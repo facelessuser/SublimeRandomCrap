@@ -250,6 +250,15 @@ def theme_loop():
 
     def is_update_time(seconds, now):
         update = False
+        debug_log("is busy: %s" % str(ThemeScheduler.busy))
+        debug_log(
+            "Compare: day: %s now: %s next: %s seconds: %s" % (
+                str(ThemeScheduler.day) if ThemeScheduler.day is not None else "None",
+                str(now.day),
+                str(ThemeScheduler.next_change.time) if ThemeScheduler.next_change is not None else "None",
+                str(seconds)
+            )
+        )
         if not ThemeScheduler.busy and ThemeScheduler.next_change is not None and not ThemeScheduler.update:
             update = (
                 (ThemeScheduler.day is None and seconds >= ThemeScheduler.next_change.time) or
