@@ -194,6 +194,8 @@ class ThemeScheduler(object):
 
         # Change the theme
         if cls.next_change is not None and cls.next_change.theme != cls.current_theme:
+            debug_log("Making Change!")
+            debug_log("Desired Next: %s Current: %s" (str(cls.next_change), str(cls.current_theme)))
             theme, msg, filters = cls.next_change.theme, cls.next_change.msg, cls.next_change.filters
             cls.current_theme = cls.next_change.theme
             # Get the next before changing
@@ -202,6 +204,9 @@ class ThemeScheduler(object):
             else:
                 cls.current_time = cls.next_change.time
                 cls.update_theme(theme, msg, filters)
+        else:
+            debug_log("Change not made!")
+            debug_log("Desired Next: %s Current: %s" (str(cls.next_change), str(cls.current_theme)))
         seconds, now = get_current_time()
         cls.get_next_change(seconds, now)
 
@@ -210,16 +215,24 @@ class ThemeScheduler(object):
         # When sublime is loading, the User preference file isn't available yet.
         # Sublime provides no real way to tell when things are intialized.
         # Handling the preference file ourselves allows us to avoid obliterating the User preference file.
+        debug_log("Theme: %s" % str(theme))
+        debug_log("Msg: %s" % str(msg))
+        debug_log("Filters: %s" % str(filters))
         cls.busy = True
         relase_busy = True
         pref_file = join(sublime.packages_path(), 'User', 'Preferences.sublime-settings')
         pref = {}
-        if filters is not None and ThemeTweaker is not None:
-            ThemeTweaker(True, theme).run(filters)
-            if msg is not None and isinstance(msg, str):
-                relase_busy = False
-                sublime.set_timeout(lambda: blocking_message(msg), 3000)
+        if filters is not None:
+            if ThemeTweaker is not None:
+                debug_log("Using Theme Tweaker to adjust file!")
+                ThemeTweaker(True, theme).run(filters)
+                if msg is not None and isinstance(msg, str):
+                    relase_busy = False
+                    sublime.set_timeout(lambda: blocking_message(msg), 3000)
+            else:
+                debug_log("ThemeTweaker is not installed :(")
         else:
+            debug_log("Selecting installed theme!")
             if exists(pref_file):
                 try:
                     with open(pref_file, "r") as f:
@@ -250,15 +263,6 @@ def theme_loop():
 
     def is_update_time(seconds, now):
         update = False
-        debug_log("is busy: %s" % str(ThemeScheduler.busy))
-        debug_log(
-            "Compare: day: %s now: %s next: %s seconds: %s" % (
-                str(ThemeScheduler.day) if ThemeScheduler.day is not None else "None",
-                str(now.day),
-                str(ThemeScheduler.next_change.time) if ThemeScheduler.next_change is not None else "None",
-                str(seconds)
-            )
-        )
         if not ThemeScheduler.busy and ThemeScheduler.next_change is not None and not ThemeScheduler.update:
             update = (
                 (ThemeScheduler.day is None and seconds >= ThemeScheduler.next_change.time) or
@@ -274,8 +278,28 @@ def theme_loop():
         if ThemeScheduler.update:
             ThemeScheduler.update = False
             ThemeScheduler.busy = False
+            debug("Button defferal")
+            debug_log("is busy: %s" % str(ThemeScheduler.busy))
+            debug_log(
+                "Compare: day: %s now: %s next: %s seconds: %s" % (
+                    str(ThemeScheduler.day) if ThemeScheduler.day is not None else "None",
+                    str(now.day),
+                    str(ThemeScheduler.next_change.time) if ThemeScheduler.next_change is not None else "None",
+                    str(seconds)
+                )
+            )
             sublime.set_timeout(lambda: ThemeScheduler.get_next_change(seconds, now, startup=True), 0)
         elif ThemeScheduler.ready and is_update_time(seconds, now):
+            debug("Time to update")
+            debug_log("is busy: %s" % str(ThemeScheduler.busy))
+            debug_log(
+                "Compare: day: %s now: %s next: %s seconds: %s" % (
+                    str(ThemeScheduler.day) if ThemeScheduler.day is not None else "None",
+                    str(now.day),
+                    str(ThemeScheduler.next_change.time) if ThemeScheduler.next_change is not None else "None",
+                    str(seconds)
+                )
+            )
             sublime.set_timeout(lambda: ThemeScheduler.change_theme(), 0)
         time.sleep(1)
 
