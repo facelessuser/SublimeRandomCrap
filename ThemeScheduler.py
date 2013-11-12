@@ -195,7 +195,7 @@ class ThemeScheduler(object):
         # Change the theme
         if cls.next_change is not None and cls.next_change.theme != cls.current_theme:
             debug_log("Making Change!")
-            debug_log("Desired Next: %s Current: %s" (str(cls.next_change), str(cls.current_theme)))
+            debug_log("Desired Next: %s Current: %s" % (str(cls.next_change), str(cls.current_theme)))
             theme, msg, filters = cls.next_change.theme, cls.next_change.msg, cls.next_change.filters
             cls.current_theme = cls.next_change.theme
             # Get the next before changing
@@ -206,7 +206,7 @@ class ThemeScheduler(object):
                 cls.update_theme(theme, msg, filters)
         else:
             debug_log("Change not made!")
-            debug_log("Desired Next: %s Current: %s" (str(cls.next_change), str(cls.current_theme)))
+            debug_log("Desired Next: %s Current: %s" % (str(cls.next_change), str(cls.current_theme)))
         seconds, now = get_current_time()
         cls.get_next_change(seconds, now)
 
@@ -278,7 +278,7 @@ def theme_loop():
         if ThemeScheduler.update:
             ThemeScheduler.update = False
             ThemeScheduler.busy = False
-            debug("Button defferal")
+            debug_log("Button defferal")
             debug_log("is busy: %s" % str(ThemeScheduler.busy))
             debug_log(
                 "Compare: day: %s now: %s next: %s seconds: %s" % (
@@ -290,7 +290,7 @@ def theme_loop():
             )
             sublime.set_timeout(lambda: ThemeScheduler.get_next_change(seconds, now, startup=True), 0)
         elif ThemeScheduler.ready and is_update_time(seconds, now):
-            debug("Time to update")
+            debug_log("Time to update")
             debug_log("is busy: %s" % str(ThemeScheduler.busy))
             debug_log(
                 "Compare: day: %s now: %s next: %s seconds: %s" % (
