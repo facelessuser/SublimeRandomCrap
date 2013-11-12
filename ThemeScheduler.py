@@ -105,6 +105,8 @@ class ThreadMgr(object):
 class ThemeScheduler(object):
     themes = []
     current_theme = ""
+    current_msg = None
+    current_filters = None
     next_change = None
     day = None
     ready = False
@@ -193,11 +195,20 @@ class ThemeScheduler(object):
         """
 
         # Change the theme
-        if cls.next_change is not None and cls.next_change.theme != cls.current_theme:
+        if (
+            cls.next_change is not None and
+            (
+                cls.next_change.theme != cls.current_theme or
+                cls.next_change.msg != cls.current_msg or
+                cls.next_change.filters != cls.current_filters
+            )
+        ):
             debug_log("Making Change!")
             debug_log("Desired Next: %s Current: %s" % (str(cls.next_change), str(cls.current_theme)))
             theme, msg, filters = cls.next_change.theme, cls.next_change.msg, cls.next_change.filters
-            cls.current_theme = cls.next_change.theme
+            cls.current_theme = theme
+            cls.current_msg = msg
+            cls.current_filters = filters
             # Get the next before changing
             if cls.current_time is not None and cls.next_change.time == cls.current_time:
                 cls.update_theme(theme, None, filters)
