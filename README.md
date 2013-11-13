@@ -9,7 +9,6 @@ Random Sublime plugin scripts (some experimental).  This is a personal repo of e
 - STABLE: Sublime Info (MIT): Simple plugin to display info about the system and Sublime Text
 - STABLE: Insert Date (MIT): Simple plugin to insert date and time
 - STABLE: Shortcut Plus (MIT): Plugin for creating shortcuts that are context sensitive to profiles, platforms, OS, etc.
-- EXPERIMENTAL: ThemeScheduler (MIT) - Change your theme based on the time of day.  Used to be stable, but recent versions of ST3 have made it unreliable.  Need to spend some time to get it stable again.  Built on top of ThemeTweaker plugin https://github.com/facelessuser/ThemeTweaker.
 
 # License
 MIT except for certain noted plugins
