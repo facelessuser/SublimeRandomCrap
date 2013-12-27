@@ -3,7 +3,7 @@ SublimeRandomCrap
 
 Random Sublime plugin scripts (some experimental).  This is a personal repo of extemely simple plugins that aren't worh creating a repo for, or experimental plugins that may or may not work well.  There is really not much documentation to anything.  Since these plugins are either super basic or experimental, I will not be actively giving support to anyone who stumbles on this, so use at your own risk.  If I am willing to start supporting a plugin here, you will see it moved to its own repo.
 
-- STABLE: Toggle White Space (MIT): simple plugin that toggle white space setting
+- STABLE: Toggles White Space (MIT): simple plugin that toggle white space setting
 - STABLE: Highlight Word (License ? - mod of ajpalkovic's plugin https://github.com/ajpalkovic) - plugin for highlighting instances of the current word
 - STABLE: Sublime API Doc (MIT): Simple plugin that brings up documentation for the detected version of Sublime Text
 - STABLE: Sublime Info (MIT): Simple plugin to display info about the system and Sublime Text
