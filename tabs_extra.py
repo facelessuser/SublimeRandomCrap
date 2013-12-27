@@ -10,7 +10,7 @@ def respect_marks():
     return sublime.load_settings("tabs_extra.sublime-settings").get("all_commands_respect_marks", False)
 
 
-class ClearAllMarks(sublime_plugin.WindowCommand):
+class ClearAllTabMarksCommand(sublime_plugin.WindowCommand):
     def run(self, group=-1, force=False):
         if group == -1:
             return
@@ -18,7 +18,7 @@ class ClearAllMarks(sublime_plugin.WindowCommand):
         views = self.window.views_in_group(group)
         if not persistent or force:
             for v in views:
-                v.settings.erase("tabs_extra_marked")
+                v.settings().erase("tabs_extra_marked")
 
 
 class CloseTabCommand(sublime_plugin.WindowCommand):
@@ -39,7 +39,7 @@ class CloseTabCommand(sublime_plugin.WindowCommand):
 
         # Clear all marks
         if not persistent and len(views):
-            self.window.run_command("clear_all_marks", {"group": group})
+            self.window.run_command("clear_all_tab_marks", {"group": group})
 
 
 class CloseTabsAllCommand(sublime_plugin.WindowCommand):
@@ -136,7 +136,7 @@ class CloseTabsToLeftCommand(sublime_plugin.WindowCommand):
                 v.settings().erase("tabs_extra_marked")
 
         if not persistent and len(views[index:]):
-            self.window.run_command("clear_all_marks", {"group": group})
+            self.window.run_command("clear_all_tab_marks", {"group": group})
 
 
 class CloseTabsToRightCommand(sublime_plugin.WindowCommand):
@@ -157,7 +157,7 @@ class CloseTabsToRightCommand(sublime_plugin.WindowCommand):
                     v.settings().erase("tabs_extra_marked")
 
         if not persistent and len(views[:index + 1]):
-            self.window.run_command("clear_all_marks", {"group": group})
+            self.window.run_command("clear_all_tab_marks", {"group": group})
 
 
 class CloseTabsOtherCommand(sublime_plugin.WindowCommand):
@@ -178,7 +178,7 @@ class CloseTabsOtherCommand(sublime_plugin.WindowCommand):
                 v.settings().erase("tabs_extra_marked")
 
         if not persistent:
-            self.window.run_command("clear_all_marks", {"group": group})
+            self.window.run_command("clear_all_tab_marks", {"group": group})
 
 
 class TabsExtraListener(sublime_plugin.EventListener):
