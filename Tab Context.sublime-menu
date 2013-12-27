@@ -1,0 +1,7 @@
+[
+    {"caption": "-", "id": "tabs_extra"},
+    // { "command": "close_tab", "args": { "group": -1, "index": -1 }, "caption": "Close" },
+    // { "command": "close_tabs_other", "args": { "group": -1, "index": -1 }, "caption": "Close Other Tabs" },
+    { "command": "close_tabs_to_left", "args": { "group": -1, "index": -1 }, "caption": "Close Tabs to the Left" },
+    // { "command": "close_tabs_to_right", "args": { "group": -1, "index": -1 }, "caption": "Close Tabs to the Right" }
+]
