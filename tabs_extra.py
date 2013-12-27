@@ -20,6 +20,15 @@ class ClearAllTabMarksCommand(sublime_plugin.WindowCommand):
             for v in views:
                 v.settings().erase("tabs_extra_marked")
 
+    def is_visible(self, group=-1, force=False):
+        marked = False
+        views = self.window.views_in_group(group)
+        for v in views:
+            if v.settings().get("tabs_extra_marked", False):
+                marked = True
+                break
+        return marked
+
 
 class CloseTabCommand(sublime_plugin.WindowCommand):
     def run(self, group=-1, index=-1):
