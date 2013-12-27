@@ -1,13 +1,13 @@
 [
-    { "caption": "-", "id": "tabs_extra_marked" },
-    { "command": "mark_tab", "args": { "group": -1, "index": -1 }, "caption": "Sticky Tab" },
-    { "command": "clear_all_tab_marks", "args": { "group": -1, "force": true }, "caption": "Clear All Sticky Tabs" },
+    { "caption": "-", "id": "tabs_extra_sticky" },
+    { "command": "tabs_extra_toggle_sticky", "args": { "group": -1, "index": -1 }, "caption": "Sticky Tab" },
+    { "command": "tabs_extra_clear_all_sticky", "args": { "group": -1, "force": true }, "caption": "Clear All Sticky Tabs" },
     { "caption": "-", "id": "tabs_extra" },
-    // { "command": "close_tab", "args": { "group": -1, "index": -1 }, "caption": "Close" },
-    { "command": "close_tabs_all", "args": { "group": -1, "index": -1 }, "caption": "Close All Tabs" },
-    // { "command": "close_tabs_other", "args": { "group": -1, "index": -1 }, "caption": "Close Other Tabs" },
-    // { "command": "close_tabs_to_right", "args": { "group": -1, "index": -1 }, "caption": "Close Tabs to the Right" }
-    { "command": "close_tabs_to_left", "args": { "group": -1, "index": -1 }, "caption": "Close Tabs to the Left" },
-    { "command": "close_tabs_marked", "args": { "group": -1, "index": -1 }, "caption": "Close Sticky Tabs" },
-    { "command": "close_tabs_unmarked", "args": { "group": -1, "index": -1 }, "caption": "Close Non-Sticky Tabs" }
+    // { "command": "tabs_extra", "args": { "group": -1, "index": -1, "close_type": "single" }, "caption": "Close" },
+    { "command": "tabs_extra", "args": { "group": -1, "index": -1, "close_type": "all"}, "caption": "Close All Tabs" },
+    // { "command": "tabs_extra", "args": { "group": -1, "index": -1, "close_type": "other" }, "caption": "Close Other Tabs" },
+    // { "command": "tabs_extra", "args": { "group": -1, "index": -1, "close_type": "right" }, "caption": "Close Tabs to the Right" }
+    { "command": "tabs_extra", "args": { "group": -1, "index": -1, "close_type": "left" }, "caption": "Close Tabs to the Left" },
+    { "command": "tabs_extra_close_sticky", "args": { "group": -1, "index": -1 }, "caption": "Close Sticky Tabs" },
+    { "command": "tabs_extra_close_sticky", "args": { "group": -1, "index": -1, "invert": true }, "caption": "Close Non-Sticky Tabs" }
 ]

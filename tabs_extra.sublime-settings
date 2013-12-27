@@ -1,4 +1,4 @@
 {
-    "persistent_marks": false,
-    "all_commands_respect_marks": false
+    "persistent_sticky": false,
+    "all_commands_respect_sticky": false
 }
