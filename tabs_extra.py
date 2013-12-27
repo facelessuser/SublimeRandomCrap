@@ -75,22 +75,10 @@ class MarkTabCommand(sublime_plugin.WindowCommand):
         view = self.window.views_in_group(group)[index]
         if not view.settings().get("tabs_extra_marked", False):
             view.settings().set("tabs_extra_marked", True)
-
-    def is_visible(self, group=-1, index=-1):
-        if group == -1 or index == -1:
-            return False
-        return not self.window.views_in_group(group)[index].settings().get("tabs_extra_marked", False)
-
-
-class UnmarkTabCommand(sublime_plugin.WindowCommand):
-    def run(self, group=-1, index=-1):
-        if group == -1 or index == -1:
-            return False
-        view = self.window.views_in_group(group)[index]
-        if view.settings().get("tabs_extra_marked", False):
+        else:
             view.settings().erase("tabs_extra_marked")
 
-    def is_visible(self, group=-1, index=-1):
+    def is_checked(self, group=-1, index=-1):
         if group == -1 or index == -1:
             return False
         return self.window.views_in_group(group)[index].settings().get("tabs_extra_marked", False)
