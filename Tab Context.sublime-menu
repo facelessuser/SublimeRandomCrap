@@ -1,7 +1,13 @@
 [
-    {"caption": "-", "id": "tabs_extra"},
+    { "caption": "-", "id": "tabs_extra" },
     // { "command": "close_tab", "args": { "group": -1, "index": -1 }, "caption": "Close" },
     // { "command": "close_tabs_other", "args": { "group": -1, "index": -1 }, "caption": "Close Other Tabs" },
+    { "command": "close_tabs_all", "args": { "group": -1, "index": -1 }, "caption": "Close All Tabs" },
     { "command": "close_tabs_to_left", "args": { "group": -1, "index": -1 }, "caption": "Close Tabs to the Left" },
+    { "caption": "-", "id": "tabs_extra_marked" },
+    { "command": "mark_tab", "args": { "group": -1, "index": -1 }, "caption": "Mark Tab" },
+    { "command": "unmark_tab", "args": { "group": -1, "index": -1 }, "caption": "Un-mark Tab" },
+    { "command": "close_tabs_marked", "args": { "group": -1, "index": -1 }, "caption": "Close Marked Tabs" },
+    { "command": "close_tabs_unmarked", "args": { "group": -1, "index": -1 }, "caption": "Close Un-marked Tabs" }
     // { "command": "close_tabs_to_right", "args": { "group": -1, "index": -1 }, "caption": "Close Tabs to the Right" }
 ]
