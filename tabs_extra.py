@@ -42,9 +42,14 @@ OVERRIDE_MENU = '''
 ]
 '''
 
-OVERRIDE_CONFIRM = '''Are you sure you want to override the "Default" Package "Tab Context.sublime-menu"?
+OVERRIDE_CONFIRM = '''TabsExtra will overwrite the entire "Tab Context.sublime-menu" file in "Packages/Default" with a new one.
 
-If you do this and later change your mind, you will have to restore the default menu manually.
+Are you sure you want to continue?
+'''
+
+RESTORE_CONFIRM = '''TabsExtra will simply delete the override "Tab Context.sublime-menu" from "Packages/Default" to allow the archived menu to take effect.
+
+Are you sure you want to continue?
 '''
 
 
@@ -182,6 +187,37 @@ class TabsExtraInstallOverrideMenuCommand(sublime_plugin.ApplicationCommand):
             default_menu = join(default_path, TAB_MENU)
             with open(default_menu, "w") as f:
                 f.write(OVERRIDE_MENU)
+
+class TabsExtraInstallOverrideMenuCommand(sublime_plugin.ApplicationCommand):
+    def run(self):
+        if sublime.ok_cancel_dialog(OVERRIDE_CONFIRM):
+            menu_path = join(sublime.packages_path(), "User", PACKAGE_NAME)
+            if not exists(menu_path):
+                makedirs(menu_path)
+            menu = join(menu_path, TAB_MENU)
+            with open(menu, "w") as f:
+                f.write(EMPTY_MENU)
+            default_path = join(sublime.packages_path(), "Default")
+            if not exists(default_path):
+                makedirs(default_path)
+            default_menu = join(default_path, TAB_MENU)
+            with open(default_menu, "w") as f:
+                f.write(OVERRIDE_MENU)
+
+
+class TabsExtraUninstallOverrideMenuCommand(sublime_plugin.ApplicationCommand):
+    def run(self):
+        if sublime.ok_cancel_dialog(RESTORE_CONFIRM):
+            menu_path = join(sublime.packages_path(), "User", PACKAGE_NAME)
+            if not exists(menu_path):
+                makedirs(menu_path)
+            menu = join(menu_path, TAB_MENU)
+            with open(menu, "w") as f:
+                f.write(DEFAULT_MENU)
+            default_path = join(sublime.packages_path(), "Default")
+            default_menu = join(default_path, TAB_MENU)
+            if exists(default_menu):
+                remove(default_menu)
 
 
 def plugin_loaded():
