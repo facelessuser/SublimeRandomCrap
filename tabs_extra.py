@@ -1,7 +1,9 @@
 import sublime_plugin
 import sublime
 from os.path import join, exists
-from os import makedirs, remove
+from os import makedirs, remove, rename
+
+ST3 = int(sublime.version()) >= 3000
 
 PACKAGE_NAME = "TabsExtra"
 DEFAULT_PACKAGE = "Default"
@@ -42,14 +44,28 @@ OVERRIDE_MENU = '''
 ]
 '''
 
-OVERRIDE_CONFIRM = '''TabsExtra will overwrite the entire "Tab Context.sublime-menu" file in "Packages/Default" with a new one.
+OVERRIDE_CONFIRM = '''TabsExtra will overwrite the entire "Tab Context.sublime-menu" file in "Packages/Default" with a new one.  ST3 keeps an unmodified copy in the archive, but in ST2 TabsExtra will backup the current menu.  In ST2, updates may wipe out the override menu and may require you to re-install the override menu.
+
+You do this at your own risk.  If something goes wrong, you may need to manually fix the menu.
 
 Are you sure you want to continue?
 '''
 
-RESTORE_CONFIRM = '''TabsExtra will simply delete the override "Tab Context.sublime-menu" from "Packages/Default" to allow the archived menu to take effect.
+RESTORE_CONFIRM = '''In ST3 TabsExtra will simply delete the override "Tab Context.sublime-menu" from "Packages/Default" to allow the archived menu to take effect.  In ST2, TabsExtra will try to restore the menu from the previous backup; if the restore fails, TabsExtra will generate a new one which should match the shipped version.
+
+You do this at your own risk.  If something goes wrong, you may need to manually fix the menu.
 
 Are you sure you want to continue?
+'''
+
+BACKUP_MENU = '''[
+    { "command": "close_by_index", "args": { "group": -1, "index": -1 }, "caption": "Close" },
+    { "command": "close_others_by_index", "args": { "group": -1, "index": -1 }, "caption": "Close others" },
+    { "command": "close_to_right_by_index", "args": { "group": -1, "index": -1 }, "caption": "Close tabs to the right" },
+    { "caption": "-" },
+    { "command": "new_file" },
+    { "command": "prompt_open_file", "caption": "Open file" }
+]
 '''
 
 
@@ -185,22 +201,9 @@ class TabsExtraInstallOverrideMenuCommand(sublime_plugin.ApplicationCommand):
             if not exists(default_path):
                 makedirs(default_path)
             default_menu = join(default_path, TAB_MENU)
-            with open(default_menu, "w") as f:
-                f.write(OVERRIDE_MENU)
-
-class TabsExtraInstallOverrideMenuCommand(sublime_plugin.ApplicationCommand):
-    def run(self):
-        if sublime.ok_cancel_dialog(OVERRIDE_CONFIRM):
-            menu_path = join(sublime.packages_path(), "User", PACKAGE_NAME)
-            if not exists(menu_path):
-                makedirs(menu_path)
-            menu = join(menu_path, TAB_MENU)
-            with open(menu, "w") as f:
-                f.write(EMPTY_MENU)
-            default_path = join(sublime.packages_path(), "Default")
-            if not exists(default_path):
-                makedirs(default_path)
-            default_menu = join(default_path, TAB_MENU)
+            if not ST3:
+                if exists(default_menu) and not exists(default_menu + ".tabs_extra"):
+                    rename(default_menu, default_menu + ".tabs_extra")
             with open(default_menu, "w") as f:
                 f.write(OVERRIDE_MENU)
 
@@ -218,6 +221,12 @@ class TabsExtraUninstallOverrideMenuCommand(sublime_plugin.ApplicationCommand):
             default_menu = join(default_path, TAB_MENU)
             if exists(default_menu):
                 remove(default_menu)
+            if not ST3:
+                if exists(default_menu + ".tabs_extra"):
+                    rename(default_menu + ".tabs_extra", default_menu)
+                else:
+                    with open(default_menu) as f:
+                        f.write(BACKUP_MENU)
 
 
 def plugin_loaded():
@@ -228,3 +237,6 @@ def plugin_loaded():
     if not exists(menu):
         with open(menu, "w") as f:
             f.write(DEFAULT_MENU)
+
+if not ST3:
+    plugin_loaded()
