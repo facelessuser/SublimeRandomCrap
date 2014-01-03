@@ -9,7 +9,7 @@ notify = None
 
 class SubNotifyInfoCommand(sublime_plugin.ApplicationCommand):
     def run(self, title="", msg=""):
-        notify.info(title, msg, True)
+        notify.info(title, msg)
 
 
 def plugin_loaded():
