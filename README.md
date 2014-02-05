@@ -9,7 +9,7 @@ Random Sublime plugin scripts (some experimental).  This is a personal repo of e
 - STABLE: Sublime Info (MIT): Simple plugin to display info about the system and Sublime Text
 - STABLE: Insert Date (MIT): Simple plugin to insert date and time
 - STABLE: Shortcut Plus (MIT): Plugin for creating shortcuts that are context sensitive to profiles, platforms, OS, etc.
-- EXPERIMENTAL: Tabs Extra (MIT): Plugin to add more tab closing options.  Also adds tab marking for specifying tabs to close or specifying tabs to not close
+- EXPERIMENTAL: Caret (MIT): Plugin to quickliy find your caret...or, I should say, make cursors highly visible briefly to aide in finding them.
 
 # License
 MIT except for certain noted plugins
