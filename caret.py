@@ -1,9 +1,32 @@
+"""
+Find Cursor
+Licensed under MIT
+Copyright (c) 2014 Isaac Muse <isaacmuse@gmail.com>
+
+Makes Sublime cursors highly visible for a short duration.
+Also cycles through all cursors centering them in the view.
+
+Example Keymap:
+    //////////////////////////////////
+    // Find Cursor
+    //////////////////////////////////
+    {
+        "keys": ["ctrl+."],
+        "command": "find_cursor",
+        "args": {"show_at_center": 1}
+    },
+    {
+        "keys": ["ctrl+shift+."],
+        "command": "find_cursor",
+        "args": {"show_at_center": -1}
+    }
+"""
 import sublime_plugin
 import sublime
 import time
 
 
-class FindCaretCommand(sublime_plugin.TextCommand):
+class FindCursorCommand(sublime_plugin.TextCommand):
     def save_item(self, defaults, src, dest):
         """
         Save the item if setting is available.
@@ -94,7 +117,7 @@ class FindCaretCommand(sublime_plugin.TextCommand):
         sublime.set_timeout(lambda t=str(self.time): self.restore(t), 3000)
 
 
-class CaretListener(sublime_plugin.EventListener):
+class FindCursorListener(sublime_plugin.EventListener):
     def on_selection_modified_async(self, view):
         """
         If selection was modified, erase the tracked last index.
