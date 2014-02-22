@@ -4,26 +4,46 @@ Licensed under MIT
 Copyright (c) 2014 Isaac Muse <isaacmuse@gmail.com>
 
 Makes Sublime cursors highly visible for a short duration.
-Also cycles through all cursors centering them in the view.
+
+Also, iterate through cursors centering them, or pan through view showing cursors.
 
 Example Keymap:
     //////////////////////////////////
-    // Find Cursor
+    // Find Cursor: Iterative Find
     //////////////////////////////////
     {
         "keys": ["ctrl+."],
         "command": "find_cursor",
-        "args": {"show_at_center": 1}
+        "args": {"reverse": false, "pan": false}
     },
     {
         "keys": ["ctrl+shift+."],
         "command": "find_cursor",
-        "args": {"show_at_center": -1}
+        "args": {"reverse": true, "pan": false}
+    }
+
+    //////////////////////////////////
+    // Find Cursor: Panning Find
+    //////////////////////////////////
+    {
+        "keys": ["ctrl+."],
+        "command": "find_cursor",
+        "args": {"reverse": false, "pan": true}
+    },
+    {
+        "keys": ["ctrl+shift+."],
+        "command": "find_cursor",
+        "args": {"reverse": true, "pan": true}
     }
 """
 import sublime_plugin
 import sublime
 import time
+
+PAN_MODE = -2
+NULL_INDEX = -1
+FORWARD = 1
+BACKWARD = -1
 
 
 class FindCursorCommand(sublime_plugin.TextCommand):
@@ -73,6 +93,8 @@ class FindCursorCommand(sublime_plugin.TextCommand):
                 self.restore_item(defaults, "style", "caret_style")
                 self.restore_item(defaults, "inverse", "inverse_caret_state")
             self.settings.erase("caret_defaults")
+            if int(self.settings.get("caret_last_index", NULL_INDEX)) == PAN_MODE:
+                self.settings.erase("caret_last_index")
 
     def high_visibility(self):
         """
@@ -87,33 +109,124 @@ class FindCursorCommand(sublime_plugin.TextCommand):
         self.settings.set("caret_style", "smooth")
         self.settings.set("caret_last_change", str(self.time))
 
-    def show_at_center(self, show_at_center):
+    def find_cursor(self, direction, pan):
         """
-        Show the next caret at the given index.
+        Find cursor and adjust view if not the first time.
         """
 
-        if show_at_center is None or show_at_center not in [1, -1]:
+        if direction not in [FORWARD, BACKWARD]:
             return
-        direction = show_at_center
-        index = int(self.settings.get("caret_last_index", -1))
-        sel = self.view.sel()
-        if len(sel):
-            index += 1 * direction
-            if index < 0:
-                index = len(sel) - 1
-            elif index >= len(sel):
-                index = 0
-            self.view.show_at_center(sel[index])
+
+        skip_focus = pan and int(self.settings.get("caret_last_index", NULL_INDEX)) == NULL_INDEX
+
+        cursor, index = self.get_pan_cursor(direction) if pan else self.get_iter_cursor(direction)
+
+        if cursor is not None:
+            if not skip_focus:
+                if pan:
+                    self.view.show(cursor, True)
+                else:
+                    self.view.show_at_center(cursor)
             self.settings.set("caret_last_index", index)
 
-    def run(self, edit, show_at_center=None):
+    def get_pan_cursor(self, direction):
+        """
+        On first call, get first cursor in viewable region.
+        If no cursor in viewable region or on additional calls,
+        grab first cursor outside of viewable region in the desired direction.
+        """
+        cursor = None
+        index = int(self.settings.get("caret_last_index", NULL_INDEX))
+
+        sel = self.view.sel()
+        visible_region = self.view.visible_region()
+
+        if index != PAN_MODE:
+            for s in sel:
+                if visible_region.begin() >= s.b and s.b <= visible_region.end():
+                    cursor = s
+                    index = PAN_MODE
+
+        if cursor is None:
+            before = []
+            after = []
+            for s in sel:
+                if visible_region.begin() > s.b:
+                    before.append(s)
+                elif visible_region.end() < s.b:
+                    after.append(s)
+            if direction == FORWARD:
+                if len(after):
+                    cursor = after[0]
+                    index = PAN_MODE
+                elif len(before):
+                    cursor = before[0]
+                    index = PAN_MODE
+            else:
+                if len(before):
+                    cursor = before[-1]
+                    index = PAN_MODE
+                elif len(after):
+                    cursor = after[-1]
+                    index = PAN_MODE
+
+        return cursor, index
+
+    def get_iter_cursor(self, direction):
+        """
+        On first call get first cursor in viewable region opposite to the desired direction.
+        If no cursors is in viewable region or on additional calls,
+        iterate to the next cursor in the desired direction.
+        """
+
+        cursor = None
+        index = int(self.settings.get("caret_last_index", NULL_INDEX))
+
+        if index == PAN_MODE:
+            index = NULL_INDEX
+
+        sel = self.view.sel()
+        visible_region = self.view.visible_region()
+
+        if len(sel):
+            if index == NULL_INDEX:
+                # Select first selection near visible edge opposite to direction
+                # This is done only on first search.
+                backwards = direction == BACKWARD
+                if backwards:
+                    index = len(sel)
+                for s in (reverse(sel) if backwards else sel):
+                    index += direction
+                    if (
+                        (backwards and s.b <= visible_region.end()) or
+                        (not backwards and s.b >= visible_region.begin())
+                    ):
+                        cursor = s
+                        break
+
+                if cursor is None:
+                    index = NULL_INDEX
+
+            if cursor is None:
+                # Next cursor or offscreen cursor
+                # if a visible cusrsor was not found
+                index += 1 * direction
+                if index < 0:
+                    index = len(sel) - 1
+                elif index >= len(sel):
+                    index = 0
+                cursor = sel[index]
+
+        return cursor, index
+
+    def run(self, edit, reverse=False, pan=False):
         """
         Show the cursor and the carets in a highly visible way, then revert them back to normal.
         """
 
         self.save()
         self.high_visibility()
-        self.show_at_center(int(show_at_center) if show_at_center is not None else show_at_center)
+        self.find_cursor(FORWARD if not reverse else BACKWARD, pan)
         sublime.set_timeout(lambda t=str(self.time): self.restore(t), 3000)
 
 
