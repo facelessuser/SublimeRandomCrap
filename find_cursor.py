@@ -93,7 +93,7 @@ class FindCursorCommand(sublime_plugin.TextCommand):
                 self.restore_item(defaults, "style", "caret_style")
                 self.restore_item(defaults, "inverse", "inverse_caret_state")
             self.settings.erase("caret_defaults")
-            if int(self.settings.get("caret_last_index", NULL_INDEX)) == PAN_MODE:
+            if int(self.settings.get("caret_last_index", NULL_INDEX)) != NULL_INDEX:
                 self.settings.erase("caret_last_index")
 
     def high_visibility(self):
@@ -109,6 +109,20 @@ class FindCursorCommand(sublime_plugin.TextCommand):
         self.settings.set("caret_style", "smooth")
         self.settings.set("caret_last_change", str(self.time))
 
+    def focus_cursor(self, cursor, index, pan):
+        """
+        Focus the given cursor if applicable.
+        Set the last cursor index in the view settings.
+        """
+
+        skip_focus = pan and int(self.settings.get("caret_last_index", NULL_INDEX)) == NULL_INDEX
+        if not skip_focus:
+            if pan:
+                self.view.show(cursor, True)
+            else:
+                self.view.show_at_center(cursor)
+        self.settings.set("caret_last_index", index)
+
     def find_cursor(self, direction, pan):
         """
         Find cursor and adjust view if not the first time.
@@ -117,17 +131,17 @@ class FindCursorCommand(sublime_plugin.TextCommand):
         if direction not in [FORWARD, BACKWARD]:
             return
 
-        skip_focus = pan and int(self.settings.get("caret_last_index", NULL_INDEX)) == NULL_INDEX
-
-        cursor, index = self.get_pan_cursor(direction) if pan else self.get_iter_cursor(direction)
+        cursor, index = self.get_cursor(direction, pan)
 
         if cursor is not None:
-            if not skip_focus:
-                if pan:
-                    self.view.show(cursor, True)
-                else:
-                    self.view.show_at_center(cursor)
-            self.settings.set("caret_last_index", index)
+            self.focus_cursor(cursor, index, pan)
+
+    def get_cursor(self, direction, pan):
+        """
+        Get the cursor.
+        """
+
+        return self.get_pan_cursor(direction) if pan else self.get_iter_cursor(direction)
 
     def get_pan_cursor(self, direction):
         """
@@ -143,7 +157,7 @@ class FindCursorCommand(sublime_plugin.TextCommand):
 
         if index != PAN_MODE:
             for s in sel:
-                if visible_region.begin() >= s.b and s.b <= visible_region.end():
+                if visible_region.begin() <= s.b and s.b <= visible_region.end():
                     cursor = s
                     index = PAN_MODE
 
@@ -186,22 +200,23 @@ class FindCursorCommand(sublime_plugin.TextCommand):
 
         if len(sel):
             if index == NULL_INDEX:
-                # Select first selection near visible edge opposite to direction
+                # Select first selection nearest the center of viewable region.
                 # This is done only on first search.
-                backwards = direction == BACKWARD
-                if backwards:
-                    index = len(sel)
-                for s in (reversed(sel) if backwards else sel):
-                    index += direction
-                    if (
-                        (backwards and s.b <= visible_region.end()) or
-                        (not backwards and s.b >= visible_region.begin())
-                    ):
-                        cursor = s
+                center_pt = visible_region.begin() + int((visible_region.end() - visible_region.begin()) / 2)
+                closest = None
+                idx = -1
+                for s in sel:
+                    idx += 1
+                    if visible_region.begin() <= s.b and s.b <= visible_region.end():
+                        distance = abs(center_pt - s.b)
+                        if closest is None or distance < closest[1]:
+                            closest = (s, distance, idx)
+                    elif s.b > visible_region.end():
                         break
 
-                if cursor is None:
-                    index = NULL_INDEX
+                if closest is not None:
+                    cursor = closest[0]
+                    index = closest[2]
 
             if cursor is None:
                 # Next cursor or offscreen cursor
