@@ -148,27 +148,23 @@ class FindCursorCommand(sublime_plugin.TextCommand):
                     index = PAN_MODE
 
         if cursor is None:
-            before = []
-            after = []
-            for s in sel:
-                if visible_region.begin() > s.b:
-                    before.append(s)
-                elif visible_region.end() < s.b:
-                    after.append(s)
-            if direction == FORWARD:
-                if len(after):
-                    cursor = after[0]
-                    index = PAN_MODE
-                elif len(before):
-                    cursor = before[0]
-                    index = PAN_MODE
-            else:
-                if len(before):
-                    cursor = before[-1]
-                    index = PAN_MODE
-                elif len(after):
-                    cursor = after[-1]
-                    index = PAN_MODE
+            backwards = direction == BACKWARD
+            before = False
+            after = False
+            for s in (reversed(sel) if backwards else sel):
+                if before is False and visible_region.begin() > s.b:
+                    before = True
+                    cursor = s
+                    if direction == BACKWARD:
+                        break
+                elif after is False and visible_region.end() < s.b:
+                    after = True
+                    cursor = s
+                    if direction == FORWARD:
+                        break
+
+            if cursor is not None:
+                index = PAN_MODE
 
         return cursor, index
 
@@ -195,7 +191,7 @@ class FindCursorCommand(sublime_plugin.TextCommand):
                 backwards = direction == BACKWARD
                 if backwards:
                     index = len(sel)
-                for s in (reverse(sel) if backwards else sel):
+                for s in (reversed(sel) if backwards else sel):
                     index += direction
                     if (
                         (backwards and s.b <= visible_region.end()) or
