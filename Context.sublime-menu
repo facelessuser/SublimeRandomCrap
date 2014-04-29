@@ -1,0 +1,4 @@
+[
+    { "caption": "-", "id": "file" },
+    {"caption": "Grep Here…", "command": "grep_win_file"}
+]
