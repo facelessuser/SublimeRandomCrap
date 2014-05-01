@@ -74,7 +74,7 @@ class GrepWin(GrepWinBase):
 
         if binary is not None:
             subprocess.Popen(
-                [binary, target]
+                [binary, "/searchpath:" + target]
             )
         else:
             self.fail(NO_TARGET)
