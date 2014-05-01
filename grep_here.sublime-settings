@@ -1,0 +1,5 @@
+{
+    "grep_call": [
+        {"platform": "windows", "binary": ["C:\\Program Files\\grepWin\\grepWin.exe", "/searchpath:${PATH}"]}
+    ]
+}

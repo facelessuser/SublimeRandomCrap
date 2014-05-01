@@ -14,36 +14,42 @@ import sublime_plugin
 import sublime
 import subprocess
 from os.path import exists, abspath, normpath, isdir, dirname
+import re
+import traceback
 
-NO_GREPWIN = 0
+NO_GREP = 0
 NO_TARGET = 1
 
-ERRS = {
-    NO_GREPWIN: "Nothing to grep!",
-    NO_TARGET: "Cannot find grepWin Binary!"
-}
+NO_GREP = "Nothing to grep!"
+CALL_FAILURE = "SubProcess Error:\n%s"
 
 
-class GrepWinBase(object):
-    def fail(self, code, alert=True):
+class GrepHereBase(object):
+    def fail(self, msg, alert=True):
         if alert:
-            sublime.error_message(ERRS[code])
+            sublime.error_message(msg)
         else:
-            print(ERRS[code])
+            print("GrepHere: %s" % msg)
 
-    def get_rummage(self):
-        binary = None
-        for value in sublime.load_settings("grepwin.sublime-settings").get("grepwin_binary", []):
+    def call_grep(self, target):
+        call = None
+        for value in sublime.load_settings("grep_here.sublime-settings").get("grep_call", []):
             platform = value.get("platform", None)
             if platform is not None and platform == sublime.platform():
-                binary = value.get("binary", None)
+                call = value.get("binary", None)
                 break
-        if binary is not None and not exists(binary):
-            binary = None
-        return binary
+        if call is not None:
+            index = 0
+            for item in call:
+                call[index] = item.replace("${PATH}", target)
+                index += 1
+            try:
+                subprocess.Popen(call)
+            except:
+                self.fail(CALL_FAILURE % str(traceback.format_exc()))
 
 
-class GrepWin(GrepWinBase):
+class GrepHere(GrepHereBase):
     def is_text_cmd(self):
         return isinstance(self, sublime_plugin.TextCommand)
 
@@ -52,7 +58,7 @@ class GrepWin(GrepWinBase):
 
     def get_target(self, paths=[]):
         target = None
-        fail_code = NO_GREPWIN
+        fail_msg = NO_GREP
         if len(paths):
             target = paths[0]
         elif self.is_text_cmd():
@@ -60,31 +66,24 @@ class GrepWin(GrepWinBase):
             if filename is not None and exists(filename):
                 target = filename
             else:
-                self.fail(fail_code)
+                self.fail(fail_msg)
         else:
-            self.fail(fail_code)
+            self.fail(fail_msg)
         return target
 
-    def grepwin(self, paths=[]):
+    def grep(self, paths=[]):
         target = self.get_target(paths)
         if target is None:
             return
 
-        binary = self.get_rummage()
-
-        if binary is not None:
-            subprocess.Popen(
-                [binary, "/searchpath:" + target]
-            )
-        else:
-            self.fail(NO_TARGET)
+        self.call_grep(target)
 
 
-class GrepWinFileCommand(sublime_plugin.TextCommand, GrepWin):
+class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
     def run(self, edit):
-        self.grepwin()
+        self.grep()
 
 
-class GrepWinFolderCommand(sublime_plugin.WindowCommand, GrepWin):
+class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
     def run(self, paths=[]):
-        self.grepwin(paths)
+        self.grep(paths)
