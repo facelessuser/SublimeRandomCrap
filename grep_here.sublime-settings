@@ -1,5 +1,6 @@
 {
     "grep_call": [
-        {"platform": "windows", "binary": ["C:\\Program Files\\grepWin\\grepWin.exe", "/searchpath:${PATH}"]}
+        {"platform": "windows", "cmd": ["C:\\Program Files\\grepWin\\grepWin.exe", "/searchpath:${PATH}"]},
+        {"platform": "osx", "cmd": ["/Applications/Rummage.app/Contents/MacOS/Rummage", "-s", "${PATH}"]}
     ]
 }

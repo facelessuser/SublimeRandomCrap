@@ -36,7 +36,7 @@ class GrepHereBase(object):
         for value in sublime.load_settings("grep_here.sublime-settings").get("grep_call", []):
             platform = value.get("platform", None)
             if platform is not None and platform == sublime.platform():
-                call = value.get("binary", None)
+                call = value.get("cmd", None)
                 break
         if call is not None:
             index = 0
