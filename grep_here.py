@@ -13,8 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 import sublime_plugin
 import sublime
 import subprocess
-from os.path import exists, abspath, normpath, isdir, dirname
-import re
+from os.path import exists
 import traceback
 
 NO_GREP = 0

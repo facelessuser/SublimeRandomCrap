@@ -84,6 +84,7 @@ def translate_time(t):
         total_seconds(timedelta(hours=t_max.tm_hour, minutes=t_max.tm_min, seconds=t_max.tm_sec))
     )
 
+
 class ShortcutMode(object):
     enabled = False
     profile = ""
@@ -110,7 +111,7 @@ class ShortcutPlusModeListener(sublime_plugin.EventListener):
             if t_min < t_max and t_min <= current_time < t_max:
                 handeled = True
             elif t_min > t_max and (t_min <= current_time or current_time < t_max):
-                handled = True
+                handeled = True
         return handeled
 
 

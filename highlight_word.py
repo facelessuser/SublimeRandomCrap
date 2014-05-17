@@ -7,6 +7,8 @@ KEY = "HighlightCurrentWord"
 STYLE = "solid"
 SCOPE = 'comment'
 
+highlight_word = None
+
 
 def debug(s):
     print("HighlightWord: " + s)
@@ -22,7 +24,7 @@ class HighlightWord(object):
     def doSearch(self, view, force=True):
         self.highlighting = True
 
-        if view == None:
+        if view is None:
             self.highlighting = False
             return
 
@@ -55,7 +57,7 @@ class HighlightWord(object):
         # remove leading/trailing separator characters just in case
         currentWord = view.substr(currentRegion).strip(separatorString)
 
-        #print u"|%s|" % currentWord
+        # print u"|%s|" % currentWord
         if len(currentWord) == 0:
             view.erase_regions(KEY)
             self.highlighting = False
@@ -87,7 +89,7 @@ class HighlightWord(object):
         validRegions = []
         while True:
             foundRegion = view.find(currentWord, searchStart, sublime.LITERAL)
-            if foundRegion == None:
+            if foundRegion is None:
                 break
 
             # regions can have reversed start/ends so normalize them
@@ -118,7 +120,7 @@ class HighlightWord(object):
                 break
 
         # Pick highlight style "outline" or the default "solid"
-        style = sublime.DRAW_OUTLINED if view.settings().get('highlight_word_outline_style', False) == True else 0
+        style = sublime.DRAW_OUTLINED if view.settings().get('highlight_word_outline_style', False) is True else 0
 
         view.add_regions(
             KEY,
@@ -163,7 +165,8 @@ def hw_run():
     HwEventManager.modified = False
     # Ignore selection and edit events inside the routine
     HwEventManager.ignore_all = True
-    highlight_word(sublime.active_window().active_view())
+    if highlight_word is not None:
+        highlight_word(sublime.active_window().active_view())
     HwEventManager.ignore_all = False
     HwEventManager.time = time()
 
@@ -173,7 +176,7 @@ def hw_run():
 # be ignored and then accounted for with one match by this thread
 def hw_loop():
     while not HwThreadMgr.restart:
-        if HwEventManager.modified == True and time() - HwEventManager.time > HwEventManager.wait_time:
+        if HwEventManager.modified is True and time() - HwEventManager.time > HwEventManager.wait_time:
             sublime.set_timeout(lambda: hw_run(), 0)
         elif not HwEventManager.modified:
             sublime.set_timeout(lambda: hw_run(), 0)
@@ -188,7 +191,7 @@ def plugin_loaded():
     global highlight_word
     highlight_word = HighlightWord().doSearch
 
-    if not 'running_hw_loop' in globals():
+    if 'running_hw_loop' not in globals():
         global running_hw_loop
         running_hw_loop = True
         debug("Start Thread")

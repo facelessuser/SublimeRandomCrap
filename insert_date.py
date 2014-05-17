@@ -10,4 +10,4 @@ class InsertDateTimeCommand(sublime_plugin.TextCommand):
         else:
             date_time = datetime.now().strftime(format)
         for sel in self.view.sel():
-             self.view.replace(edit, sel, date_time)
+            self.view.replace(edit, sel, date_time)

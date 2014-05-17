@@ -2,8 +2,7 @@ import socket
 import sublime
 import sublime_plugin
 
-INFO = \
-'''
+INFO = '''
 Platform:        %(platform)s
 Hostname:        %(hostname)s
 Sublime Version: %(version)s
@@ -17,9 +16,9 @@ class SublimeInfoCommand(sublime_plugin.ApplicationCommand):
         info = {
             "platform": sublime.platform(),
             "hostname": socket.gethostname().lower(),
-            "version":  sublime.version(),
-            "arch":     sublime.arch(),
-            "ip":       socket.gethostbyname(socket.gethostname())
+            "version": sublime.version(),
+            "arch": sublime.arch(),
+            "ip": socket.gethostbyname(socket.gethostname())
         }
 
         msg = INFO % info
