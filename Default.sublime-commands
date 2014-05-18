@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "LintSwitch: Toggle Python Version",
+        "command": "py_lint_switch"
+    }
+]
