@@ -1,4 +1,3 @@
-import sublime
 import sublime_plugin
 
 
@@ -39,8 +38,8 @@ ASCII_INFO = {
     127: {"char": "DEL", "info": "(delete)"}
 }
 
-ASCII_HEADER = "DEC HEX  OCT     CHR INFO\n"
-ASCII_LINE = "%3d 0x%02x 0o%03o % 5s%s"
+ASCII_HEADER = "DEC    HEX     OCT        CHR    INFO\n"
+ASCII_LINE = "%3d    0x%02x    0o%03o    % 5s%s"
 
 
 def display_ascii(code):
@@ -50,7 +49,7 @@ def display_ascii(code):
 
     entry = ASCII_INFO.get(code, {"char": chr(code)})
     char = entry["char"]
-    info = (" " + entry.get("info", "")).rstrip()
+    info = ("    " + entry.get("info", "")).rstrip()
     return ASCII_LINE % (
         code,  # decimal
         code,  # hex
@@ -79,3 +78,4 @@ class AsciiTableCommand(sublime_plugin.WindowCommand):
             view.set_scratch(True)
             view.set_name(".ascii_table")
             view.settings().set("ascii_table_view", True)
+            view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table.hidden-tmLanguage")
