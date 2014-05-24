@@ -1,5 +1,11 @@
 import sublime_plugin
 
+DEC = 0
+HEX = 1
+OCT = 2
+CHR = 3
+INF = 4
+
 
 ASCII_INFO = {
     0: {"char": "NUL", "info": "(null)"},
@@ -38,8 +44,8 @@ ASCII_INFO = {
     127: {"char": "DEL", "info": "(delete)"}
 }
 
-ASCII_HEADER = "DEC    HEX     OCT        CHR    INFO\n"
-ASCII_LINE = "%3d    0x%02x    0o%03o    % 5s%s"
+ASCII_HEADER = "DEC    HEX     OCT      CHR      INFO\n"
+ASCII_LINE = "%-3d    0x%02x    0o%03o    %-5s%s"
 
 
 def display_ascii(code):
@@ -49,14 +55,59 @@ def display_ascii(code):
 
     entry = ASCII_INFO.get(code, {"char": chr(code)})
     char = entry["char"]
-    info = ("    " + entry.get("info", "")).rstrip()
-    return ASCII_LINE % (
-        code,  # decimal
-        code,  # hex
-        code,  # octal
-        char,  # char
-        info   # info
-    )
+    info = ("    " + entry.get("info", ""))
+    return (
+        ASCII_LINE % (
+            code,  # decimal
+            code,  # hex
+            code,  # octal
+            char,  # char
+            info   # info
+        )
+    ).rstrip()
+
+
+def get_ascii_info(code, info_type):
+    value = None
+    entry = ASCII_INFO.get(code, {"char": chr(code)})
+    if info_type == DEC:
+        value = str(code)
+    elif info_type == HEX:
+        value = hex(code)[2:]
+    elif info_type == OCT:
+        value = oct(code)[2:]
+    elif info_type == CHR:
+        value = entry["char"]
+    elif info_type == INF:
+        value = entry.get("info", "")
+    return value
+
+
+class AsciiTableSearchCommand(sublime_plugin.TextCommand):
+    def run(self, edit, info_type):
+        info_map = {
+            "dec": DEC,
+            "hex": HEX,
+            "oct": OCT,
+            "chr": CHR
+        }
+        print(info_type)
+        self.info_type = info_map.get(info_type)
+        print(self.info_type)
+        if self.info_type is not None:
+            self.items = [get_ascii_info(x, self.info_type) for x in range(0, 128)]
+            if len(self.items):
+                self.view.window().show_quick_panel(self.items, self.show)
+
+    def show(self, value):
+        if value != -1:
+            pt = self.view.text_point(value + 1, 0)
+            self.view.sel().clear()
+            self.view.sel().add(pt)
+            self.view.show_at_center(pt)
+
+    def is_visible(self, info_type):
+        return self.view.settings().get("ascii_table_view", False)
 
 
 class AsciiTableWriteCommand(sublime_plugin.TextCommand):
