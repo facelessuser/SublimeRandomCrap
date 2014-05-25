@@ -40,9 +40,14 @@
 					<key>name</key>
 					<string>support.function.label.ascii_table</string>
 				</dict>
+				<key>6</key>
+				<dict>
+					<key>name</key>
+					<string>support.function.label.ascii_table</string>
+				</dict>
 			</dict>
 			<key>match</key>
-			<string>^(DEC) +(HEX) +(OCT) +(CHR) +(INFO)$</string>
+			<string>^(DEC) +(HEX) +(OCT) +(CHR) +(HTML) +(DESCRIPTION)$</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -70,11 +75,16 @@
 				<key>5</key>
 				<dict>
 					<key>name</key>
+					<string>support.type.ascii_table</string>
+				</dict>
+				<key>6</key>
+				<dict>
+					<key>name</key>
 					<string>string.info.ascii_table</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>^ *(\d+) +(0x[\da-fA-F]+) +(0o[0-8]+) +([^ ]+)(?: +(\(.*\)))?$</string>
+			<string>^ *(\d+) +(0x[\da-fA-F]+) +(0o[0-8]+) +([^ ]+)(?: +(&amp;[A-Za-z\d]+;))?(?: +(\(.*\)))?$</string>
 		</dict>
 	</array>
 	<key>scopeName</key>
