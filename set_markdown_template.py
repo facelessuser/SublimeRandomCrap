@@ -1,6 +1,6 @@
 import sublime
 import sublime_plugin
-from os.path import exists, join
+from os.path import join
 
 TEMPLATE_NAME = "custom-template.html"
 
