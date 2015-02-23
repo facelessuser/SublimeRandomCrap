@@ -146,6 +146,7 @@ HwEventManager.load()
 
 class HwThreadMgr(object):
     restart = False
+    kill = False
 
 
 class HighlightWordListenerCommand(sublime_plugin.EventListener):
@@ -175,7 +176,7 @@ def hw_run():
 # Initial highlight is instant, but subsequent events in close succession will
 # be ignored and then accounted for with one match by this thread
 def hw_loop():
-    while not HwThreadMgr.restart:
+    while not HwThreadMgr.restart and not HwThreadMgr.kill:
         if HwEventManager.modified is True and time() - HwEventManager.time > HwEventManager.wait_time:
             sublime.set_timeout(lambda: hw_run(), 0)
         elif not HwEventManager.modified:
@@ -185,6 +186,11 @@ def hw_loop():
     if HwThreadMgr.restart:
         HwThreadMgr.restart = False
         sublime.set_timeout(lambda: thread.start_new_thread(hw_loop, ()), 0)
+
+    if HwThreadMgr.kill:
+        global running_hw_loop
+        del running_hw_loop
+        HwThreadMgr.kill = False
 
 
 def plugin_loaded():
@@ -199,3 +205,7 @@ def plugin_loaded():
     else:
         HwThreadMgr.restart = True
         debug("Restart Thread")
+
+
+def plugin_unloaded():
+    HwThreadMgr.kill = True
