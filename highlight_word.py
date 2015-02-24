@@ -143,7 +143,7 @@ class HighlightWordListenerCommand(sublime_plugin.EventListener):
             return
         now = time()
         if now - hh_thread.time > hh_thread.wait_time:
-            sublime.set_timeout(lambda: hw_run(), 0)
+            sublime.set_timeout(lambda: hh_thread.payload(), 0)
         else:
             hh_thread.modified = True
             hh_thread.time = now
