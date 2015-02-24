@@ -1,13 +1,14 @@
 import sublime
 import sublime_plugin
 from time import time, sleep
-import _thread as thread
+import threading
 
 KEY = "HighlightCurrentWord"
 STYLE = "solid"
 SCOPE = 'comment'
 
 highlight_word = None
+hh_thread = None
 
 
 def debug(s):
@@ -18,10 +19,12 @@ def debug(s):
 # Each of the event handlers simply marks the time of the most recent event and a timer periodically executes doSearch
 class HighlightWord(object):
     def __init__(self):
+        """ Setup """
         self.previousRegion = sublime.Region(0, 0)
         self.highlighting = False
 
     def doSearch(self, view, force=True):
+        """ Perform the search for the highlighted word """
         self.highlighting = True
 
         if view is None:
@@ -133,79 +136,74 @@ class HighlightWord(object):
         self.highlighting = False
 
 
-class HwEventManager(object):
-    @classmethod
-    def load(cls):
-        cls.wait_time = 0.12
-        cls.time = time()
-        cls.modified = False
-        cls.ignore_all = False
-
-HwEventManager.load()
-
-
-class HwThreadMgr(object):
-    restart = False
-    kill = False
-
-
 class HighlightWordListenerCommand(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
-        if HwEventManager.ignore_all:
+        """ Handle selection events for highlighting """
+        if hh_thread.ignore_all:
             return
         now = time()
-        if now - HwEventManager.time > HwEventManager.wait_time:
+        if now - hh_thread.time > hh_thread.wait_time:
             sublime.set_timeout(lambda: hw_run(), 0)
         else:
-            HwEventManager.modified = True
-            HwEventManager.time = now
+            hh_thread.modified = True
+            hh_thread.time = now
 
 
-# Kick off hex highlighting
-def hw_run():
-    HwEventManager.modified = False
-    # Ignore selection and edit events inside the routine
-    HwEventManager.ignore_all = True
-    if highlight_word is not None:
-        highlight_word(sublime.active_window().active_view())
-    HwEventManager.ignore_all = False
-    HwEventManager.time = time()
+class HhThread(threading.Thread):
+    """ Load up defaults """
 
+    def __init__(self):
+        """ Setup the thread """
+        self.reset()
+        threading.Thread.__init__(self)
 
-# Start thread that will ensure highlighting happens after a barage of events
-# Initial highlight is instant, but subsequent events in close succession will
-# be ignored and then accounted for with one match by this thread
-def hw_loop():
-    while not HwThreadMgr.restart and not HwThreadMgr.kill:
-        if HwEventManager.modified is True and time() - HwEventManager.time > HwEventManager.wait_time:
-            sublime.set_timeout(lambda: hw_run(), 0)
-        elif not HwEventManager.modified:
-            sublime.set_timeout(lambda: hw_run(), 0)
-        sleep(0.5)
+    def reset(self):
+        """ Reset the thread variables """
+        self.wait_time = 0.12
+        self.time = time()
+        self.modified = False
+        self.ignore_all = False
+        self.abort = False
 
-    if HwThreadMgr.restart:
-        HwThreadMgr.restart = False
-        sublime.set_timeout(lambda: thread.start_new_thread(hw_loop, ()), 0)
+    def payload(self):
+        """ Code to run """
+        self.modified = False
+        # Ignore selection and edit events inside the routine
+        self.ignore_all = True
+        if highlight_word is not None:
+            highlight_word(sublime.active_window().active_view())
+        self.ignore_all = False
+        self.time = time()
 
-    if HwThreadMgr.kill:
-        global running_hw_loop
-        del running_hw_loop
-        HwThreadMgr.kill = False
+    def kill(self):
+        """ Kill thread """
+        self.abort = True
+        while self.is_alive():
+            pass
+        self.reset()
+
+    def run(self):
+        """ Thread loop """
+        while not self.abort:
+            if self.modified is True and time() - self.time > self.wait_time:
+                sublime.set_timeout(lambda: self.payload(), 0)
+            elif not self.modified:
+                sublime.set_timeout(lambda: self.payload(), 0)
+            sleep(0.5)
 
 
 def plugin_loaded():
+    """ Setup plugin """
     global highlight_word
+    global hh_thread
     highlight_word = HighlightWord().doSearch
 
-    if 'running_hw_loop' not in globals():
-        global running_hw_loop
-        running_hw_loop = True
-        debug("Start Thread")
-        thread.start_new_thread(hw_loop, ())
-    else:
-        HwThreadMgr.restart = True
-        debug("Restart Thread")
+    if hh_thread is not None:
+        hh_thread.kill()
+    hh_thread = HhThread()
+    hh_thread.start()
 
 
 def plugin_unloaded():
-    HwThreadMgr.kill = True
+    """ Kill thread """
+    hh_thread.kill()
