@@ -1,0 +1,17 @@
+{
+    // Define scopes for highlights
+    // The more you define, the more selections you can do
+    "highlight_scopes": ["string", "keyword", "constant.language"],
+
+    // Require the word to be selected.
+    // Disable to highlight word with no selection.
+    "require_word_select": true,
+
+    // Highlight style (solid|outline|underline|thin_underline|squiggly|stippled)
+    "highlight_style": "outline",
+
+    // If selection threshold is greater than
+    // the specified setting, don't highlight words.
+    // -1 means no threshold.
+    "selection_threshold": -1
+}

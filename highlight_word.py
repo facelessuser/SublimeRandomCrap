@@ -4,149 +4,230 @@ from time import time, sleep
 import threading
 
 KEY = "HighlightCurrentWord"
-STYLE = "solid"
 SCOPE = 'comment'
 
+reload = False
 highlight_word = None
-hh_thread = None
+settings = None
 
 
 def debug(s):
     print("HighlightWord: " + s)
 
 
-# The search is performed half a second after the most recent event in order to prevent the search hapenning on every keypress.
-# Each of the event handlers simply marks the time of the most recent event and a timer periodically executes doSearch
+def highlight_style(option):
+    """
+    Configure style of region based on option
+    """
+
+    style = 0
+    if option == "outline":
+        style |= sublime.DRAW_NO_FILL
+    elif option == "none":
+        style |= sublime.HIDDEN
+    elif option == "underline":
+        style |= sublime.DRAW_EMPTY_AS_OVERWRITE
+    elif option == "thin_underline":
+        style |= sublime.DRAW_NO_FILL
+        style |= sublime.DRAW_NO_OUTLINE
+        style |= sublime.DRAW_SOLID_UNDERLINE
+    elif option == "squiggly":
+        style |= sublime.DRAW_NO_FILL
+        style |= sublime.DRAW_NO_OUTLINE
+        style |= sublime.DRAW_SQUIGGLY_UNDERLINE
+    elif option == "stippled":
+        style |= sublime.DRAW_NO_FILL
+        style |= sublime.DRAW_NO_OUTLINE
+        style |= sublime.DRAW_STIPPLED_UNDERLINE
+    return style
+
+
+def clear_regions(view=None):
+    if view is None:
+        win = sublime.active_window()
+        if win is not None:
+            view = win.active_view()
+    if view is not None:
+        regions = view.settings().get('highlight_word_regions', 0)
+        if highlight_word is not None:
+            for count in range(0, regions):
+                view.erase_regions(KEY + str(count))
+                view.settings().set('highlight_word_regions', 0)
+
+
+def underline(regions):
+    """ Convert to empty regions """
+
+    new_regions = []
+    for region in regions:
+        start = region.begin()
+        end = region.end()
+        while start < end:
+            new_regions.append(sublime.Region(start))
+            start += 1
+    return new_regions
+
+
+# The search is performed half a second after the most recent event
+# in order to prevent the search hapenning on every keypress.
+# Each of the event handlers simply marks the time of the most recent
+# event and a timer periodically executes do_search
 class HighlightWord(object):
     def __init__(self):
         """ Setup """
-        self.previousRegion = sublime.Region(0, 0)
-        self.highlighting = False
+        self.previous_region = sublime.Region(0, 0)
+        self.theme_selectors = tuple(settings.get('highlight_scopes', [SCOPE]))
+        self.word_select = settings.get('require_word_select', False)
+        style = settings.get('highlight_style', 'outline')
+        self.style = highlight_style(style)
+        self.underline = style == 'underline'
+        self.max_selections = len(self.theme_selectors)
+        self.sel_threshold = int(settings.get('selection_threshold', -1))
 
-    def doSearch(self, view, force=True):
+    def do_search(self, view, force=True):
         """ Perform the search for the highlighted word """
-        self.highlighting = True
-
+        global reload
         if view is None:
-            self.highlighting = False
             return
 
-        selections = view.sel()
-        if len(selections) == 0:
-            view.erase_regions(KEY)
-            self.highlighting = False
+        if reload:
+            reload = False
+            self.theme_selectors = tuple(settings.get('highlight_scopes', [SCOPE]))
+            self.max_selections = len(self.theme_selectors)
+            self.word_select = settings.get('require_word_select', False)
+            style = settings.get('highlight_style', 'outline')
+            self.style = highlight_style(style)
+            self.underline = style == 'underline'
+            self.sel_threshold = int(settings.get('selection_threshold', -1))
+            force = True
+
+        visible_region = view.visible_region()
+        if not force and self.previous_region == visible_region:
             return
 
-        visibleRegion = view.visible_region()
-        if force or (self.previousRegion != visibleRegion):
-            self.previousRegion = visibleRegion
-            view.erase_regions(KEY)
-        else:
-            self.highlighting = False
-            return
+        clear_regions()
 
         # The default separator does not include whitespace, so I add that here no matter what
-        separatorString = view.settings().get('word_separators', "") + " \n\r\t"
-        themeSelector = view.settings().get('highlight_word_theme_selector', SCOPE)
+        separator_string = view.settings().get('word_separators', "") + " \n\r\t"
 
-        currentRegion = view.word(selections[0])
+        current_words = []
+        current_regions = []
+        good_words = set()
+        words = []
 
-        # See if a word is selected or if you are just in a word
-        if view.settings().get('highlight_word_require_word_select', False) and currentRegion.size() != selections[0].size():
-            view.erase_regions(KEY)
-            self.highlighting = False
-            return
+        selections = view.sel()
+        sel_len = len(selections)
+        if sel_len > 0 and (self.sel_threshold == -1 or self.sel_threshold >= sel_len):
+            self.previous_region = visible_region
 
-        # remove leading/trailing separator characters just in case
-        currentWord = view.substr(currentRegion).strip(separatorString)
+            # Reduce m*n search to just n by mapping each word
+            # separator character into a dictionary
+            self.separators = {}
+            for c in separator_string:
+                self.separators[c] = True
 
-        # print u"|%s|" % currentWord
-        if len(currentWord) == 0:
-            view.erase_regions(KEY)
-            self.highlighting = False
-            return
+            for selection in selections:
+                current_regions.append(view.word(selection))
+                current_words.append(
+                    view.substr(current_regions[-1]).strip(separator_string)
+                )
 
+            count = 0
+            for word in current_words:
+                if word not in good_words:
+                    if count != self.max_selections:
+                        good_words.add(word)
+                        words.append((word, current_regions[count]))
+                        count += 1
+                    else:
+                        return
+
+        count = 0
+        for word in words:
+            key = KEY + str(count)
+            selector = self.theme_selectors[count]
+
+            # See if a word is selected or if you are just in a word
+            if self.word_select and word[1].size() != selections[count].size():
+                continue
+
+            # remove leading/trailing separator characters just in case
+            # print u"|%s|" % currentWord
+            if len(word[0]) == 0:
+                continue
+
+            # ignore the selection if it spans multiple words
+            abort = False
+            for c in word[0]:
+                if c in self.separators:
+                    abort = True
+                    break
+            if abort:
+                continue
+
+            self.highlight_word(view, key, selector, word[1], word[0])
+            count += 1
+
+    def highlight_word(self, view, key, selector, current_region, current_word):
         size = view.size() - 1
-        searchStart = max(0, self.previousRegion.begin() - len(currentWord))
-        searchEnd = min(size, self.previousRegion.end() + len(currentWord))
+        search_start = max(0, self.previous_region.begin() - len(current_word))
+        search_end = min(size, self.previous_region.end() + len(current_word))
 
-        # Reduce m*n search to just n by mapping each word separator character into a dictionary
-        separators = {}
-        for c in separatorString:
-            separators[c] = True
-
-        # ignore the selection if it spans multiple words
-        for c in currentWord:
-            if c in separators:
-                self.highlighting = False
-                return
-
-        # If we are multi-selecting and all the words are the same, then we should still highlight
-        if len(selections) > 1:
-            for region in selections:
-                word = view.substr(region).strip(separatorString)
-                if word != currentWord:
-                    self.highlighting = False
-                    return
-
-        validRegions = []
+        valid_regions = []
         while True:
-            foundRegion = view.find(currentWord, searchStart, sublime.LITERAL)
-            if foundRegion is None:
+            found_region = view.find(current_word, search_start, sublime.LITERAL)
+            if found_region is None:
                 break
 
             # regions can have reversed start/ends so normalize them
-            start = max(0, foundRegion.begin())
-            end = min(size, foundRegion.end())
-            if searchStart == end:
-                searchStart += 1
+            start = max(0, found_region.begin())
+            end = min(size, found_region.end())
+            if search_start == end:
+                search_start += 1
                 continue
-            searchStart = end
+            search_start = end
 
-            if searchStart >= size:
+            if search_start >= size:
                 break
 
-            if foundRegion.empty():
+            if found_region.empty():
                 break
 
-            if foundRegion.intersects(currentRegion):
+            if found_region.intersects(current_region):
                 continue
 
             # check if the character before and after the region is a separator character
             # if it is not, then the region is part of a larger word and shouldn't match
             # this can't be done in a regex because we would be unable to use the word_separators setting string
-            if start == 0 or view.substr(sublime.Region(start - 1, start)) in separators:
-                if end == size or view.substr(sublime.Region(end, end + 1)) in separators:
-                    validRegions.append(foundRegion)
+            if start == 0 or view.substr(sublime.Region(start - 1, start)) in self.separators:
+                if end == size or view.substr(sublime.Region(end, end + 1)) in self.separators:
+                    valid_regions.append(found_region)
 
-            if searchStart > searchEnd:
+            if search_start > search_end:
                 break
 
-        # Pick highlight style "outline" or the default "solid"
-        style = sublime.DRAW_OUTLINED if view.settings().get('highlight_word_outline_style', False) is True else 0
-
         view.add_regions(
-            KEY,
-            validRegions,
-            themeSelector,
+            key,
+            valid_regions if not self.underline else underline(valid_regions),
+            selector,
             "",
-            style
+            self.style
         )
 
-        self.highlighting = False
+        view.settings().set('highlight_word_regions', self.max_selections)
 
 
 class HighlightWordListenerCommand(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
         """ Handle selection events for highlighting """
-        if hh_thread.ignore_all:
+        if hw_thread.ignore_all:
             return
         now = time()
-        hh_thread.modified = True
-        hh_thread.time = now
+        hw_thread.modified = True
+        hw_thread.time = now
 
 
-class HhThread(threading.Thread):
+class HwThread(threading.Thread):
     """ Load up defaults """
 
     def __init__(self):
@@ -162,13 +243,13 @@ class HhThread(threading.Thread):
         self.ignore_all = False
         self.abort = False
 
-    def payload(self):
+    def payload(self, force=False):
         """ Code to run """
         self.modified = False
         # Ignore selection and edit events inside the routine
         self.ignore_all = True
         if highlight_word is not None:
-            highlight_word(sublime.active_window().active_view())
+            highlight_word.do_search(sublime.active_window().active_view(), force)
         self.ignore_all = False
         self.time = time()
 
@@ -183,24 +264,35 @@ class HhThread(threading.Thread):
         """ Thread loop """
         while not self.abort:
             if self.modified is True and time() - self.time > self.wait_time:
-                sublime.set_timeout(lambda: self.payload(), 0)
+                sublime.set_timeout(lambda: self.payload(force=True), 0)
             elif not self.modified:
                 sublime.set_timeout(lambda: self.payload(), 0)
             sleep(0.5)
 
 
+def set_reload():
+    global reload
+    global settings
+    reload = True
+    settings = sublime.load_settings("highlight_word.sublime-settings")
+    settings.clear_on_change('reload')
+    settings.add_on_change('reload', set_reload)
+
+
 def plugin_loaded():
     """ Setup plugin """
     global highlight_word
-    global hh_thread
-    highlight_word = HighlightWord().doSearch
+    global hw_thread
+    set_reload()
+    highlight_word = HighlightWord()
 
-    if hh_thread is not None:
-        hh_thread.kill()
-    hh_thread = HhThread()
-    hh_thread.start()
+    if 'hw_thread' in globals() and hw_thread is not None:
+        hw_thread.kill()
+    hw_thread = HwThread()
+    hw_thread.start()
 
 
 def plugin_unloaded():
     """ Kill thread """
-    hh_thread.kill()
+    clear_regions()
+    hw_thread.kill()
