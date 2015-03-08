@@ -10,6 +10,9 @@ reload = False
 highlight_word = None
 settings = None
 
+if 'hw_thread' not in globals():
+    hw_thread = None
+
 
 def debug(s):
     print("HighlightWord: " + s)
@@ -43,6 +46,7 @@ def highlight_style(option):
 
 
 def clear_regions(view=None):
+    """ Clear regions """
     if view is None:
         win = sublime.active_window()
         if win is not None:
@@ -169,6 +173,7 @@ class HighlightWord(object):
             count += 1
 
     def highlight_word(self, view, key, selector, current_region, current_word):
+        """ Find and highlight word """
         size = view.size() - 1
         search_start = max(0, self.previous_region.begin() - len(current_word))
         search_end = min(size, self.previous_region.end() + len(current_word))
@@ -286,7 +291,7 @@ def plugin_loaded():
     set_reload()
     highlight_word = HighlightWord()
 
-    if 'hw_thread' in globals() and hw_thread is not None:
+    if hw_thread is not None:
         hw_thread.kill()
     hw_thread = HwThread()
     hw_thread.start()
