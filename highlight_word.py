@@ -299,5 +299,5 @@ def plugin_loaded():
 
 def plugin_unloaded():
     """ Kill thread """
-    clear_regions()
     hw_thread.kill()
+    clear_regions()
