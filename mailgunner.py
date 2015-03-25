@@ -29,6 +29,17 @@ DEFAULT_VARS = {
     "keyfile": ""
 }
 
+RE_MAIL = re.compile(
+    r'''(?x)(?i)
+    (
+        (?:[\-+\w]([\w\-+]|\.(?!\.))+)        # Local part
+        @(?:[\w\-]+\.)                        # @domain part start
+        (?:(?:[\w\-]|(?<!\.)\.(?!\.))*)[a-z]  # @domain.end (allow multiple dot names)
+        (?![\d\-_@])                          # Don't allow last char to be followed by these
+    )
+    '''
+)
+
 
 def get_mail_settings_dir():
     """ Get mail settings dir """
@@ -45,8 +56,9 @@ def get_mail_settings():
 
 
 class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
-    def run(self, edit, template_variables=DEFAULT_VARS):
+    def run(self, edit, address=None, template_variables=DEFAULT_VARS):
         """ Insert template into new mail view """
+        self.address = address if address and isinstance(address, str) else None
         subject = template_variables.get('subject', None)
         if not subject or not isinstance(subject, str):
             template_variables['subject'] = ''
@@ -62,12 +74,18 @@ class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
         for recipient in ('to', 'cc', 'bcc'):
             to = template_variables.get(recipient, None)
             if not to or not isinstance(to, (str, list, tuple, set)):
-                template_variables[recipient] = ''
+                template_variables[recipient] = self.address if recipient == 'to' and self.address is not None else ''
             elif isinstance(to, (list, tuple, set)):
                 value = ['\n- %s' % r for r in to if r and isinstance(r, str)]
+                if recipient == 'to' and self.address:
+                    value.insert(0, self.address)
                 template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
             elif isinstance(to, str):
-                template_variables[recipient] = ' %s' % to
+                if recipient == 'to' and self.address:
+                    value = ['\n- %s' % r for r in (self.address, to) if r and isinstance(r, str)]
+                    template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
+                else:
+                    template_variables[recipient] = ' %s' % to
 
         attachements = template_variables.get('attachements', None)
         if not attachements or not isinstance(attachements, (str, list, tuple, set)):
@@ -122,11 +140,15 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
         view = self.window.new_file()
         view.run_command(
             'mail_gunner_format_mail',
-            {'template_variables': vars if vars else DEFAULT_VARS}
+            {
+                'template_variables': vars if vars else DEFAULT_VARS,
+                'address': self.address if self.address else None
+            }
         )
 
-    def run(self, mail_settings=None):
+    def run(self, address=None, mail_settings=None):
         """ Initiate opening new view with mail template """
+        self.address = address if address and isinstance(address, str) else None
         mail_menu = []
         if mail_settings is not None:
             # Mail config file provided
@@ -178,6 +200,11 @@ class MailGunnerCommand(sublime_plugin.TextCommand):
                     pass
             self.send(settings)
 
+    def store_contacts(self, mg):
+        """ Store contacts """
+        contacts = mg.to + mg.cc + mg.bcc
+        print(contacts)
+
     def send(self, mail_settings):
         """ Using the settings file to send the mail """
         api_key = mail_settings.get('api_key', None)
@@ -194,6 +221,7 @@ class MailGunnerCommand(sublime_plugin.TextCommand):
                 m = re.match(r'<Response \[(\d+)\]>', response)
                 if m and m.group(1) == '200':
                     # Mail sent
+                    self.store_contacts(mg)
                     sublime.status_message('Mail successfully sent!')
                 elif m:
                     # Mail sending failed with the following response
@@ -253,6 +281,46 @@ class MailGunnerCommand(sublime_plugin.TextCommand):
                 )
         else:
             sublime.error_message('No mail configurations available!')
+
+
+class MailGunnerMailTo(sublime_plugin.TextCommand):
+    def run(self, edit, event):
+        address = self.find_address(event)
+        if address:
+            self.view.window().run_command('mail_gunner_new', {"address": address})
+
+    def is_visible(self, event):
+        return self.find_address(event) is not None
+
+    def find_address(self, event):
+        pt = self.view.window_to_text((event["x"], event["y"]))
+        line = self.view.line(pt)
+
+        line.a = max(line.a, pt - 1024)
+        line.b = min(line.b, pt + 1024)
+
+        text = self.view.substr(line)
+
+        it = RE_MAIL.finditer(text)
+
+        for match in it:
+            if match.start() <= (pt - line.a) and match.end() >= (pt - line.a):
+                url = text[match.start():match.end()]
+                if url[0:3] == "www":
+                    return "http://" + url
+                else:
+                    return url
+
+        return None
+
+    def description(self, event):
+        address = self.find_address(event)
+        if len(address) > 64:
+            address = address[0:64] + "..."
+        return "Mail To: " + address
+
+    def want_event(self):
+        return True
 
 
 def plugin_loaded():
