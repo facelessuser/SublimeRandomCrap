@@ -40,7 +40,6 @@ class MailGun(object):
     def __init__(self, api_url, api_key):
         """ Initialize mail variables """
         self.sender = None
-        self.reply = None
         self.to = []
         self.cc = []
         self.bcc = []
@@ -78,16 +77,13 @@ class MailGun(object):
         # Prepare data structure
         data = {
             "from": self.sender,
+            "h:Reply-To": self.sender,
             "to": self.to,
             "cc": self.cc,
             "bcc": self.bcc,
             "subject": self.subject,
             "text": self.text
         }
-
-        # Add reply if provided
-        if self.reply:
-            data["h:Reply-To"] = self.reply
 
         # Attempt to physically send email
         response = requests.post(
@@ -100,18 +96,10 @@ class MailGun(object):
 
         return str(response)
 
-    def set_sender(self, sender, reply):
-        """ Set sender and reply email """
+    def set_sender(self, sender):
+        """ Set sender """
         if sender and isinstance(sender, str):
             self.sender = sender
-
-        if reply and isinstance(reply, str):
-            self.reply = reply
-
-        # Use reply as sender name if reply is specified
-        # and sender (from) is not
-        if not self.sender and self.reply:
-            self.sender = self.reply
 
     def set_recipients(self, recipient_type, recipients):
         """ Set recipient """
@@ -150,10 +138,7 @@ class MailGun(object):
         #  Strip mail frontmatter from mail text
         frontmatter, body = strip_frontmatter(string)
 
-        self.set_sender(
-            frontmatter.get('from', None),
-            frontmatter.get('reply', None)
-        )
+        self.set_sender(frontmatter.get('from', None))
         for x in ('to', 'cc', 'bcc'):
             self.set_recipients(x, frontmatter.get(x, []))
         self.set_subject(frontmatter.get('subject', None))
@@ -161,7 +146,7 @@ class MailGun(object):
         self.set_body(body)
 
         # Send message if we have enough info
-        if self.reply and self.to and (self.text or len(self.attachments)):
+        if self.sender and self.to and (self.text or len(self.attachments)):
             # If text is empty, make sure it is at least a string.
             response = self.send()
         else:
