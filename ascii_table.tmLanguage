@@ -9,7 +9,9 @@
 	<key>keyEquivalent</key>
 	<string>^~A</string>
 	<key>name</key>
-	<string>Ascii Table</string>
+	<string>ASCII Table</string>
+	<key>hidden</key>
+	<true/>
 	<key>patterns</key>
 	<array>
 		<dict>
