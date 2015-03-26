@@ -127,7 +127,6 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
                 with codecs.open(mail_setting, 'r', encoding='utf-8') as f:
                     vars = json.loads(f.read())
                 keyfile = vars.get('keyfile', None)
-                print(keyfile)
                 if not keyfile or not isinstance(keyfile, str):
                     vars['keyfile'] = os.path.basename(mail_setting)
                 if 'api_key' in vars:
