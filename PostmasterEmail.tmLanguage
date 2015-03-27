@@ -5,7 +5,7 @@
 	<key>keyEquivalent</key>
 	<string>^~E</string>
 	<key>name</key>
-	<string>Email</string>
+	<string>Postmaster Email</string>
 	<key>patterns</key>
 	<array>
 		<dict>
@@ -14,7 +14,7 @@
 			<key>end</key>
 			<string>^---(?=\s*)</string>
 			<key>contentName</key>
-			<string>meta.header.yaml.email</string>
+			<string>meta.header.yaml.postmaster</string>
 			<key>patterns</key>
 			<array>
 				<dict>
@@ -29,7 +29,7 @@
 		</dict>
 	</array>
 	<key>scopeName</key>
-	<string>source.email</string>
+	<string>source.postmaster</string>
 	<key>uuid</key>
 	<string>F5E04BF4-69A9-45AE-9205-B3F3C2B00130</string>
 </dict>

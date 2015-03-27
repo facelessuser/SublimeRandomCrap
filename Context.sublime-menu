@@ -1,5 +1,5 @@
 [
     { "caption": "-", "id": "file" },
     {"caption": "Grep Here…", "command": "grep_here_file"},
-    {"command": "mail_gunner_mail_to"}
+    {"command": "postmaster_mail_to"}
 ]

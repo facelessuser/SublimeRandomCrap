@@ -1,8 +1,8 @@
 [
-    { "keys": ["tab"], "command": "mail_gunner_insert_contact",
+    { "keys": ["tab"], "command": "postmaster_insert_contact",
         "context":
         [
-            { "key": "selector", "operator": "equal", "operand": "meta.header.yaml.email", "match_all": true },
+            { "key": "selector", "operator": "equal", "operand": "meta.header.yaml.postmaster", "match_all": true },
             { "key": "preceding_text", "operator": "regex_match", "operand": ".*@", "match_all": true }
         ]
     }

@@ -69,12 +69,12 @@ def strip_frontmatter(string):
     return frontmatter, string
 
 
-class MailGunException(Exception):
+class PostmasterException(Exception):
     pass
 
 
-class MailGunApi(object):
-    def __init__(self, api_url, api_key):
+class SendMailGunApi(object):
+    def __init__(self):
         """ Initialize mail variables """
         self.sender = None
         self.reply = None
@@ -84,8 +84,6 @@ class MailGunApi(object):
         self.subject = None
         self.text = None
         self.attachments = []
-        self.api_url = api_url
-        self.api_key = api_key
 
     def get_email_size(self):
         """ Get size of email in bytes """
@@ -97,11 +95,11 @@ class MailGunApi(object):
                 pass
         return size
 
-    def send(self):
+    def send(self, api_url, api_key):
         """ Send email via MailGun's API """
 
         if convert_file_size('bytes', 'mega', self.get_email_size()) > 25:
-            raise MailGunException('Message exceeds 25MB!')
+            raise PostmasterException('Message exceeds 25MB!')
 
         # Prepare attachments
         files = []
@@ -125,8 +123,8 @@ class MailGunApi(object):
 
         # Attempt to physically send email
         response = requests.post(
-            self.api_url + '/messages',
-            auth=("api", self.api_key),
+            api_url + '/messages',
+            auth=("api", api_key),
             files=files,
             data=data,
             timeout=5
@@ -174,7 +172,7 @@ class MailGunApi(object):
 
     def sendmail(self, string):
         """ Parse mail buffer and send it """
-        response = "Mail Fail"
+        response = None
 
         #  Strip mail frontmatter from mail text
         frontmatter, body = strip_frontmatter(string)
@@ -191,14 +189,20 @@ class MailGunApi(object):
             # If text is empty, make sure it is at least a string.
             response = self.send()
         else:
-            raise MailGunException('Message configuration did not meet the minimum requirements!')
+            raise PostmasterException('Message configuration did not meet the minimum requirements!')
 
         return response
 
 
-class MailGunSmtp(object):
-    def __init__(self, auth):
+class SendSmtp(object):
+    def __init__(self, smtp_server, port, tls=True):
         """ Initialize mail variables """
+        # Server settings
+        self.server = smtp_server
+        self.port = port
+        self.tls = tls
+
+        # Mail header settings
         self.sender = None
         self.reply = None
         self.to = []
@@ -207,7 +211,6 @@ class MailGunSmtp(object):
         self.subject = None
         self.text = None
         self.attachments = []
-        self.auth = auth
 
     def get_email_size(self):
         """ Get size of email in bytes """
@@ -219,11 +222,11 @@ class MailGunSmtp(object):
                 pass
         return size
 
-    def send(self):
-        """ Send email via MailGun's API """
+    def send(self, auth):
+        """ Send email via smtp """
 
         if convert_file_size('bytes', 'mega', self.get_email_size()) > 25:
-            raise MailGunException('Message exceeds 25MB!')
+            raise PostmasterException('Message exceeds 25MB!')
 
         # create the message
         msg = MIMEMultipart()
@@ -248,14 +251,21 @@ class MailGunSmtp(object):
                 pass
 
         msg.attach(MIMEText(self.text))
-        server = smtplib.SMTP('smtp.mailgun.org', 587)
-        server.login(self.reply, self.auth)
+        server = smtplib.SMTP(self.server, self.port)
+        if self.tls:
+            # identify ourselves to smtp client
+            server.ehlo()
+            # secure our email with tls encryption
+            server.starttls()
+            # re-identify ourselves as an encrypted connection
+            server.ehlo()
+        server.login(self.reply, auth)
         try:
             server.sendmail(self.reply, self.to + self.cc + self.bcc, msg.as_string())
             server.quit()
         except:
             server.quit()
-            raise MailGunException('SMTP mail sending failed!')
+            raise PostmasterException('SMTP mail sending failed!')
 
         return str('<Response [200]>')
 
@@ -297,9 +307,9 @@ class MailGunSmtp(object):
         """ Set body """
         self.text = body if body else ''
 
-    def sendmail(self, string):
+    def sendmail(self, string, auth):
         """ Parse mail buffer and send it """
-        response = "Mail Fail"
+        response = None
 
         #  Strip mail frontmatter from mail text
         frontmatter, body = strip_frontmatter(string)
@@ -314,8 +324,8 @@ class MailGunSmtp(object):
         # Send message if we have enough info
         if self.sender and self.to and (self.text or len(self.attachments)):
             # If text is empty, make sure it is at least a string.
-            response = self.send()
+            response = self.send(auth)
         else:
-            raise MailGunException('Message configuration did not meet the minimum requirements!')
+            raise PostmasterException('Message configuration did not meet the minimum requirements!')
 
         return response

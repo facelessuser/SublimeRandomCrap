@@ -4,7 +4,7 @@ import codecs
 import os
 import re
 import json
-import SublimeRandomCrap.mailgun as mailgun
+import SublimeRandomCrap.postmaster as postmaster
 
 NEW_MAIL = '''---
 subject:%(subject)s
@@ -13,6 +13,9 @@ to:%(to)s
 cc:%(cc)s
 bcc:%(bcc)s
 attachments:%(attachments)s
+smtp_server:%(smtp_server)s
+port:%(port)s
+tls:%(tls)s
 ---
 %(body)s%(signature)s
 '''
@@ -24,7 +27,10 @@ DEFAULT_VARS = {
     "cc": "",
     "bcc": "",
     "attachments": "",
-    "body": ""
+    "body": "",
+    "smtp_server": " smtp.gmail.com",
+    "port": " 587",
+    "tls": " true"
 }
 
 
@@ -33,7 +39,7 @@ DEFAULT_VARS = {
 ########################
 def get_mail_settings_dir():
     """ Get mail settings dir """
-    return os.path.join(sublime.packages_path(), "User", 'MailGunner')
+    return os.path.join(sublime.packages_path(), "User", 'Postmaster')
 
 
 def get_mail_contacts():
@@ -75,13 +81,13 @@ def get_mail_settings():
 ########################
 # Compose Mail
 ########################
-class MailGunnerInsertContactCommand(sublime_plugin.TextCommand):
+class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
     """ Quick insert of contacts from contact file into mail frontmatter """
     def insert_contact(self, value):
         """ Call insert with the selected contact """
         if value >= 0:
             self.view.run_command(
-                'mail_gunner_insert_contact',
+                'postmaster_insert_contact',
                 {"contact": self.options[value]}
             )
 
@@ -103,7 +109,7 @@ class MailGunnerInsertContactCommand(sublime_plugin.TextCommand):
             self.view.insert(edit, pt, contact)
 
 
-class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
+class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
     """ When creating a new mail, use a template and format desired content. """
     def format_subject(self):
         """ Format subject """
@@ -166,6 +172,30 @@ class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
         else:
             self.template_variables['signature'] = '\n\n%s' % signature
 
+    def format_smtp_server(self):
+        """ Format smtp server """
+        server = self.template_variables.get('smtp_server', "smtp.gmail.com")
+        if not server or not isinstance(server, str):
+            self.template_variables['smtp_server'] = " smtp.gmail.com"
+        else:
+            self.template_variables['smtp_server'] = " %s" % server
+
+    def format_port(self):
+        """ Format port """
+        port = self.template_variables.get('port', 587)
+        if not port or not isinstance(port, int):
+            self.template_variables['port'] = " %s" % str(587)
+        else:
+            self.template_variables['port'] = " %s" % str(port)
+
+    def format_tls(self):
+        """ Format tls """
+        tls = self.template_variables.get('tls', 587)
+        if not tls or not isinstance(tls, bool):
+            self.template_variables['tls'] = " true"
+        else:
+            self.template_variables['tls'] = " true" if tls else " false"
+
     def run(self, edit, address=None, template_variables=DEFAULT_VARS):
         """ Insert template into new mail view """
         self.address = address if address and isinstance(address, str) else None
@@ -178,11 +208,14 @@ class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
         self.format_attachments()
         self.format_body()
         self.format_signature()
+        self.format_smtp_server()
+        self.format_port()
+        self.format_tls()
 
         self.view.insert(edit, 0, NEW_MAIL % template_variables)
 
 
-class MailGunnerNewCommand(sublime_plugin.WindowCommand):
+class PostmasterNewCommand(sublime_plugin.WindowCommand):
     """ Create a new mail view to send """
     def new_mail(self, value):
         """ Open the new view with the template """
@@ -197,13 +230,13 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
 
         view = self.window.new_file()
         view.run_command(
-            'mail_gunner_format_mail',
+            'postmaster_format_mail',
             {
                 'template_variables': vars if vars else DEFAULT_VARS,
                 'address': self.address if self.address else None
             }
         )
-        view.set_syntax_file("Packages/SublimeRandomCrap/Email.tmLanguage")
+        view.set_syntax_file("Packages/SublimeRandomCrap/PostmasterEmail.tmLanguage")
 
     def run(self, address=None, mail_settings=None):
         """ Initiate opening new view with mail template """
@@ -245,7 +278,7 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
             self.new_mail(-1)
 
 
-class MailGunnerMailTo(sublime_plugin.TextCommand):
+class PostmasterMailTo(sublime_plugin.TextCommand):
     """ Context menu command to create mail from address under cursor """
     def is_visible(self, event):
         """ Don't show in context menu unless there is an address """
@@ -262,7 +295,7 @@ class MailGunnerMailTo(sublime_plugin.TextCommand):
 
         text = self.view.substr(line)
 
-        it = mailgun.RE_MAIL.finditer(text)
+        it = postmaster.RE_MAIL.finditer(text)
 
         for match in it:
             if match.start() <= (pt - line.a) and match.end() >= (pt - line.a):
@@ -286,12 +319,12 @@ class MailGunnerMailTo(sublime_plugin.TextCommand):
         """ Create new email to the given address """
         address = self.find_address(event)
         if address:
-            self.view.window().run_command('mail_gunner_new', {"address": address})
+            self.view.window().run_command('postmaster_new', {"address": address})
 
 
-class MailGunnerListener(sublime_plugin.EventListener):
+class PostmasterListener(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
-        if view is not None and view.settings().get('mail_gunner_password', False):
+        if view is not None and view.settings().get('postmaster_password_panel', False):
             view.sel().clear()
             view.sel().add(sublime.Region(view.size()))
 
@@ -299,7 +332,7 @@ class MailGunnerListener(sublime_plugin.EventListener):
 ########################
 # Send Mail
 ########################
-class MailGunnerSendCommand(sublime_plugin.TextCommand):
+class PostmasterSendCommand(sublime_plugin.TextCommand):
     """ Send the mail from the current view buffer """
     def send_with_auth(self, value):
         """ Send with the settings """
@@ -330,7 +363,7 @@ class MailGunnerSendCommand(sublime_plugin.TextCommand):
         """ Store contacts """
         contacts = []
         for contact in (mg.to + mg.cc + mg.bcc):
-            record = mailgun.parse_contact(contact)
+            record = postmaster.parse_contact(contact)
             if record is not None:
                 contacts.append(record)
         contact_list = get_mail_contacts()
@@ -342,36 +375,61 @@ class MailGunnerSendCommand(sublime_plugin.TextCommand):
         """ Using the settings file to send the mail """
 
         if auth:
-            mg = mailgun.MailGunSmtp(auth)
+            pm = postmaster.SendSmtp(self.smtp_server, self.port, self.tls)
             try:
-                response = mg.sendmail(
-                    self.view.substr(sublime.Region(0, self.view.size()))
-                )
+                response = pm.sendmail(self.bfr, auth)
 
                 # Parse response
                 m = re.match(r'<Response \[(\d+)\]>', response)
                 if m and m.group(1) == '200':
                     # Mail sent
-                    self.store_contacts(mg)
+                    self.store_contacts(pm)
                     sublime.status_message('Mail successfully sent!')
                 elif m:
                     # Mail sending failed with the following response
                     sublime.error_message('Mail failed with code %s!' % m.group(1))
                 else:
                     # Something else got returned
-                    sublime.error_message('Mail failed with unknown error: %s!' % response)
+                    sublime.error_message('Mail failed with unknown error!\nSee console for more info.')
+                    print(str(response))
 
-            except mailgun.MailGunException as e:
+            except Exception as e:
+                sublime.error_message('Mail failed with unknown error!\nSee console for more info.')
                 sublime.error_message(str(e))
         else:
-            sublime.error_message('Could not find MailGun API setup info!')
+            sublime.error_message('Auth was not provided!')
 
-    def run(self, edit, mail_settings=None):
+    def run(self, edit):
         """ Initiate mail sending """
         self.auth = ''
         self.window = self.view.window()
-        view = self.window.show_input_panel('Password:', '', self.send_with_auth, self.hide_auth, self.clear_auth)
-        view.settings().set('mail_gunner_password', True)
+
+        self.bfr = self.view.substr(sublime.Region(0, self.view.size()))
+        frontmatter = postmaster.strip_frontmatter(self.bfr)[0]
+
+        smtp_server = frontmatter.get('smtp_server', None)
+        if smtp_server and isinstance(smtp_server, str):
+            self.smtp_server = smtp_server
+        else:
+            self.smtp_server = None
+
+        port = frontmatter.get('port', None)
+        if port and isinstance(port, int):
+            self.port = port
+        else:
+            self.port = None
+
+        tls = frontmatter.get('tls', None)
+        if tls and isinstance(tls, bool):
+            self.tls = tls
+        else:
+            self.tls = None
+
+        self.port = frontmatter.get('port', None)
+        self.tls = frontmatter.get('tls', None)
+        if self.smtp_server and self.port is not None and self.tls is not None:
+            view = self.window.show_input_panel('Password:', '', self.send_with_auth, self.hide_auth, self.clear_auth)
+            view.settings().set('postmaster_password_panel', True)
 
 
 def plugin_loaded():
