@@ -30,6 +30,9 @@ DEFAULT_VARS = {
 }
 
 
+########################
+# Helper methods
+########################
 def get_mail_settings_dir():
     """ Get mail settings dir """
     return os.path.join(sublime.packages_path(), "User", 'MailGunner')
@@ -71,7 +74,11 @@ def get_mail_settings():
             yield file_path
 
 
+########################
+# Compose Mail
+########################
 class MailGunnerInsertContactCommand(sublime_plugin.TextCommand):
+    """ Quick insert of contacts from contact file into mail frontmatter """
     def insert_contact(self, value):
         """ Call insert with the selected contact """
         if value >= 0:
@@ -99,68 +106,95 @@ class MailGunnerInsertContactCommand(sublime_plugin.TextCommand):
 
 
 class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
-    def run(self, edit, address=None, template_variables=DEFAULT_VARS):
-        """ Insert template into new mail view """
-        self.address = address if address and isinstance(address, str) else None
-        subject = template_variables.get('subject', None)
+    """ When creating a new mail, use a template and format desired content. """
+    def format_subject(self):
+        """ Format subject """
+        subject = self.template_variables.get('subject', None)
         if not subject or not isinstance(subject, str):
-            template_variables['subject'] = ''
+            self.template_variables['subject'] = ''
         else:
-            template_variables['subject'] = ' %s' % subject
+            self.template_variables['subject'] = ' %s' % subject
 
-        sender = template_variables.get('from', None)
+    def format_sender(self):
+        """ Format sender """
+        sender = self.template_variables.get('from', None)
         if not sender or not isinstance(sender, str):
-            template_variables['from'] = ''
+            self.template_variables['from'] = ''
         else:
-            template_variables['from'] = ' %s' % sender
+            self.template_variables['from'] = ' %s' % sender
 
+    def format_recipients(self):
+        """ Format recipients """
         for recipient in ('to', 'cc', 'bcc'):
-            to = template_variables.get(recipient, None)
+            to = self.template_variables.get(recipient, None)
             if not to or not isinstance(to, (str, list, tuple, set)):
-                template_variables[recipient] = ' %s' % self.address if recipient == 'to' and self.address is not None else ''
+                self.template_variables[recipient] = ' %s' % self.address if recipient == 'to' and self.address is not None else ''
             elif isinstance(to, (list, tuple, set)):
                 value = ['\n- %s' % r for r in to if r and isinstance(r, str)]
                 if recipient == 'to' and self.address:
                     value.insert(0, self.address)
-                template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
+                self.template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
             elif isinstance(to, str):
                 if recipient == 'to' and self.address:
                     value = ['\n- %s' % r for r in (self.address, to) if r and isinstance(r, str)]
-                    template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
+                    self.template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
                 else:
-                    template_variables[recipient] = ' %s' % to
+                    self.template_variables[recipient] = ' %s' % to
 
-        attachements = template_variables.get('attachements', None)
+    def format_attachments(self):
+        """ Format attachements """
+        attachements = self.template_variables.get('attachements', None)
         if not attachements or not isinstance(attachements, (str, list, tuple, set)):
-            template_variables['attachements'] = ''
+            self.template_variables['attachements'] = ''
         elif isinstance(attachements, (list, tuple, set)):
             value = ['\n- %s' % a for a in attachements if a and isinstance(a, str)]
-            template_variables['attachements'] = '' if len(value) == 0 else ''.join(value)
+            self.template_variables['attachements'] = '' if len(value) == 0 else ''.join(value)
         elif isinstance(attachements, str):
-            template_variables['attachements'] = ' %s' % attachements
+            self.template_variables['attachements'] = ' %s' % attachements
 
-        keyfile = template_variables.get('keyfile', None)
-        if not keyfile or not isinstance(keyfile, str):
-            template_variables['keyfile'] = ''
-        else:
-            template_variables['keyfile'] = ' %s' % keyfile
-
-        body = template_variables.get('body', None)
+    def format_body(self):
+        """ Format body """
+        body = self.template_variables.get('body', None)
         if not body or not isinstance(body, str):
-            template_variables['body'] = ''
+            self.template_variables['body'] = ''
         else:
-            template_variables['body'] = ' %s' % body
+            self.template_variables['body'] = ' %s' % body
 
-        signature = template_variables.get('signature', None)
+    def format_signature(self):
+        """ Format signature """
+        signature = self.template_variables.get('signature', None)
         if not signature or not isinstance(signature, str):
-            template_variables['signature'] = ''
+            self.template_variables['signature'] = ''
         else:
-            template_variables['signature'] = '\n\n%s' % signature
+            self.template_variables['signature'] = '\n\n%s' % signature
+
+    def format_keyfile(self):
+        """ Format keyfile """
+        keyfile = self.template_variables.get('keyfile', None)
+        if not keyfile or not isinstance(keyfile, str):
+            self.template_variables['keyfile'] = ''
+        else:
+            self.template_variables['keyfile'] = ' %s' % keyfile
+
+    def run(self, edit, address=None, template_variables=DEFAULT_VARS):
+        """ Insert template into new mail view """
+        self.address = address if address and isinstance(address, str) else None
+        self.template_variables = template_variables
+
+        # Format template values
+        self.format_subject()
+        self.format_sender()
+        self.format_recipients()
+        self.format_attachments()
+        self.format_body()
+        self.format_signature()
+        self.format_keyfile()
 
         self.view.insert(edit, 0, NEW_MAIL % template_variables)
 
 
 class MailGunnerNewCommand(sublime_plugin.WindowCommand):
+    """ Create a new mail view to send """
     def new_mail(self, value):
         """ Open the new view with the template """
         vars = None
@@ -229,7 +263,55 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
             self.new_mail(-1)
 
 
-class MailGunnerCommand(sublime_plugin.TextCommand):
+class MailGunnerMailTo(sublime_plugin.TextCommand):
+    """ Context menu command to create mail from address under cursor """
+    def is_visible(self, event):
+        """ Don't show in context menu unless there is an address """
+        return self.find_address(event) is not None
+
+    def find_address(self, event):
+        """ Retrieve the address from the view """
+        address = None
+        pt = self.view.window_to_text((event["x"], event["y"]))
+        line = self.view.line(pt)
+
+        line.a = max(line.a, pt - 1024)
+        line.b = min(line.b, pt + 1024)
+
+        text = self.view.substr(line)
+
+        it = mailgun.RE_MAIL.finditer(text)
+
+        for match in it:
+            if match.start() <= (pt - line.a) and match.end() >= (pt - line.a):
+                address = text[match.start():match.end()]
+                break
+
+        return address
+
+    def description(self, event):
+        """ Display address to mail to in context menu """
+        address = self.find_address(event)
+        if len(address) > 64:
+            address = address[0:64] + "..."
+        return "Mail To: " + address
+
+    def want_event(self):
+        """ Receive event """
+        return True
+
+    def run(self, edit, event):
+        """ Create new email to the given address """
+        address = self.find_address(event)
+        if address:
+            self.view.window().run_command('mail_gunner_new', {"address": address})
+
+
+########################
+# Send Mail
+########################
+class MailGunnerSendCommand(sublime_plugin.TextCommand):
+    """ Send the mail from the current view buffer """
     def send_with_settings(self, value):
         """ Send with the settings """
         if value >= 0:
@@ -331,46 +413,6 @@ class MailGunnerCommand(sublime_plugin.TextCommand):
                 )
         else:
             sublime.error_message('No mail configurations available!')
-
-
-class MailGunnerMailTo(sublime_plugin.TextCommand):
-    def run(self, edit, event):
-        address = self.find_address(event)
-        if address:
-            self.view.window().run_command('mail_gunner_new', {"address": address})
-
-    def is_visible(self, event):
-        return self.find_address(event) is not None
-
-    def find_address(self, event):
-        pt = self.view.window_to_text((event["x"], event["y"]))
-        line = self.view.line(pt)
-
-        line.a = max(line.a, pt - 1024)
-        line.b = min(line.b, pt + 1024)
-
-        text = self.view.substr(line)
-
-        it = mailgun.RE_MAIL.finditer(text)
-
-        for match in it:
-            if match.start() <= (pt - line.a) and match.end() >= (pt - line.a):
-                url = text[match.start():match.end()]
-                if url[0:3] == "www":
-                    return "http://" + url
-                else:
-                    return url
-
-        return None
-
-    def description(self, event):
-        address = self.find_address(event)
-        if len(address) > 64:
-            address = address[0:64] + "..."
-        return "Mail To: " + address
-
-    def want_event(self):
-        return True
 
 
 def plugin_loaded():
