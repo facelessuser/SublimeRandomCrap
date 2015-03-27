@@ -12,8 +12,7 @@ from:%(from)s
 to:%(to)s
 cc:%(cc)s
 bcc:%(bcc)s
-attachements:%(attachements)s
-keyfile:%(keyfile)s
+attachments:%(attachments)s
 ---
 %(body)s%(signature)s
 '''
@@ -24,9 +23,8 @@ DEFAULT_VARS = {
     "to": "",
     "cc": "",
     "bcc": "",
-    "attachements": "",
-    "body": "",
-    "keyfile": ""
+    "attachments": "",
+    "body": ""
 }
 
 
@@ -142,15 +140,15 @@ class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
                     self.template_variables[recipient] = ' %s' % to
 
     def format_attachments(self):
-        """ Format attachements """
-        attachements = self.template_variables.get('attachements', None)
-        if not attachements or not isinstance(attachements, (str, list, tuple, set)):
-            self.template_variables['attachements'] = ''
-        elif isinstance(attachements, (list, tuple, set)):
-            value = ['\n- %s' % a for a in attachements if a and isinstance(a, str)]
-            self.template_variables['attachements'] = '' if len(value) == 0 else ''.join(value)
-        elif isinstance(attachements, str):
-            self.template_variables['attachements'] = ' %s' % attachements
+        """ Format attachments """
+        attachments = self.template_variables.get('attachments', None)
+        if not attachments or not isinstance(attachments, (str, list, tuple, set)):
+            self.template_variables['attachments'] = ''
+        elif isinstance(attachments, (list, tuple, set)):
+            value = ['\n- %s' % a for a in attachments if a and isinstance(a, str)]
+            self.template_variables['attachments'] = '' if len(value) == 0 else ''.join(value)
+        elif isinstance(attachments, str):
+            self.template_variables['attachments'] = ' %s' % attachments
 
     def format_body(self):
         """ Format body """
@@ -168,14 +166,6 @@ class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
         else:
             self.template_variables['signature'] = '\n\n%s' % signature
 
-    def format_keyfile(self):
-        """ Format keyfile """
-        keyfile = self.template_variables.get('keyfile', None)
-        if not keyfile or not isinstance(keyfile, str):
-            self.template_variables['keyfile'] = ''
-        else:
-            self.template_variables['keyfile'] = ' %s' % keyfile
-
     def run(self, edit, address=None, template_variables=DEFAULT_VARS):
         """ Insert template into new mail view """
         self.address = address if address and isinstance(address, str) else None
@@ -188,7 +178,6 @@ class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
         self.format_attachments()
         self.format_body()
         self.format_signature()
-        self.format_keyfile()
 
         self.view.insert(edit, 0, NEW_MAIL % template_variables)
 
@@ -203,13 +192,6 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
             try:
                 with codecs.open(mail_setting, 'r', encoding='utf-8') as f:
                     vars = json.loads(f.read())
-                keyfile = vars.get('keyfile', None)
-                if not keyfile or not isinstance(keyfile, str):
-                    vars['keyfile'] = os.path.basename(mail_setting)
-                if 'api_key' in vars:
-                    del vars['api_key']
-                if 'api_url' in vars:
-                    del vars['api_url']
             except:
                 pass
 
@@ -307,23 +289,42 @@ class MailGunnerMailTo(sublime_plugin.TextCommand):
             self.view.window().run_command('mail_gunner_new', {"address": address})
 
 
+class MailGunnerListener(sublime_plugin.EventListener):
+    def on_selection_modified(self, view):
+        if view is not None and view.settings().get('mail_gunner_password', False):
+            view.sel().clear()
+            view.sel().add(sublime.Region(view.size()))
+
+
 ########################
 # Send Mail
 ########################
 class MailGunnerSendCommand(sublime_plugin.TextCommand):
     """ Send the mail from the current view buffer """
-    def send_with_settings(self, value):
+    def send_with_auth(self, value):
         """ Send with the settings """
-        if value >= 0:
-            mail_setting = self.mail_settings[value]
-            settings = {}
-            if os.path.exists(mail_setting):
-                try:
-                    with codecs.open(mail_setting, "r", encoding='utf-8') as f:
-                        settings = json.loads(f.read())
-                except:
-                    pass
-            self.send(settings)
+        if value:
+            value = self.auth
+            self.auth = ''
+            self.send(value)
+        else:
+            self.auth = ''
+
+    def hide_auth(self, password):
+        if len(password) > len(self.auth):
+            self.auth += password[len(self.auth):]
+            password = '*' * len(self.auth)
+        elif len(password) < len(self.auth):
+            self.auth = self.auth[:len(password)]
+            password = '*' * len(self.auth)
+        else:
+            return
+        view = self.window.show_input_panel("Password", password, self.send_with_auth, self.hide_auth, self.clear_auth)
+        view.sel().clear()
+        view.sel().add(sublime.Region(view.size()))
+
+    def clear_auth(self):
+        self.auth = ''
 
     def store_contacts(self, mg):
         """ Store contacts """
@@ -337,13 +338,11 @@ class MailGunnerSendCommand(sublime_plugin.TextCommand):
             contact_list[c[0]] = c[1]
         save_contacts(contact_list)
 
-    def send(self, mail_settings):
+    def send(self, auth):
         """ Using the settings file to send the mail """
-        api_key = mail_settings.get('api_key', None)
-        api_url = mail_settings.get('api_url', None)
 
-        if api_key and api_url:
-            mg = mailgun.MailGun(api_url, api_key)
+        if auth:
+            mg = mailgun.MailGunSmtp(auth)
             try:
                 response = mg.sendmail(
                     self.view.substr(sublime.Region(0, self.view.size()))
@@ -369,50 +368,10 @@ class MailGunnerSendCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, mail_settings=None):
         """ Initiate mail sending """
-        mail_menu = []
-        if mail_settings is not None:
-            # Keyfile fed in via argument
-            settings = os.path.join(get_mail_settings_dir(), mail_settings)
-            if not os.path.exists(settings):
-                mail_settings = None
-            else:
-                mail_settings = settings
-        else:
-            # Keyfile found in frontmatter
-            bfr = self.view.substr(sublime.Region(0, self.view.size()))
-            frontmatter = mailgun.strip_frontmatter(bfr)[0]
-            if frontmatter is not None:
-                keyfile = frontmatter.get('keyfile', None)
-                if keyfile and isinstance(keyfile, str):
-                    settings = os.path.join(get_mail_settings_dir(), keyfile)
-                    if os.path.exists(settings):
-                        mail_settings = settings
-
-        if mail_settings:
-            # Mail setting to use already provided
-            mail_menu = [os.path.splitext(os.path.basename(mail_settings))[0]]
-            self.mail_settings = [mail_settings]
-            entries = 1
-        else:
-            # Search for available mail settings
-            self.mail_settings = []
-            for setting in get_mail_settings():
-                mail_menu.append(os.path.splitext(os.path.basename(setting))[0])
-                self.mail_settings.append(setting)
-            entries = len(self.mail_settings)
-
-        if entries:
-            if entries == 1:
-                # Send with the only option
-                self.send_with_settings(0)
-            else:
-                # Prompt user to pick which send config to use
-                self.view.window().show_quick_panel(
-                    mail_menu,
-                    self.send_with_settings
-                )
-        else:
-            sublime.error_message('No mail configurations available!')
+        self.auth = ''
+        self.window = self.view.window()
+        view = self.window.show_input_panel('Password:', '', self.send_with_auth, self.hide_auth, self.clear_auth)
+        view.settings().set('mail_gunner_password', True)
 
 
 def plugin_loaded():
