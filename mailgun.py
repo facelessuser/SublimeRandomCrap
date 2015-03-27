@@ -5,6 +5,37 @@ import os
 import re
 
 
+EMAIL = r'''
+(?:[\-+\w]([\w\-+]|\.(?!\.))+)        # Local part
+@(?:[\w\-]+\.)                        # @domain part start
+(?:(?:[\w\-]|(?<!\.)\.(?!\.))*)[a-z]  # @domain.end (allow multiple dot names)
+(?![\d\-_@])                          # Don't allow last char to be followed by these
+'''
+
+RE_MAIL = re.compile(r'''(?x)(?i)(?P<email>%s)''' % EMAIL)
+
+RE_CONTACT = re.compile(
+    r'''(?x)(?i)\s*(?:(?P<name>.*?)<(?P<email>%s)>|(?P<email2>%s))\s*''' % (EMAIL, EMAIL)
+)
+
+
+def is_contact(contact):
+    """ Is string a contact? """
+    return RE_CONTACT.match(contact) is not None
+
+
+def parse_contact(contact):
+    """ Parse contact """
+    m = RE_CONTACT.match(contact)
+    contact_record = None
+    if m:
+        if m.group('name'):
+            contact_record = (m.group('email').lower(), m.group('name'))
+        else:
+            contact_record = (m.group('email2').lower(), '')
+    return contact_record
+
+
 def convert_file_size(from_size, to_size, value):
     """ Convert byte sizes """
     file_sizes = ('bytes', 'kilo', 'mega', 'giga', 'tera', 'peta')
@@ -40,6 +71,7 @@ class MailGun(object):
     def __init__(self, api_url, api_key):
         """ Initialize mail variables """
         self.sender = None
+        self.reply = None
         self.to = []
         self.cc = []
         self.bcc = []
@@ -77,7 +109,7 @@ class MailGun(object):
         # Prepare data structure
         data = {
             "from": self.sender,
-            "h:Reply-To": self.sender,
+            "h:Reply-To": self.reply,
             "to": self.to,
             "cc": self.cc,
             "bcc": self.bcc,
@@ -99,17 +131,20 @@ class MailGun(object):
     def set_sender(self, sender):
         """ Set sender """
         if sender and isinstance(sender, str):
-            self.sender = sender
+            contact = parse_contact(sender)
+            if contact is not None:
+                self.sender = '%s <%s>' % (contact[1], contact[0]) if contact[1] else contact[0]
+                self.reply = contact[0]
 
     def set_recipients(self, recipient_type, recipients):
         """ Set recipient """
         to = getattr(self, recipient_type)
         if recipients:
-            if isinstance(recipients, str):
+            if isinstance(recipients, str) and is_contact(recipients):
                 to.append(recipients)
             elif isinstance(recipients, list):
                 for recipient in recipients:
-                    if recipient and isinstance(recipient, str):
+                    if recipient and isinstance(recipient, str) and is_contact(recipient):
                         to.append(recipient)
 
     def set_subject(self, subject):

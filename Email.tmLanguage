@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>keyEquivalent</key>
+	<string>^~E</string>
+	<key>name</key>
+	<string>Email</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>begin</key>
+			<string>^---(?=\s*)</string>
+			<key>end</key>
+			<string>^---(?=\s*)</string>
+			<key>contentName</key>
+			<string>meta.header.yaml.email</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>source.yaml</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>text.plain</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>source.email</string>
+	<key>uuid</key>
+	<string>F5E04BF4-69A9-45AE-9205-B3F3C2B00130</string>
+</dict>
+</plist>

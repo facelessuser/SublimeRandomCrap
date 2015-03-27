@@ -29,21 +29,37 @@ DEFAULT_VARS = {
     "keyfile": ""
 }
 
-RE_MAIL = re.compile(
-    r'''(?x)(?i)
-    (
-        (?:[\-+\w]([\w\-+]|\.(?!\.))+)        # Local part
-        @(?:[\w\-]+\.)                        # @domain part start
-        (?:(?:[\w\-]|(?<!\.)\.(?!\.))*)[a-z]  # @domain.end (allow multiple dot names)
-        (?![\d\-_@])                          # Don't allow last char to be followed by these
-    )
-    '''
-)
-
 
 def get_mail_settings_dir():
     """ Get mail settings dir """
     return os.path.join(sublime.packages_path(), "User", 'MailGunner')
+
+
+def get_mail_contacts():
+    """ Get mail contacts """
+    contacts = {}
+    base = get_mail_settings_dir()
+    contact_file = os.path.join(base, 'Contacts.mail-contacts')
+    if os.path.exists(contact_file):
+        try:
+            with codecs.open(contact_file, 'r', encoding='utf-8') as f:
+                obj = json.loads(f.read())
+            for k, v in obj.items():
+                contacts[k.lower()] = v
+        except:
+            pass
+    return contacts
+
+
+def save_contacts(contacts):
+    """ Save contacts """
+    base = get_mail_settings_dir()
+    contact_file = os.path.join(base, 'Contacts.mail-contacts')
+    try:
+        with codecs.open(contact_file, 'w', encoding='utf-8') as f:
+            f.write(json.dumps(contacts, sort_keys=True, indent=4, separators=(',', ': ')))
+    except:
+        pass
 
 
 def get_mail_settings():
@@ -53,6 +69,33 @@ def get_mail_settings():
         file_path = os.path.join(base, f)
         if os.path.isfile(file_path) and file_path.lower().endswith('.mail-settings'):
             yield file_path
+
+
+class MailGunnerInsertContactCommand(sublime_plugin.TextCommand):
+    def insert_contact(self, value):
+        """ Call insert with the selected contact """
+        if value >= 0:
+            self.view.run_command(
+                'mail_gunner_insert_contact',
+                {"contact": self.options[value]}
+            )
+
+    def run(self, edit, contact=None):
+        """ Insert contact if provided. If not, prompt user for contact. """
+        pt = self.view.sel()[0].begin()
+        if contact is None and pt > 0 and self.view.substr(pt - 1) == '@':
+            self.options = []
+            self.view.erase(edit, sublime.Region(pt - 1, pt))
+            contacts = get_mail_contacts()
+            for email, name in contacts.items():
+                if not name:
+                    self.options.append(email)
+                else:
+                    self.options.append("%s <%s>" % (name, email))
+            if len(self.options):
+                self.view.window().show_quick_panel(self.options, self.insert_contact)
+        elif contact:
+            self.view.insert(edit, pt, contact)
 
 
 class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
@@ -74,7 +117,7 @@ class MailGunnerFormatMailCommand(sublime_plugin.TextCommand):
         for recipient in ('to', 'cc', 'bcc'):
             to = template_variables.get(recipient, None)
             if not to or not isinstance(to, (str, list, tuple, set)):
-                template_variables[recipient] = self.address if recipient == 'to' and self.address is not None else ''
+                template_variables[recipient] = ' %s' % self.address if recipient == 'to' and self.address is not None else ''
             elif isinstance(to, (list, tuple, set)):
                 value = ['\n- %s' % r for r in to if r and isinstance(r, str)]
                 if recipient == 'to' and self.address:
@@ -144,6 +187,7 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
                 'address': self.address if self.address else None
             }
         )
+        view.set_syntax_file("Packages/SublimeRandomCrap/Email.tmLanguage")
 
     def run(self, address=None, mail_settings=None):
         """ Initiate opening new view with mail template """
@@ -176,7 +220,7 @@ class MailGunnerNewCommand(sublime_plugin.WindowCommand):
                 self.new_mail(0)
             else:
                 # Prompt user to pick config to populate template
-                self.view.window().show_quick_panel(
+                self.window.show_quick_panel(
                     mail_menu,
                     self.new_mail
                 )
@@ -193,7 +237,7 @@ class MailGunnerCommand(sublime_plugin.TextCommand):
             settings = {}
             if os.path.exists(mail_setting):
                 try:
-                    with codecs.open(mail_setting, "r", encoding='utf8') as f:
+                    with codecs.open(mail_setting, "r", encoding='utf-8') as f:
                         settings = json.loads(f.read())
                 except:
                     pass
@@ -201,8 +245,15 @@ class MailGunnerCommand(sublime_plugin.TextCommand):
 
     def store_contacts(self, mg):
         """ Store contacts """
-        contacts = mg.to + mg.cc + mg.bcc
-        print(contacts)
+        contacts = []
+        for contact in (mg.to + mg.cc + mg.bcc):
+            record = mailgun.parse_contact(contact)
+            if record is not None:
+                contacts.append(record)
+        contact_list = get_mail_contacts()
+        for c in contacts:
+            contact_list[c[0]] = c[1]
+        save_contacts(contact_list)
 
     def send(self, mail_settings):
         """ Using the settings file to send the mail """
@@ -300,7 +351,7 @@ class MailGunnerMailTo(sublime_plugin.TextCommand):
 
         text = self.view.substr(line)
 
-        it = RE_MAIL.finditer(text)
+        it = mailgun.RE_MAIL.finditer(text)
 
         for match in it:
             if match.start() <= (pt - line.a) and match.end() >= (pt - line.a):
