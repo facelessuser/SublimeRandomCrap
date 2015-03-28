@@ -7,11 +7,6 @@ import yaml
 import SublimeRandomCrap.postmaster as postmaster
 from collections import OrderedDict
 
-yaml.add_representer(
-    OrderedDict,
-    lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
-)
-
 NEW_MAIL = '''---
 %(header)s---
 %(body)s%(signature)s
@@ -38,6 +33,29 @@ DEFAULT_VARS = {
 def get_mail_settings_dir():
     """ Get mail settings dir """
     return os.path.join(sublime.packages_path(), "User", 'Postmaster')
+
+
+def yaml_frontmatter_dump(obj):
+    """
+    Normal we would approach an ordered dict like this:
+        yaml.add_representer(
+            OrderedDict,
+            lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
+        )
+    But because we are sharing PyYaml across plugins, we cannot guaruntee this will stick;
+    someone may override this behavior.
+    Instead we will just iterate the dictionary treating each key as a separate dict,
+    and output it to the buffer.
+    """
+    yaml_bfr = []
+    for k, v in obj.items():
+        yaml_bfr.append(
+            yaml.dump(
+                {k: v}, width=None, indent=4,
+                allow_unicode=True, default_flow_style=False
+            )
+        )
+    return ''.join(yaml_bfr)
 
 
 def get_mail_contacts():
@@ -225,10 +243,7 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
         self.view.insert(
             edit, 0,
             NEW_MAIL % {
-                "header": yaml.dump(
-                    self.template_variables, width=None, indent=4,
-                    allow_unicode=True, default_flow_style=False
-                ),
+                "header": yaml_frontmatter_dump(self.template_variables),
                 "body": self.body,
                 "signature": self.signature
             }
