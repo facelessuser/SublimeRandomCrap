@@ -3,7 +3,7 @@ import sublime_plugin
 import codecs
 import os
 import re
-import json
+import yaml
 import SublimeRandomCrap.postmaster as postmaster
 
 NEW_MAIL = '''---
@@ -50,7 +50,7 @@ def get_mail_contacts():
     if os.path.exists(contact_file):
         try:
             with codecs.open(contact_file, 'r', encoding='utf-8') as f:
-                obj = json.loads(f.read())
+                obj = yaml.load(f.read())
             for k, v in obj.items():
                 contacts[k.lower()] = v
         except:
@@ -64,7 +64,12 @@ def save_contacts(contacts):
     contact_file = os.path.join(base, 'Contacts.mail-contacts')
     try:
         with codecs.open(contact_file, 'w', encoding='utf-8') as f:
-            f.write(json.dumps(contacts, sort_keys=True, indent=4, separators=(',', ': ')))
+            f.write(
+                yaml.dump(
+                    contacts, width=None, indent=4,
+                    allow_unicode=True, default_flow_style=False
+                )
+            )
     except:
         pass
 
@@ -224,7 +229,7 @@ class PostmasterNewCommand(sublime_plugin.WindowCommand):
             mail_setting = self.mail_settings[value]
             try:
                 with codecs.open(mail_setting, 'r', encoding='utf-8') as f:
-                    vars = json.loads(f.read())
+                    vars = yaml.load(f.read())
             except:
                 pass
 
@@ -368,7 +373,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
                 contacts.append(record)
         contact_list = get_mail_contacts()
         for c in contacts:
-            contact_list[c[0]] = c[1]
+            contact_list[c[0]] = c[1].strip()
         save_contacts(contact_list)
 
     def send(self, auth):
