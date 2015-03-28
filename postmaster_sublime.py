@@ -359,6 +359,10 @@ class PostmasterMailTo(sublime_plugin.TextCommand):
 
 class PostmasterListener(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
+        """
+        Try to force the selection in an password panel to be at end.
+        Milage may vary.
+        """
         if view is not None and view.settings().get('postmaster_password_panel', False):
             view.sel().clear()
             view.sel().add(sublime.Region(view.size()))
@@ -379,6 +383,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
             self.auth = ''
 
     def hide_auth(self, password):
+        """ Hide auth input """
         if len(password) > len(self.auth):
             self.auth += password[len(self.auth):]
             password = '*' * len(self.auth)
@@ -392,6 +397,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
         view.sel().add(sublime.Region(view.size()))
 
     def clear_auth(self):
+        """ Clear auth value """
         self.auth = ''
 
     def store_contacts(self, mg):
