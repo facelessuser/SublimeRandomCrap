@@ -222,7 +222,7 @@ class SendSmtp(object):
                 pass
         return size
 
-    def send(self, auth):
+    def send(self, auth, user=None):
         """ Send email via smtp """
 
         if convert_file_size('bytes', 'mega', self.get_email_size()) > 25:
@@ -259,7 +259,7 @@ class SendSmtp(object):
             server.starttls()
             # re-identify ourselves as an encrypted connection
             server.ehlo()
-        server.login(self.reply, auth)
+        server.login(self.reply if user is None else user, auth)
         try:
             server.sendmail(self.reply, self.to + self.cc + self.bcc, msg.as_string())
             server.quit()
@@ -307,7 +307,7 @@ class SendSmtp(object):
         """ Set body """
         self.text = body if body else ''
 
-    def sendmail(self, string, auth):
+    def sendmail(self, string, auth, user=None):
         """ Parse mail buffer and send it """
         response = None
 
@@ -324,7 +324,7 @@ class SendSmtp(object):
         # Send message if we have enough info
         if self.sender and self.to and (self.text or len(self.attachments)):
             # If text is empty, make sure it is at least a string.
-            response = self.send(auth)
+            response = self.send(auth, user=user)
         else:
             raise PostmasterException('Message configuration did not meet the minimum requirements!')
 
