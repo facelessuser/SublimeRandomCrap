@@ -5,18 +5,15 @@ import os
 import re
 import yaml
 import SublimeRandomCrap.postmaster as postmaster
+from collections import OrderedDict
+
+yaml.add_representer(
+    OrderedDict,
+    lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
+)
 
 NEW_MAIL = '''---
-subject:%(subject)s
-from:%(from)s
-to:%(to)s
-cc:%(cc)s
-bcc:%(bcc)s
-attachments:%(attachments)s
-smtp_server:%(smtp_server)s
-port:%(port)s
-tls:%(tls)s
----
+%(header)s---
 %(body)s%(signature)s
 '''
 
@@ -30,7 +27,8 @@ DEFAULT_VARS = {
     "body": "",
     "smtp_server": " smtp.gmail.com",
     "port": " 587",
-    "tls": " true"
+    "tls": " true",
+    'user': ""
 }
 
 
@@ -116,108 +114,125 @@ class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
 
 class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
     """ When creating a new mail, use a template and format desired content. """
-    def format_subject(self):
+    def format_subject(self, template_variables):
         """ Format subject """
-        subject = self.template_variables.get('subject', None)
+        subject = template_variables.get('subject', None)
         if not subject or not isinstance(subject, str):
             self.template_variables['subject'] = ''
         else:
-            self.template_variables['subject'] = ' %s' % subject
+            self.template_variables['subject'] = subject
 
-    def format_sender(self):
+    def format_sender(self, template_variables):
         """ Format sender """
-        sender = self.template_variables.get('from', None)
+        sender = template_variables.get('from', None)
         if not sender or not isinstance(sender, str):
             self.template_variables['from'] = ''
         else:
-            self.template_variables['from'] = ' %s' % sender
+            self.template_variables['from'] = sender
 
-    def format_recipients(self):
+    def format_recipients(self, template_variables):
         """ Format recipients """
         for recipient in ('to', 'cc', 'bcc'):
-            to = self.template_variables.get(recipient, None)
+            to = template_variables.get(recipient, None)
             if not to or not isinstance(to, (str, list, tuple, set)):
-                self.template_variables[recipient] = ' %s' % self.address if recipient == 'to' and self.address is not None else ''
+                self.template_variables[recipient] = self.address if recipient == 'to' and self.address is not None else ''
             elif isinstance(to, (list, tuple, set)):
-                value = ['\n- %s' % r for r in to if r and isinstance(r, str)]
+                value = [r for r in to if r and isinstance(r, str)]
                 if recipient == 'to' and self.address:
                     value.insert(0, self.address)
-                self.template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
+                self.template_variables[recipient] = '' if len(value) == 0 else value
             elif isinstance(to, str):
                 if recipient == 'to' and self.address:
-                    value = ['\n- %s' % r for r in (self.address, to) if r and isinstance(r, str)]
-                    self.template_variables[recipient] = '' if len(value) == 0 else ''.join(value)
+                    value = [r for r in (self.address, to) if r and isinstance(r, str)]
+                    self.template_variables[recipient] = '' if len(value) == 0 else value
                 else:
                     self.template_variables[recipient] = ' %s' % to
 
-    def format_attachments(self):
+    def format_attachments(self, template_variables):
         """ Format attachments """
-        attachments = self.template_variables.get('attachments', None)
+        attachments = template_variables.get('attachments', None)
         if not attachments or not isinstance(attachments, (str, list, tuple, set)):
             self.template_variables['attachments'] = ''
         elif isinstance(attachments, (list, tuple, set)):
-            value = ['\n- %s' % a for a in attachments if a and isinstance(a, str)]
-            self.template_variables['attachments'] = '' if len(value) == 0 else ''.join(value)
+            value = [a for a in attachments if a and isinstance(a, str)]
+            self.template_variables['attachments'] = '' if len(value) == 0 else value
         elif isinstance(attachments, str):
-            self.template_variables['attachments'] = ' %s' % attachments
+            self.template_variables['attachments'] = attachments
 
-    def format_body(self):
+    def format_body(self, template_variables):
         """ Format body """
-        body = self.template_variables.get('body', None)
+        body = template_variables.get('body', None)
         if not body or not isinstance(body, str):
-            self.template_variables['body'] = ''
+            self.body = ''
         else:
-            self.template_variables['body'] = ' %s' % body
+            self.body = ' %s' % body
 
-    def format_signature(self):
+    def format_signature(self, template_variables):
         """ Format signature """
-        signature = self.template_variables.get('signature', None)
+        signature = template_variables.get('signature', None)
         if not signature or not isinstance(signature, str):
-            self.template_variables['signature'] = ''
+            self.signature = ''
         else:
-            self.template_variables['signature'] = '\n\n%s' % signature
+            self.signature = '\n\n%s' % signature
 
-    def format_smtp_server(self):
+    def format_smtp_server(self, template_variables):
         """ Format smtp server """
-        server = self.template_variables.get('smtp_server', "smtp.gmail.com")
+        server = template_variables.get('smtp_server', "smtp.gmail.com")
         if not server or not isinstance(server, str):
-            self.template_variables['smtp_server'] = " smtp.gmail.com"
+            self.template_variables['smtp_server'] = "smtp.gmail.com"
         else:
-            self.template_variables['smtp_server'] = " %s" % server
+            self.template_variables['smtp_server'] = server
 
-    def format_port(self):
+    def format_port(self, template_variables):
         """ Format port """
-        port = self.template_variables.get('port', 587)
+        port = template_variables.get('port', 587)
         if not port or not isinstance(port, int):
-            self.template_variables['port'] = " %s" % str(587)
+            self.template_variables['port'] = 587
         else:
-            self.template_variables['port'] = " %s" % str(port)
+            self.template_variables['port'] = port
 
-    def format_tls(self):
+    def format_tls(self, template_variables):
         """ Format tls """
-        tls = self.template_variables.get('tls', 587)
+        tls = template_variables.get('tls', 587)
         if not tls or not isinstance(tls, bool):
-            self.template_variables['tls'] = " true"
+            self.template_variables['tls'] = True
         else:
-            self.template_variables['tls'] = " true" if tls else " false"
+            self.template_variables['tls'] = tls
+
+    def format_user(self, template_variables):
+        """ Format user """
+        user = template_variables.get('user', None)
+        if user and isinstance(user, str):
+            self.template_variables['user'] = user
 
     def run(self, edit, address=None, template_variables=DEFAULT_VARS):
         """ Insert template into new mail view """
         self.address = address if address and isinstance(address, str) else None
-        self.template_variables = template_variables
+        self.template_variables = OrderedDict()
 
         # Format template values
-        self.format_subject()
-        self.format_sender()
-        self.format_recipients()
-        self.format_attachments()
-        self.format_body()
-        self.format_signature()
-        self.format_smtp_server()
-        self.format_port()
-        self.format_tls()
+        self.format_subject(template_variables)
+        self.format_sender(template_variables)
+        self.format_recipients(template_variables)
+        self.format_attachments(template_variables)
+        self.format_body(template_variables)
+        self.format_signature(template_variables)
+        self.format_smtp_server(template_variables)
+        self.format_port(template_variables)
+        self.format_tls(template_variables)
+        self.format_user(template_variables)
 
-        self.view.insert(edit, 0, NEW_MAIL % template_variables)
+        self.view.insert(
+            edit, 0,
+            NEW_MAIL % {
+                "header": yaml.dump(
+                    self.template_variables, width=None, indent=4,
+                    allow_unicode=True, default_flow_style=False
+                ),
+                "body": self.body,
+                "signature": self.signature
+            }
+        )
 
 
 class PostmasterNewCommand(sublime_plugin.WindowCommand):
@@ -382,7 +397,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
         if auth:
             pm = postmaster.SendSmtp(self.smtp_server, self.port, self.tls)
             try:
-                response = pm.sendmail(self.bfr, auth)
+                response = pm.sendmail(self.bfr, auth, self.user)
 
                 # Parse response
                 m = re.match(r'<Response \[(\d+)\]>', response)
@@ -408,6 +423,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
         """ Initiate mail sending """
         self.auth = ''
         self.window = self.view.window()
+        self.user = None
 
         self.bfr = self.view.substr(sublime.Region(0, self.view.size()))
         frontmatter = postmaster.strip_frontmatter(self.bfr)[0]
@@ -429,6 +445,12 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
             self.tls = tls
         else:
             self.tls = None
+
+        user = frontmatter.get('user', None)
+        if user and isinstance(user, str):
+            self.user = user
+        else:
+            self.user = None
 
         self.port = frontmatter.get('port', None)
         self.tls = frontmatter.get('tls', None)
