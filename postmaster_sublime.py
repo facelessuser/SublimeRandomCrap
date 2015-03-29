@@ -481,7 +481,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
 
 
 def plugin_loaded():
-    # Make sure mail setting folder exists
+    """ Make sure mail setting folder exists """
     mail_folder = get_mail_settings_dir()
     if not os.path.exists(mail_folder):
         os.makedirs(mail_folder)
