@@ -1,5 +1,6 @@
 [
     { "caption": "-", "id": "file" },
-    {"caption": "Grep Here…", "command": "grep_here_file"},
+    {"command": "grep_here_file", "args": {"key": "osx"}},
+    {"command": "grep_here_file", "args": {"key": "win"}},
     {"command": "postmaster_mail_to"}
 ]

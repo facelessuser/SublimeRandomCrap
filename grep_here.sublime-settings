@@ -1,6 +1,14 @@
 {
-    "grep_call": [
-        {"platform": "windows", "cmd": ["C:\\Program Files\\grepWin\\grepWin.exe", "/searchpath:${PATH}"]},
-        {"platform": "osx", "cmd": ["/Applications/Rummage.app/Contents/MacOS/Rummage", "-s", "${PATH}"]}
-    ]
+    "grep_call": {
+        "win": {
+            "caption": "Grep Here…",
+            "cmd": ["C:\\Program Files\\grepWin\\grepWin.exe", "/searchpath:${PATH}"],
+            "platform": ["windows"]
+        },
+        "osx": {
+            "caption": "Rummage Here…",
+            "cmd": ["/Applications/Rummage.app/Contents/MacOS/Rummage", "-s", "${PATH}"],
+            "platform": ["osx"]
+        }
+    }
 }

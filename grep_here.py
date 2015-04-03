@@ -30,13 +30,12 @@ class GrepHereBase(object):
         else:
             print("GrepHere: %s" % msg)
 
-    def call_grep(self, target):
+    def call_grep(self, target, key):
         call = None
-        for value in sublime.load_settings("grep_here.sublime-settings").get("grep_call", []):
-            platform = value.get("platform", None)
-            if platform is not None and platform == sublime.platform():
-                call = value.get("cmd", None)
-                break
+        setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
+        obj = setting.get(key, None)
+        if obj is not None:
+            call = obj.get('cmd', [])
         if call is not None:
             index = 0
             for item in call:
@@ -70,19 +69,67 @@ class GrepHere(GrepHereBase):
             self.fail(fail_msg)
         return target
 
-    def grep(self, paths=[]):
+    def grep(self, paths=[], key=None):
+        if key is None:
+            return
         target = self.get_target(paths)
         if target is None:
             return
 
-        self.call_grep(target)
+        self.call_grep(target, key)
 
 
 class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
-    def run(self, edit):
-        self.grep()
+    def run(self, edit, key):
+        self.grep(paths=[], key=key)
+
+    def description(self, key=None):
+        caption = None
+        if key is not None:
+            setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
+            obj = setting.get(key, None)
+            if obj is not None:
+                caption = obj.get('caption', None)
+        return caption
+
+    def is_enabled(self, key=None):
+        enabled = False
+        if key is not None:
+            setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
+            obj = setting.get(key, None)
+            if key is not None:
+                platform = obj.get('platform', [])
+                if len(platform):
+                    if '*' in platform or sublime.platform() in platform:
+                        enabled = True
+        return enabled
+
+    is_visible = is_enabled
 
 
 class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
-    def run(self, paths=[]):
-        self.grep(paths)
+    def run(self, paths=[], key=None):
+        self.grep(paths=paths, key=key)
+
+    def description(self, paths=[], key=None):
+        caption = None
+        if key is not None:
+            setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
+            obj = setting.get(key, None)
+            if obj is not None:
+                caption = obj.get('caption', None)
+        return caption
+
+    def is_enabled(self, paths=[], key=None):
+        enabled = False
+        if key is not None:
+            setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
+            obj = setting.get(key, None)
+            if key is not None:
+                platform = obj.get('platform', [])
+                if len(platform):
+                    if '*' in platform or sublime.platform() in platform:
+                        enabled = True
+        return enabled
+
+    is_visible = is_enabled
