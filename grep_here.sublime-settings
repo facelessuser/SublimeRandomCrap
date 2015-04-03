@@ -5,6 +5,11 @@
             "cmd": ["C:\\Program Files\\grepWin\\grepWin.exe", "/searchpath:${PATH}"],
             "platform": ["windows"]
         },
+        "win_rummage": {
+            "caption": "Rummage Here…",
+            "cmd": ["C:\\Program Files (x86\\Rummage\\Rummage.exe", "-s", ":${PATH}"],
+            "platform": ["windows"]
+        },
         "osx": {
             "caption": "Rummage Here…",
             "cmd": ["/Applications/Rummage.app/Contents/MacOS/Rummage", "-s", "${PATH}"],
