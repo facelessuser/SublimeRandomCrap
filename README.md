@@ -364,7 +364,7 @@ the subject, sender, recipients, attachments and SMTP servo info:
 ---
 subject: Sending a file
 from: Postmaster User <postmasteruser@example.com>
-to: ''
+to: Someone <someone@example.com>
 cc: ''
 bcc: ''
 attachments:
@@ -400,19 +400,19 @@ with its frontmatter and content:
 
 Available template variables are:
 
-| Name         | Type                       | Description                                                                                     |
-|--------------|----------------------------|-------------------------------------------------------------------------------------------------|
-| subject      | string                     | Email subject.                                                                                  |
-| from         | string                     | Sender in the form `me@example.com` or `My Name <me@example.com>`.                              |
-| to           | string or array of strings | Recipient in the form `to@example.com` or `Their Name <to@example.com>`.                        |
-| cc           | string or array of strings | Carbon copy recipient in the form `to@example.com` or `Their Name <to@example.com>`.            |
-| bcc          | string or array of strings | Blind carbon copy recipient in the form `to@example.com` or `Their Name <to@example.com>`.      |
-| attachements | string or array of strings | Full file path for the attachment.                                                              |
-| body         | string                     | Optional default body if desired.                                                               |
-| smtp_server  | string                     | SMTP server used to send email.                                                                 |
-| port         | int                        | SMTP server port used to send email.                                                            |
-| tls          | bool                       | Should use tls via STARTTLS.                                                                    |
-| user         | string                     | Optional user name for SMTP server. By your default sender email will be used `me@example.com`. |
+| Name         | Type                       | Description                                                                                      |
+|--------------|----------------------------|--------------------------------------------------------------------------------------------------|
+| subject      | string                     | Email subject.                                                                                   |
+| from         | string                     | Sender in the form `me@example.com` or `My Name <me@example.com>`.                               |
+| to           | string or array of strings | Recipient in the form `to@example.com` or `Their Name <to@example.com>`.                         |
+| cc           | string or array of strings | Carbon copy recipient in the form `to@example.com` or `Their Name <to@example.com>`.             |
+| bcc          | string or array of strings | Blind carbon copy recipient in the form `to@example.com` or `Their Name <to@example.com>`.       |
+| attachements | string or array of strings | Full file path for the attachment.                                                               |
+| body         | string                     | Optional default body if desired.                                                                |
+| smtp_server  | string                     | SMTP server used to send email.                                                                  |
+| port         | int                        | SMTP server port used to send email.                                                             |
+| tls          | bool                       | Should use tls via STARTTLS.                                                                     |
+| user         | string                     | Optional user name for SMTP server. By default, your sender email will be used `me@example.com`. |
 
 
 ### Commands
