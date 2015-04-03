@@ -1,5 +1,4 @@
 import sublime_plugin
-import sublime
 import re
 
 

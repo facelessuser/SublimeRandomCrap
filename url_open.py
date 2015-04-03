@@ -1,3 +1,8 @@
+"""
+Overrides the default url open plugin command in Sublime Text.
+
+This gives me control over the regex so I can imrpove it over time.
+"""
 import sublime_plugin
 import webbrowser
 import re
@@ -9,7 +14,7 @@ rex = re.compile(
         w{3}\.[a-z\d\-_]+(?:\.[a-z\d\-._]+)+                        # www.
     )
     /?[a-z\d\-._?,!'(){}\[\]/+&@%$#=:"|~;]*                         # url path and querry stuff
-    [a-z\d\-_~/#@$*+=]                                             # allowed end chars
+    [a-z\d\-_~/#@$*+=]                                              # allowed end chars
     '''
 )
 

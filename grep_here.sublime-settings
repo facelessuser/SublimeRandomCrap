@@ -7,7 +7,7 @@
         },
         "win_rummage": {
             "caption": "Rummage Here…",
-            "cmd": ["C:\\Program Files (x86\\Rummage\\Rummage.exe", "-s", ":${PATH}"],
+            "cmd": ["C:\\Program Files (x86)\\Rummage\\Rummage.exe", "-s", "${PATH}"],
             "platform": ["windows"]
         },
         "osx": {
