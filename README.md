@@ -382,6 +382,8 @@ Hey what's up. Here's a file.
 
 New emails can be configured with templates. If you have multiple templates, you will prompted for which template to use.
 
+Currently, postmaster will store all the email address you write to in `User/Postmaster/Contacts.mail-contacts` (this will be optional in the future).  So when you are in the frontmatter, you can type <kbd>@</kbd> and then <kbd>Tab</kbd> and a panel will open from which you can pick a contact to insert.
+
 When sending emails, you will be prompted for your password.
 
 ### Configuring

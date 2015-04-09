@@ -436,4 +436,4 @@ class AsciiTableCommand(sublime_plugin.WindowCommand):
             view.set_scratch(True)
             view.set_name(".ascii_table")
             view.settings().set("ascii_table_view", True)
-            view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table.tmLanguage")
+            view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table.sublime-syntax")

@@ -1,0 +1,26 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/3/syntax.html
+name: ASCII Table
+file_extensions:
+  - ascii_table
+hidden: true
+scope: source.ascii_table
+contexts:
+  main:
+    - match: ^(DEC) +(HEX) +(OCT) +(CHR) +(HTML) +(DESCRIPTION)$
+      captures:
+        1: support.function.label.ascii_table
+        2: support.function.label.ascii_table
+        3: support.function.label.ascii_table
+        4: support.function.label.ascii_table
+        5: support.function.label.ascii_table
+        6: support.function.label.ascii_table
+    - match: '^ *(\d+) +(0x[\da-fA-F]+) +(0o[0-8]+) +([^ ]+)(?: +(&[A-Za-z\d]+;))?(?: +(\(.*\)))?$'
+      captures:
+        1: constant.numeric.decimal.ascii_table
+        2: constant.numeric.hex.ascii_table
+        3: constant.numeric.octal.ascii_table
+        4: keyword.char.ascii_table
+        5: support.type.ascii_table
+        6: string.info.ascii_table
