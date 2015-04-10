@@ -2,8 +2,7 @@
 ---
 # http://www.sublimetext.com/docs/3/syntax.html
 name: ASCII Table
-file_extensions:
-  - ascii_table
+file_extensions: []
 hidden: true
 scope: source.ascii_table
 contexts:

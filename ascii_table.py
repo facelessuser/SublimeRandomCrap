@@ -50,6 +50,10 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import sublime_plugin
+import sublime
+
+USE_ST_SYNTAX = int(sublime.version()) >= 3084 and False
+ST_SYNTAX = "sublime-syntax" if USE_ST_SYNTAX else 'tmLanguage'
 
 DEC = 0
 HEX = 1
@@ -436,4 +440,4 @@ class AsciiTableCommand(sublime_plugin.WindowCommand):
             view.set_scratch(True)
             view.set_name(".ascii_table")
             view.settings().set("ascii_table_view", True)
-            view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table.sublime-syntax")
+            view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table.%s" % ST_SYNTAX)
