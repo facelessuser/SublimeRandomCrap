@@ -82,7 +82,12 @@ class GrepHereBase(object):
                 call[index] = item.replace("${PATH}", target)
                 index += 1
             try:
-                subprocess.Popen(call)
+                if sublime.platform() == "windows":
+                    startupinfo = subprocess.STARTUPINFO()
+                    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                    subprocess.Popen(call, startupinfo=startupinfo)
+                else:
+                    subprocess.Popen(call)
             except:
                 self.fail(CALL_FAILURE % str(traceback.format_exc()))
 
