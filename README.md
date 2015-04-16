@@ -277,6 +277,24 @@ Multiple entries can be defined and you can limit them to a specific platform:
     }
 ```
 
+Keep in mind that on windows, passing quoted paths to some applications in Python can turn out poorly (it all depends on the application receiving the paths). For example, I use [grepWin](http://stefanstools.sourceforge.net/grepWin.html) on windowns, and passing quoted paths to it via Python just doesn't work well due to the way it parses its command line arguments.  So in this case, using a batch file is probably preferrable as shown below:
+
+Batch file:
+
+```batch
+"C:\Program Files\grepWin\grepWin.exe" /searchpath:%1
+```
+
+GrepHere configuration:
+
+```js
+    "win": {
+        "caption": "Grep Here…",
+        "cmd": ["C:\\MyPath\\grepwin.bat", "${PATH}"],
+        "platform": ["windows"]
+    },
+```
+
 ### Commands
 You can then define actual commands for the context menu or sidebar context menu:
 
