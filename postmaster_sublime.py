@@ -105,6 +105,9 @@ NEW_MAIL = '''---
 %(body)s%(signature)s
 '''
 
+SETTINGS = 'postmaster.sublime-settings'
+GLOBAL_CONTACTS = 'Contacts.mail-contacts'
+
 DEFAULT_VARS = {
     "subject": "",
     "from": "",
@@ -116,7 +119,8 @@ DEFAULT_VARS = {
     "smtp_server": " smtp.gmail.com",
     "port": " 587",
     "tls": " true",
-    'user': ""
+    "user": "",
+    "contacts": GLOBAL_CONTACTS
 }
 
 
@@ -151,11 +155,13 @@ def yaml_frontmatter_dump(obj):
     return ''.join(yaml_bfr)
 
 
-def get_mail_contacts():
+def get_mail_contacts(contact_file_path):
     """ Get mail contacts """
     contacts = {}
-    base = get_mail_settings_dir()
-    contact_file = os.path.join(base, 'Contacts.mail-contacts')
+    if not os.path.exists(contact_file_path):
+        contact_file_path = os.path.join(get_mail_settings_dir(), GLOBAL_CONTACTS)
+    else:
+        contact_file = contact_file_path
     if os.path.exists(contact_file):
         try:
             with codecs.open(contact_file, 'r', encoding='utf-8') as f:
@@ -167,10 +173,12 @@ def get_mail_contacts():
     return contacts
 
 
-def save_contacts(contacts):
+def save_contacts(contacts, contact_file_path):
     """ Save contacts """
-    base = get_mail_settings_dir()
-    contact_file = os.path.join(base, 'Contacts.mail-contacts')
+    if not os.path.exists(contact_file_path):
+        contact_file_path = os.path.join(get_mail_settings_dir(), GLOBAL_CONTACTS)
+    else:
+        contact_file = contact_file_path
     try:
         with codecs.open(contact_file, 'w', encoding='utf-8') as f:
             f.write(
@@ -205,13 +213,24 @@ class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
                 {"contact": self.options[value]}
             )
 
+    def get_contact_file(self):
+        """ Get contact file """
+        frontmatter = postmaster.strip_frontmatter(
+            self.view.substr(sublime.Region(0, self.view.size()))
+        )[0]
+        contacts = frontmatter.get('contacts', GLOBAL_CONTACTS)
+        contact_file = os.path.join(get_mail_settings_dir(), contacts)
+        if not os.path.exists(contact_file):
+            contact_file = os.path.join(get_mail_settings_dir(), GLOBAL_CONTACTS)
+        return contact_file
+
     def run(self, edit, contact=None):
         """ Insert contact if provided. If not, prompt user for contact. """
         pt = self.view.sel()[0].begin()
         if contact is None and pt > 0 and self.view.substr(pt - 1) == '@':
             self.options = []
             self.view.erase(edit, sublime.Region(pt - 1, pt))
-            contacts = get_mail_contacts()
+            contacts = get_mail_contacts(self.get_contact_file())
             for email, name in contacts.items():
                 if not name:
                     self.options.append(email)
@@ -316,6 +335,12 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
         if user and isinstance(user, str):
             self.template_variables['user'] = user
 
+    def format_contacts(self, template_variables):
+        """ Format contacts """
+        contacts = template_variables.get('contacts', None)
+        if contacts and isinstance(contacts, str):
+            self.template_variables['contacts'] = contacts
+
     def run(self, edit, address=None, template_variables=DEFAULT_VARS):
         """ Insert template into new mail view """
         self.address = address if address and isinstance(address, str) else None
@@ -332,6 +357,7 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
         self.format_port(template_variables)
         self.format_tls(template_variables)
         self.format_user(template_variables)
+        self.format_contacts(template_variables)
 
         self.view.insert(
             edit, 0,
@@ -495,15 +521,17 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
 
     def store_contacts(self, mg):
         """ Store contacts """
-        contacts = []
-        for contact in (mg.to + mg.cc + mg.bcc):
-            record = postmaster.parse_contact(contact)
-            if record is not None:
-                contacts.append(record)
-        contact_list = get_mail_contacts()
-        for c in contacts:
-            contact_list[c[0]] = c[1].strip()
-        save_contacts(contact_list)
+        settings = sublime.load_settings(SETTINGS)
+        if settings.get('save_contacts'):
+            contacts = []
+            for contact in (mg.to + mg.cc + mg.bcc):
+                record = postmaster.parse_contact(contact)
+                if record is not None:
+                    contacts.append(record)
+            contact_list = get_mail_contacts(self.contacts)
+            for c in contacts:
+                contact_list[c[0]] = c[1].strip()
+            save_contacts(contact_list, self.contacts)
 
     def send(self, auth):
         """ Using the settings file to send the mail """
@@ -565,6 +593,16 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
             self.user = user
         else:
             self.user = None
+
+        contacts = frontmatter.get('contacts', GLOBAL_CONTACTS)
+        if contacts and isinstance(contacts, str):
+            full_path = os.path.join(get_mail_settings_dir(), contacts)
+            if os.path.exists(full_path):
+                self.contacts = full_path
+            else:
+                self.contacts = os.path.join(get_mail_settings_dir(), GLOBAL_CONTACTS)
+        else:
+            self.contacts = os.path.join(get_mail_settings_dir(), GLOBAL_CONTACTS)
 
         self.port = frontmatter.get('port', None)
         self.tls = frontmatter.get('tls', None)
