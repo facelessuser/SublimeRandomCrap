@@ -5,24 +5,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ToggleWhiteSpace - Sublime Random Crap Documentation</title>
+  <title>SublimeInfo - Sublime Random Crap Documentation</title>
   
 
-  <link rel="shortcut icon" href="../img/favicon.ico">
+  <link rel="shortcut icon" href="../../img/favicon.ico">
 
   
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
-  <link href="../css/theme_custom.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
 
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script>
-  <script src="../js/theme.js"></script>
-  <script src="../js/theme_custom.js"></script> 
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script src="../../js/theme.js"></script> 
 
   
 </head>
@@ -34,7 +32,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href=".." class="icon icon-home"> Sublime Random Crap Documentation</a>
+        <a href="../.." class="icon icon-home"> Sublime Random Crap Documentation</a>
         
       </div>
 
@@ -43,7 +41,7 @@
     
         
             <li class="toctree-l1 ">
-                <a class="" href="..">Home</a>
+                <a class="" href="../..">Home</a>
                 
             </li>
         
@@ -87,17 +85,12 @@
                     
                 </li>
             
-                <li class="toctree-l2 ">
-                    <a class="" href="../sublimeinfo/">SublimeInfo</a>
-                    
-                </li>
-            
                 <li class="toctree-l2 current">
-                    <a class="current" href="./">ToggleWhiteSpace</a>
+                    <a class="current" href="./">SublimeInfo</a>
                     
                         <ul>
                         
-                            <li class="toctree-l3"><a href="#togglewhitespace-stable">ToggleWhiteSpace (STABLE)</a></li>
+                            <li class="toctree-l3"><a href="#sublimeinfo-stable">SublimeInfo (STABLE)</a></li>
                             
                         
                             <li class="toctree-l3"><a href="#commands">Commands</a></li>
@@ -110,14 +103,11 @@
                     
                 </li>
             
-        
-
-    
-        
-            <li class="toctree-l1 ">
-                <a class="" href="../license/">License</a>
-                
-            </li>
+                <li class="toctree-l2 ">
+                    <a class="" href="../togglewhitespace/">ToggleWhiteSpace</a>
+                    
+                </li>
+            
         
 
     
@@ -132,7 +122,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="..">Sublime Random Crap Documentation</a>
+        <a href="../..">Sublime Random Crap Documentation</a>
       </nav>
 
       
@@ -140,13 +130,13 @@
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="..">Docs</a> &raquo;</li>
+    <li><a href="../..">Docs</a> &raquo;</li>
     
       
         <li>Plugins &raquo;</li>
       
     
-    <li>ToggleWhiteSpace</li>
+    <li>SublimeInfo</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -159,19 +149,20 @@
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="togglewhitespace-stable">ToggleWhiteSpace (STABLE)</h1>
-<p>Simple plugin that toggles showing white space.</p>
-<h1 id="commands">Commands</h1>
-<pre><code class="js">    //////////////////////////////////
-    // Toggle White Space Command
-    //////////////////////////////////
-    {
-        &quot;caption&quot;: &quot;Toggle White Space&quot;,
-        &quot;command&quot;: &quot;toggle_white_space&quot;
-    },
-</code></pre>
+              <h1 id="sublimeinfo-stable"><a name="user-content-sublimeinfo-stable" href="#sublimeinfo-stable" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SublimeInfo (STABLE)</h1>
+<p>Show info about the system and the current Sublime Text instance.</p>
+<h1 id="commands"><a name="user-content-commands" href="#commands" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Commands</h1>
+<div class="codehilite"><pre>    <span class="c1">//////////////////////////////////</span>
+    <span class="c1">// Info Commands</span>
+    <span class="c1">//////////////////////////////////</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;caption&quot;</span><span class="o">:</span> <span class="s2">&quot;Sublime Info&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;command&quot;</span><span class="o">:</span> <span class="s2">&quot;sublime_info&quot;</span>
+    <span class="p">},</span>
+</pre></div>
 
-<h1 id="license">License</h1>
+
+<h1 id="license"><a name="user-content-license" href="#license" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>License</h1>
 <p>Licensed under MIT<br />
 Copyright &copy; 2013-2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &ldquo;Software&rdquo;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
@@ -183,10 +174,10 @@ Copyright &copy; 2013-2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../license/" class="btn btn-neutral float-right" title="License"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../togglewhitespace/" class="btn btn-neutral float-right" title="ToggleWhiteSpace"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../sublimeinfo/" class="btn btn-neutral" title="SublimeInfo"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../sublimeapidoc/" class="btn btn-neutral" title="SublimeApiDoc"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -195,13 +186,15 @@ Copyright &copy; 2013-2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&
 
   <div role="contentinfo">
     <p>
-    <!-- Copyright etc -->
+    
+    Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a>
+    
     </p>
   </div>
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-	  
+    
         </div>
       </div>
 
@@ -214,14 +207,14 @@ Copyright &copy; 2013-2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&
         
             <a href="https://github.com/facelessuser/SublimeRandomCrap" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
         
-      <span><a href="../sublimeinfo/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      <span style="margin-left: 15px"><a href="../license/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../sublimeapidoc/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      <span style="margin-left: 15px"><a href="../togglewhitespace/" style="color: #fcfcfc">Next &raquo;</a></span>
     </span>
 </div>
 
 <!--
 MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-21 02:37:56.684264
+Docs Build Date : 2015-04-22 04:51:38.686106
 -->
 </body>
 </html>

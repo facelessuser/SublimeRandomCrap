@@ -8,21 +8,19 @@
   <title>Postmaster - Sublime Random Crap Documentation</title>
   
 
-  <link rel="shortcut icon" href="../img/favicon.ico">
+  <link rel="shortcut icon" href="../../img/favicon.ico">
 
   
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
-  <link href="../css/theme_custom.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
 
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script>
-  <script src="../js/theme.js"></script>
-  <script src="../js/theme_custom.js"></script> 
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script src="../../js/theme.js"></script> 
 
   
 </head>
@@ -34,7 +32,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href=".." class="icon icon-home"> Sublime Random Crap Documentation</a>
+        <a href="../.." class="icon icon-home"> Sublime Random Crap Documentation</a>
         
       </div>
 
@@ -43,7 +41,7 @@
     
         
             <li class="toctree-l1 ">
-                <a class="" href="..">Home</a>
+                <a class="" href="../..">Home</a>
                 
             </li>
         
@@ -116,14 +114,6 @@
         
 
     
-        
-            <li class="toctree-l1 ">
-                <a class="" href="../license/">License</a>
-                
-            </li>
-        
-
-    
 </ul>
 
       </div>
@@ -135,7 +125,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="..">Sublime Random Crap Documentation</a>
+        <a href="../..">Sublime Random Crap Documentation</a>
       </nav>
 
       
@@ -143,7 +133,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="..">Docs</a> &raquo;</li>
+    <li><a href="../..">Docs</a> &raquo;</li>
     
       
         <li>Plugins &raquo;</li>
@@ -162,16 +152,16 @@
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="postmaster-experimental">Postmaster (EXPERIMENTAL)</h1>
+              <h1 id="postmaster-experimental"><a name="user-content-postmaster-experimental" href="#postmaster-experimental" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Postmaster (EXPERIMENTAL)</h1>
 <p>Allows for sending emails via SMTP.  New emails are created via a command:</p>
 <p>Emails consist of the email content preceded by YAML frontmatter that defines<br />
 the subject, sender, recipients, attachments and SMTP servo info:</p>
-<pre><code>---
+<div class="codehilite"><pre>---
 subject: Sending a file
 from: Postmaster User &lt;postmasteruser@example.com&gt;
 to: Someone &lt;someone@example.com&gt;
-cc: ''
-bcc: ''
+cc: &#39;&#39;
+bcc: &#39;&#39;
 attachments:
 - /Somepath/somefile.txt
 smtp_server: smtp.gmail.com
@@ -180,25 +170,27 @@ tls: true
 ---
 Jeff,
 
-Hey what's up. Here's a file.
+Hey what&#39;s up. Here&#39;s a file.
 
 ~Postmaster
-</code></pre>
+</pre></div>
+
 
 <p>New emails can be configured with templates. If you have multiple templates, you will prompted for which template to use.</p>
-<p>Currently, postmaster will store all the email address you write to in <code class="inlinehilite language-text">User/Postmaster/Contacts.mail-contacts</code> (this will be optional in the future).  So when you are in the frontmatter, you can type <kbd>@</kbd> and then <kbd>Tab</kbd> and a panel will open from which you can pick a contact to insert.</p>
+<p>Currently, postmaster will store all the email address you write to in <code>User/Postmaster/Contacts.mail-contacts</code> (this will be optional in the future).  So when you are in the frontmatter, you can type <kbd>@</kbd> and then <kbd>Tab</kbd> and a panel will open from which you can pick a contact to insert.</p>
 <p>When sending emails, you will be prompted for your password.</p>
-<h1 id="configuring">Configuring</h1>
+<h1 id="configuring"><a name="user-content-configuring" href="#configuring" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Configuring</h1>
 <p>When creating an new email, postmaster looks in your Sublime User/Postmaster folder to find email templates.  These are used to create your new email<br />
 with its frontmatter and content:</p>
-<pre><code class="js">{
-    &quot;from&quot;: &quot;Postmaster User &lt;postmasteruser@example.com&gt;&quot;,
-    &quot;signature&quot;: &quot;~Postmaster&quot;,
-    &quot;smtp_server&quot;: &quot;smtp.gmail.com&quot;,
-    &quot;port&quot;: 587,
-    &quot;tls&quot;: true
-}
-</code></pre>
+<div class="codehilite"><pre><span class="p">{</span>
+    <span class="s2">&quot;from&quot;</span><span class="o">:</span> <span class="s2">&quot;Postmaster User &lt;postmasteruser@example.com&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;signature&quot;</span><span class="o">:</span> <span class="s2">&quot;~Postmaster&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;smtp_server&quot;</span><span class="o">:</span> <span class="s2">&quot;smtp.gmail.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;port&quot;</span><span class="o">:</span> <span class="mi">587</span><span class="p">,</span>
+    <span class="s2">&quot;tls&quot;</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+
 
 <p>Available template variables are:</p>
 <table>
@@ -218,22 +210,22 @@ with its frontmatter and content:</p>
 <tr>
 <td>from</td>
 <td>string</td>
-<td>Sender in the form <code class="inlinehilite language-text">me@example.com</code> or <code class="inlinehilite language-text">My Name &lt;me@example.com&gt;</code>.</td>
+<td>Sender in the form <code>me@example.com</code> or <code>My Name &lt;me@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>to</td>
 <td>string or array of strings</td>
-<td>Recipient in the form <code class="inlinehilite language-text">to@example.com</code> or <code class="inlinehilite language-text">Their Name &lt;to@example.com&gt;</code>.</td>
+<td>Recipient in the form <code>to@example.com</code> or <code>Their Name &lt;to@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>cc</td>
 <td>string or array of strings</td>
-<td>Carbon copy recipient in the form <code class="inlinehilite language-text">to@example.com</code> or <code class="inlinehilite language-text">Their Name &lt;to@example.com&gt;</code>.</td>
+<td>Carbon copy recipient in the form <code>to@example.com</code> or <code>Their Name &lt;to@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>bcc</td>
 <td>string or array of strings</td>
-<td>Blind carbon copy recipient in the form <code class="inlinehilite language-text">to@example.com</code> or <code class="inlinehilite language-text">Their Name &lt;to@example.com&gt;</code>.</td>
+<td>Blind carbon copy recipient in the form <code>to@example.com</code> or <code>Their Name &lt;to@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>attachements</td>
@@ -263,30 +255,32 @@ with its frontmatter and content:</p>
 <tr>
 <td>user</td>
 <td>string</td>
-<td>Optional user name for SMTP server. By default, your sender email will be used <code class="inlinehilite language-text">me@example.com</code>.</td>
+<td>Optional user name for SMTP server. By default, your sender email will be used <code>me@example.com</code>.</td>
 </tr>
 </tbody>
 </table>
-<h1 id="commands">Commands</h1>
+<h1 id="commands"><a name="user-content-commands" href="#commands" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Commands</h1>
 <p>Just add the following commands to create and send emails:</p>
-<pre><code class="js">    //////////////////////////////////
-    // Postmaster
-    //////////////////////////////////
-    {
-        &quot;caption&quot;: &quot;Postmaster: Send Mail&quot;,
-        &quot;command&quot;: &quot;postmaster_send&quot;
-    },
-    {
-        &quot;caption&quot;: &quot;Postmaster: New Mail&quot;,
-        &quot;command&quot;: &quot;postmaster_new&quot;
-    },
-</code></pre>
+<div class="codehilite"><pre>    <span class="c1">//////////////////////////////////</span>
+    <span class="c1">// Postmaster</span>
+    <span class="c1">//////////////////////////////////</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;caption&quot;</span><span class="o">:</span> <span class="s2">&quot;Postmaster: Send Mail&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;command&quot;</span><span class="o">:</span> <span class="s2">&quot;postmaster_send&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;caption&quot;</span><span class="o">:</span> <span class="s2">&quot;Postmaster: New Mail&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;command&quot;</span><span class="o">:</span> <span class="s2">&quot;postmaster_new&quot;</span>
+    <span class="p">},</span>
+</pre></div>
+
 
 <p>If you want to right click an email in a view and send an email to it, add the following to your context menu:</p>
-<pre><code class="js">    {&quot;command&quot;: &quot;postmaster_mail_to&quot;}
-</code></pre>
+<div class="codehilite"><pre>    <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="o">:</span> <span class="s2">&quot;postmaster_mail_to&quot;</span><span class="p">}</span>
+</pre></div>
 
-<h1 id="license">License</h1>
+
+<h1 id="license"><a name="user-content-license" href="#license" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>License</h1>
 <p>Licensed under MIT<br />
 Copyright &copy; 2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &ldquo;Software&rdquo;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
@@ -310,13 +304,15 @@ Copyright &copy; 2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;
 
   <div role="contentinfo">
     <p>
-    <!-- Copyright etc -->
+    
+    Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a>
+    
     </p>
   </div>
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-	  
+    
         </div>
       </div>
 
@@ -336,7 +332,7 @@ Copyright &copy; 2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;
 
 <!--
 MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-21 02:37:56.628534
+Docs Build Date : 2015-04-22 04:51:38.546517
 -->
 </body>
 </html>
