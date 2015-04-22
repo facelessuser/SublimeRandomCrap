@@ -4,27 +4,24 @@ site_description: Random plugins and scripts for Sublime Text.
 copyright: Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a>
 pages:
 - ['index.md', 'Home']
-- ['asciitable.md', 'Plugins', 'AsciiTable']
-- ['grephere.md', 'Plugins', 'GrepHere']
-- ['highlightword.md', 'Plugins', 'HighlightWord']
-- ['insertdate.md', 'Plugins', 'InsertDate']
-- ['postmaster.md', 'Plugins', 'Postmaster']
-- ['shortcutplus.md', 'Plugins', 'ShortcutPlus']
-- ['sublimeapidoc.md', 'Plugins', 'SublimeApiDoc']
-- ['sublimeinfo.md', 'Plugins', 'SublimeInfo']
-- ['togglewhitespace.md', 'Plugins', 'ToggleWhiteSpace']
-- ['license.md', 'License']
+- ['plugins/asciitable.md', 'Plugins', 'AsciiTable']
+- ['plugins/grephere.md', 'Plugins', 'GrepHere']
+- ['plugins/highlightword.md', 'Plugins', 'HighlightWord']
+- ['plugins/insertdate.md', 'Plugins', 'InsertDate']
+- ['plugins/postmaster.md', 'Plugins', 'Postmaster']
+- ['plugins/shortcutplus.md', 'Plugins', 'ShortcutPlus']
+- ['plugins/sublimeapidoc.md', 'Plugins', 'SublimeApiDoc']
+- ['plugins/sublimeinfo.md', 'Plugins', 'SublimeInfo']
+- ['plugins/togglewhitespace.md', 'Plugins', 'ToggleWhiteSpace']
 theme: readthedocs
-extra_javascript:
-- js/theme_custom.js
-extra_css:
-- css/theme_custom.css
+theme_dir: doc_theme
 markdown_extensions:
 - markdown.extensions.extra
 - markdown.extensions.admonition
 - markdown.extensions.smarty
 - markdown.extensions.nl2br
-- pymdownx.inlinehilite(use_pygments=False)
+- markdown.extensions.codehilite
+- pymdownx.inlinehilite
 - pymdownx.magiclink
 - pymdownx.betterem
 - pymdownx.tilde
@@ -34,3 +31,4 @@ markdown_extensions:
 - pymdownx.tasklist
 - pymdownx.superfences
 - pymdownx.progressbar
+- pymdownx.headeranchor
