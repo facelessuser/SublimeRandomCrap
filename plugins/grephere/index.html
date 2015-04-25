@@ -63,6 +63,9 @@
                             <li class="toctree-l3"><a href="#grephere-stable">GrepHere (STABLE)</a></li>
                             
                         
+                            <li class="toctree-l3"><a href="#overview">Overview</a></li>
+                            
+                        
                             <li class="toctree-l3"><a href="#configuring">Configuring</a></li>
                             
                         
@@ -151,7 +154,10 @@
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="grephere-stable"><a name="user-content-grephere-stable" href="#grephere-stable" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>GrepHere (STABLE)</h1>
+              <h1 class="doctitle" id="grephere-stable"><a name="user-content-grephere-stable" href="#grephere-stable" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>GrepHere (STABLE)</h1>
+<p class="doctitle-info">Launch your favorite grep tool from Sublime text.<br /></p>
+<hr />
+<h1 id="overview"><a name="user-content-overview" href="#overview" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Overview</h1>
 <p>Sends a sidebar path or current view path to your favorite grep program.</p>
 <h1 id="configuring"><a name="user-content-configuring" href="#configuring" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Configuring</h1>
 <p>Multiple entries can be defined and you can limit them to a specific platform:</p>
@@ -175,7 +181,7 @@
 </pre></div>
 
 
-<p>Keep in mind that on windows, passing quoted paths to some applications in Python can turn out poorly (it all depends on the application receiving the paths). For example, I use <a href="http://stefanstools.sourceforge.net/grepWin.html">grepWin</a> on windowns, and passing quoted paths to it via Python just doesn&rsquo;t work well due to the way it parses its command line arguments.  So in this case, using a batch file is probably preferrable as shown below:</p>
+<p>Keep in mind that on windows, passing quoted paths to some applications in Python can turn out poorly (it all depends on the application receiving the paths). For example, I use <a href="http://stefanstools.sourceforge.net/grepWin.html">grepWin</a> on windows, and passing quoted paths to it via Python just doesn&rsquo;t work well due to the way it parses its command line arguments.  So in this case, using a batch file is probably preferable as shown below:</p>
 <p>Batch file:</p>
 <div class="codehilite"><pre><span class="s2">&quot;C:\Program Files\grepWin\grepWin.exe&quot;</span> <span class="n">/searchpath:%1</span>
 </pre></div>
@@ -256,8 +262,8 @@ Copyright &copy; 2013-2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&
 </div>
 
 <!--
-MkDocs version  : 0.12.1
-Docs Build Date : 2015-04-23 02:19:31.008908
+MkDocs version  : 0.12.2
+Docs Build Date : 2015-04-25 04:14:29.305872
 -->
 </body>
 </html>
