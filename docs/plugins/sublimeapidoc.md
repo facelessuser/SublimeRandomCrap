@@ -1,5 +1,8 @@
-# SublimeApiDoc (STABLE)
-Show Sublime's API Doc webpage:
+# SublimeApiDoc (STABLE) {: .doctitle}
+Show Sublime's API Doc website.
+{: .doctitle-info}
+
+---
 
 # Commands
 ```js

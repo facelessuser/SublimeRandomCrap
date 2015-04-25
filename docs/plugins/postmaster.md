@@ -1,4 +1,9 @@
-# Postmaster (EXPERIMENTAL)
+# Postmaster (EXPERIMENTAL) {: .doctitle}
+Send emails from Sublime Text.
+{: .doctitle-info}
+
+---
+
 Allows for sending emails via SMTP.  New emails are created via a command:
 
 Emails consist of the email content preceded by YAML frontmatter that defines

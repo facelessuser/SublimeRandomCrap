@@ -1,5 +1,8 @@
-# ToggleWhiteSpace (STABLE)
-Simple plugin that toggles showing white space.
+# ToggleWhiteSpace (STABLE) {: .doctitle}
+Toggle whitespace in Sublime Text.
+{: .doctitle-info}
+
+---
 
 # Commands
 ```js

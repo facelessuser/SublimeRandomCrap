@@ -1,4 +1,9 @@
-# ShortcutPlus (STABLE)
+# ShortcutPlus (STABLE) {: .doctitle}
+Shortcut profile manager for Sublime Text.
+{: .doctitle-info}
+
+---
+
 Plugin for creating shortcuts that are context sensitive to profiles, platforms, OS, etc.
 
 # Commands

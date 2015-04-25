@@ -1,4 +1,10 @@
-# InsertDate (STABLE)
+# InsertDate (STABLE) {: .doctitle}
+Insert the date in Sublime Text.
+{: .doctitle-info}
+
+---
+
+# Overview
 Very simple plugin that inserts the date.  You can create multiple variants of the commands
 in the command palette to format the date in different ways via the `format` and `utc` option.
 

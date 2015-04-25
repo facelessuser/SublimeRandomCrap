@@ -1,4 +1,10 @@
-# GrepHere (STABLE)
+# GrepHere (STABLE) {: .doctitle}
+Launch your favorite grep tool from Sublime text.
+{: .doctitle-info}
+
+---
+
+# Overview
 Sends a sidebar path or current view path to your favorite grep program.
 
 # Configuring
@@ -24,7 +30,7 @@ Multiple entries can be defined and you can limit them to a specific platform:
     }
 ```
 
-Keep in mind that on windows, passing quoted paths to some applications in Python can turn out poorly (it all depends on the application receiving the paths). For example, I use [grepWin](http://stefanstools.sourceforge.net/grepWin.html) on windowns, and passing quoted paths to it via Python just doesn't work well due to the way it parses its command line arguments.  So in this case, using a batch file is probably preferrable as shown below:
+Keep in mind that on windows, passing quoted paths to some applications in Python can turn out poorly (it all depends on the application receiving the paths). For example, I use [grepWin](http://stefanstools.sourceforge.net/grepWin.html) on windows, and passing quoted paths to it via Python just doesn't work well due to the way it parses its command line arguments.  So in this case, using a batch file is probably preferable as shown below:
 
 Batch file:
 

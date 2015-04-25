@@ -1,4 +1,10 @@
-# SublimeRandomCrap
+# SublimeRandomCrap {: .doctitle}
+A random collection of Sublime Text plugins.
+{: .doctitle-info}
+
+---
+
+# Overview
 Sublime random crap is a collection of Sublime Text plugins that I either do no want to publicly support or that are in an experimental state.
 
 # Plugins

@@ -1,5 +1,8 @@
-# SublimeInfo (STABLE)
-Show info about the system and the current Sublime Text instance.
+# SublimeInfo (STABLE) {: .doctitle}
+Show basic system info in Sublime Text.
+{: .doctitle-info}
+
+---
 
 # Commands
 ```js

@@ -1,4 +1,10 @@
-# AsciiTable (STABLE)
+# AsciiTable (STABLE) {: .doctitle}
+Reference ASCII table for Sublime Text.
+{: .doctitle-info}
+
+---
+
+# Overview
 Displays an extended ASCII table in Sublime for reference.  Allows searching the table for specific info.
 
 # Commands

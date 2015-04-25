@@ -1,5 +1,11 @@
-# HighlightWord (STABLE)
-Originally a mod of ajpalkovic's plugin https://github.com/ajpalkovic, though it doesn't appear to be available anymore.
+# HighlightWord (STABLE) {: .doctitle}
+Highlight selected instances of words.
+{: .doctitle-info}
+
+---
+
+# Overview
+Originally a mod of [ajpalkovic's plugin](https://github.com/ajpalkovic), though it doesn't appear to be available anymore.
 
 
 # Configuring
