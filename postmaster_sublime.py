@@ -132,27 +132,16 @@ def get_mail_settings_dir():
     return os.path.join(sublime.packages_path(), "User", 'Postmaster')
 
 
-def yaml_frontmatter_dump(obj):
-    """
-    Normal we would approach an ordered dict like this:
-        yaml.add_representer(
-            OrderedDict,
-            lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
-        )
-    But because we are sharing PyYaml across plugins, we cannot guaruntee this will stick;
-    someone may override this behavior.
-    Instead we will just iterate the dictionary treating each key as a separate dict,
-    and output it to the buffer.
-    """
-    yaml_bfr = []
-    for k, v in obj.items():
-        yaml_bfr.append(
-            yaml.dump(
-                {k: v}, width=None, indent=4,
-                allow_unicode=True, default_flow_style=False
-            )
-        )
-    return ''.join(yaml_bfr)
+def yaml_dump(data, stream=None, Dumper=yaml.Dumper, object_pairs_hook=OrderedDict, **kwargs):
+    class OrderedDumper(Dumper):
+        pass
+
+    OrderedDumper.add_representer(
+        object_pairs_hook,
+        lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
+    )
+
+    return yaml.dump(data, stream, OrderedDumper, **kwargs)
 
 
 def get_mail_contacts(contact_file_path):
@@ -182,8 +171,9 @@ def save_contacts(contacts, contact_file_path):
     try:
         with codecs.open(contact_file, 'w', encoding='utf-8') as f:
             f.write(
-                yaml.dump(
-                    contacts, width=None, indent=4,
+                yaml_dump(
+                    contacts,
+                    width=None, indent=4,
                     allow_unicode=True, default_flow_style=False
                 )
             )
@@ -362,7 +352,11 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
         self.view.insert(
             edit, 0,
             NEW_MAIL % {
-                "header": yaml_frontmatter_dump(self.template_variables),
+                "header": yaml_dump(
+                    self.template_variables,
+                    width=None, indent=4,
+                    allow_unicode=True, default_flow_style=False
+                ),
                 "body": self.body,
                 "signature": self.signature
             }
