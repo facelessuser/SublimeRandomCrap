@@ -1,5 +1,5 @@
-"""
-GrepHere Sublime Plugin
+r"""
+GrepHere Sublime Plugin.
 
 Sends a sidebar path or current view path to your favorite grep gui program.
 Multiple entries can be defined and you can limit them to a specific platform:
@@ -44,11 +44,19 @@ You can then define actual commands for the context menu or sidebar context menu
 Licensed under MIT
 Copyright (c) 2013-2015 Isaac Muse <isaacmuse@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions
+of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 """
 import sublime_plugin
 import sublime
@@ -64,13 +72,20 @@ CALL_FAILURE = "SubProcess Error:\n%s"
 
 
 class GrepHereBase(object):
+
+    """Grep Base class."""
+
     def fail(self, msg, alert=True):
+        """Display failure."""
+
         if alert:
             sublime.error_message(msg)
         else:
             print("GrepHere: %s" % msg)
 
     def call_grep(self, target, key):
+        """Call grep program."""
+
         call = None
         setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
         obj = setting.get(key, None)
@@ -88,18 +103,27 @@ class GrepHereBase(object):
                     subprocess.Popen(call, startupinfo=startupinfo)
                 else:
                     subprocess.Popen(call)
-            except:
+            except Exception:
                 self.fail(CALL_FAILURE % str(traceback.format_exc()))
 
 
 class GrepHere(GrepHereBase):
+
+    """Grep Here."""
+
     def is_text_cmd(self):
+        """Detect if TextCommand."""
+
         return isinstance(self, sublime_plugin.TextCommand)
 
     def is_win_cmd(self):
+        """Detect if WindowCommand."""
+
         return isinstance(self, sublime_plugin.WindowCommand)
 
     def get_target(self, paths=[]):
+        """Get the target."""
+
         target = None
         fail_msg = NO_GREP
         if len(paths):
@@ -115,6 +139,8 @@ class GrepHere(GrepHereBase):
         return target
 
     def grep(self, paths=[], key=None):
+        """Call grep program."""
+
         if key is None:
             return
         target = self.get_target(paths)
@@ -125,10 +151,17 @@ class GrepHere(GrepHereBase):
 
 
 class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
+
+    """Grep the file."""
+
     def run(self, edit, key):
+        """Run the command."""
+
         self.grep(paths=[], key=key)
 
     def description(self, key=None):
+        """Get command description."""
+
         caption = None
         if key is not None:
             setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
@@ -138,6 +171,8 @@ class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
         return caption
 
     def is_enabled(self, key=None):
+        """Check if command is enabled."""
+
         enabled = False
         if key is not None:
             setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
@@ -153,10 +188,17 @@ class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
 
 
 class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
+
+    """Grep the folder."""
+
     def run(self, paths=[], key=None):
+        """Run the command."""
+
         self.grep(paths=paths, key=key)
 
     def description(self, paths=[], key=None):
+        """Get command description."""
+
         caption = None
         if key is not None:
             setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
@@ -166,6 +208,8 @@ class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
         return caption
 
     def is_enabled(self, paths=[], key=None):
+        """Check if command is enabled."""
+
         enabled = False
         if key is not None:
             setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})

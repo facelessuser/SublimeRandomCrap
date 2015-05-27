@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 """
-ASCII Table Sublime Plugin
+ASCII Table Sublime Plugin.
 
 Display an extended ascii table in Sublime for reference.  Allows searching the table for specific info.
 
@@ -327,9 +328,7 @@ ASCII_LINE = "%-3d    0x%02x    0o%03o    %-5s%s    %-8s%s"
 
 
 def display_ascii(code):
-    """
-    Format and return ascii line
-    """
+    """Format and return ascii line."""
 
     entry = ASCII_INFO[code]
     char = entry.get("char", chr(code))
@@ -375,7 +374,8 @@ def get_ascii_info(code, info_type):
 
 class AsciiTableSearchCommand(sublime_plugin.TextCommand):
     def run(self, edit, info_type):
-        """ Find or launch an ascii table view and pop and then call actual search command """
+        """Find or launch an ascii table view and pop and then call actual search command."""
+
         if not self.view.settings().get("ascii_table_view", False):
             window = self.view.window()
             if window is not None:
@@ -390,7 +390,8 @@ class AsciiTableSearchCommand(sublime_plugin.TextCommand):
 
 class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
     def run(self, edit, info_type):
-        """ Show the palette search options based on info_type """
+        """Show the palette search options based on info_type."""
+
         info_map = {
             "dec": DEC,
             "hex": HEX,
@@ -406,7 +407,8 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
                 self.view.window().show_quick_panel(self.items, self.show)
 
     def show(self, value):
-        """ Focus the search result """
+        """Focus the search result."""
+
         if value != -1:
             pt = self.view.text_point(value + 1, 0)
             self.view.sel().clear()
@@ -414,19 +416,22 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
             self.view.show_at_center(pt)
 
     def is_enabled(self, info_type):
-        """ Enable only if we are in an ascii table view """
+        """Enable only if we are in an ascii table view."""
+
         return self.view.settings().get("ascii_table_view", False)
 
 
 class AsciiTableWriteCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        """ Insert table in ascii view """
+        """Insert table in ascii view."""
+
         self.view.insert(edit, 0, ASCII_HEADER + '\n'.join([display_ascii(x) for x in range(0, 256) if x in ASCII_INFO]))
 
 
 class AsciiTableCommand(sublime_plugin.WindowCommand):
     def run(self):
-        """ Show the ascii table.  Only generate if one is not available. """
+        """Show the ascii table.  Only generate if one is not available."""
+
         for view in self.window.views():
             if view.settings().get("ascii_table_view", False):
                 self.window.focus_view(view)

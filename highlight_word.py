@@ -43,7 +43,7 @@ import threading
 KEY = "HighlightCurrentWord"
 SCOPE = 'comment'
 
-reload = False
+reload_flag = False
 highlight_word = None
 settings = None
 
@@ -52,13 +52,13 @@ if 'hw_thread' not in globals():
 
 
 def debug(s):
+    """Debug logging."""
+
     print("HighlightWord: " + s)
 
 
 def highlight_style(option):
-    """
-    Configure style of region based on option
-    """
+    """Configure style of region based on option."""
 
     style = 0
     if option == "outline":
@@ -83,7 +83,8 @@ def highlight_style(option):
 
 
 def clear_regions(view=None):
-    """ Clear regions """
+    """Clear regions."""
+
     if view is None:
         win = sublime.active_window()
         if win is not None:
@@ -97,7 +98,7 @@ def clear_regions(view=None):
 
 
 def underline(regions):
-    """ Convert to empty regions """
+    """Convert to empty regions."""
 
     new_regions = []
     for region in regions:
@@ -114,8 +115,12 @@ def underline(regions):
 # Each of the event handlers simply marks the time of the most recent
 # event and a timer periodically executes do_search
 class HighlightWord(object):
+
+    """HighlightWord."""
+
     def __init__(self):
-        """ Setup """
+        """Setup."""
+
         self.previous_region = sublime.Region(0, 0)
         self.theme_selectors = tuple(settings.get('highlight_scopes', [SCOPE]))
         self.word_select = settings.get('require_word_select', False)
@@ -126,13 +131,14 @@ class HighlightWord(object):
         self.sel_threshold = int(settings.get('selection_threshold', -1))
 
     def do_search(self, view, force=True):
-        """ Perform the search for the highlighted word """
-        global reload
+        """Perform the search for the highlighted word."""
+
+        global reload_flag
         if view is None:
             return
 
-        if reload:
-            reload = False
+        if reload_flag:
+            reload_flag = False
             self.theme_selectors = tuple(settings.get('highlight_scopes', [SCOPE]))
             self.max_selections = len(self.theme_selectors)
             self.word_select = settings.get('require_word_select', False)
@@ -210,7 +216,8 @@ class HighlightWord(object):
             count += 1
 
     def highlight_word(self, view, key, selector, current_region, current_word):
-        """ Find and highlight word """
+        """Find and highlight word."""
+
         size = view.size() - 1
         search_start = max(0, self.previous_region.begin() - len(current_word))
         search_end = min(size, self.previous_region.end() + len(current_word))
@@ -260,8 +267,12 @@ class HighlightWord(object):
 
 
 class HighlightWordListenerCommand(sublime_plugin.EventListener):
+
+    """Handle listener events."""
+
     def on_selection_modified(self, view):
-        """ Handle selection events for highlighting """
+        """Handle selection events for highlighting."""
+
         if hw_thread.ignore_all:
             return
         now = time()
@@ -270,15 +281,16 @@ class HighlightWordListenerCommand(sublime_plugin.EventListener):
 
 
 class HwThread(threading.Thread):
-    """ Load up defaults """
+
+    """Load up defaults."""
 
     def __init__(self):
-        """ Setup the thread """
+        """Setup the thread."""
         self.reset()
         threading.Thread.__init__(self)
 
     def reset(self):
-        """ Reset the thread variables """
+        """Reset the thread variables."""
         self.wait_time = 0.12
         self.time = time()
         self.modified = False
@@ -286,7 +298,8 @@ class HwThread(threading.Thread):
         self.abort = False
 
     def payload(self, force=False):
-        """ Code to run """
+        """Code to run."""
+
         self.modified = False
         # Ignore selection and edit events inside the routine
         self.ignore_all = True
@@ -296,33 +309,38 @@ class HwThread(threading.Thread):
         self.time = time()
 
     def kill(self):
-        """ Kill thread """
+        """Kill thread."""
+
         self.abort = True
         while self.is_alive():
             pass
         self.reset()
 
     def run(self):
-        """ Thread loop """
+        """Thread loop."""
+
         while not self.abort:
             if self.modified is True and time() - self.time > self.wait_time:
                 sublime.set_timeout(lambda: self.payload(force=True), 0)
             elif not self.modified:
-                sublime.set_timeout(lambda: self.payload(), 0)
+                sublime.set_timeout(self.payload, 0)
             sleep(0.5)
 
 
 def set_reload():
-    global reload
+    """Set reload events."""
+
+    global reload_flag
     global settings
-    reload = True
+    reload_flag = True
     settings = sublime.load_settings("highlight_word.sublime-settings")
     settings.clear_on_change('reload')
     settings.add_on_change('reload', set_reload)
 
 
 def plugin_loaded():
-    """ Setup plugin """
+    """Setup plugin."""
+
     global highlight_word
     global hw_thread
     set_reload()
@@ -335,6 +353,7 @@ def plugin_loaded():
 
 
 def plugin_unloaded():
-    """ Kill thread """
+    """Kill thread."""
+
     hw_thread.kill()
     clear_regions()
