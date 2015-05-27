@@ -4,11 +4,19 @@ Postmaster
 Licensed under MIT
 Copyright (c) 2015 Isaac Muse <isaacmuse@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions
+of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 """
 import requests
 import yaml
@@ -38,12 +46,14 @@ RE_CONTACT = re.compile(
 
 
 def is_contact(contact):
-    """ Is string a contact? """
+    """Is string a contact?."""
+
     return RE_CONTACT.match(contact) is not None
 
 
 def parse_contact(contact):
-    """ Parse contact """
+    """Parse contact."""
+
     m = RE_CONTACT.match(contact)
     contact_record = None
     if m:
@@ -55,7 +65,8 @@ def parse_contact(contact):
 
 
 def convert_file_size(from_size, to_size, value):
-    """ Convert byte sizes """
+    """Convert byte sizes."""
+
     file_sizes = ('bytes', 'kilo', 'mega', 'giga', 'tera', 'peta')
     if from_size != 'bytes':
         value = value * (1024.0 ** file_sizes.index(from_size))
@@ -63,7 +74,8 @@ def convert_file_size(from_size, to_size, value):
 
 
 def strip_frontmatter(string):
-    """ Get frontmatter from string """
+    """Get frontmatter from string."""
+
     frontmatter = {}
 
     if string.startswith("---"):
@@ -71,10 +83,10 @@ def strip_frontmatter(string):
         if m:
             try:
                 frontmatter = json.loads(m.group(2))
-            except:
+            except Exception:
                 try:
                     frontmatter = yaml.load(m.group(2))
-                except:
+                except Exception:
                     pass
             string = string[m.end(1):]
 
@@ -82,12 +94,19 @@ def strip_frontmatter(string):
 
 
 class PostmasterException(Exception):
+
+    """Postmaster exception."""
+
     pass
 
 
 class SendMailGunApi(object):
+
+    """Send mail via mail gun API."""
+
     def __init__(self):
-        """ Initialize mail variables """
+        """Initialize mail variables."""
+
         self.sender = None
         self.reply = None
         self.to = []
@@ -98,17 +117,18 @@ class SendMailGunApi(object):
         self.attachments = []
 
     def get_email_size(self):
-        """ Get size of email in bytes """
+        """Get size of email in bytes."""
+
         size = len(self.text.encode('utf-8'))
         for attachment in self.attachments:
             try:
                 size += os.path.getsize(attachment)
-            except:
+            except Exception:
                 pass
         return size
 
     def send(self, api_url, api_key):
-        """ Send email via MailGun's API """
+        """Send email via MailGun's API."""
 
         if convert_file_size('bytes', 'mega', self.get_email_size()) > 25:
             raise PostmasterException('Message exceeds 25MB!')
@@ -119,7 +139,7 @@ class SendMailGunApi(object):
             try:
                 f = ("attachment", open(attachment))
                 files.append(f)
-            except:
+            except Exception:
                 pass
 
         # Prepare data structure
@@ -145,7 +165,8 @@ class SendMailGunApi(object):
         return str(response)
 
     def set_sender(self, sender):
-        """ Set sender """
+        """Set sender."""
+
         if sender and isinstance(sender, str):
             contact = parse_contact(sender)
             if contact is not None:
@@ -153,7 +174,8 @@ class SendMailGunApi(object):
                 self.reply = contact[0]
 
     def set_recipients(self, recipient_type, recipients):
-        """ Set recipient """
+        """Set recipient."""
+
         to = getattr(self, recipient_type)
         if recipients:
             if isinstance(recipients, str) and is_contact(recipients):
@@ -164,11 +186,13 @@ class SendMailGunApi(object):
                         to.append(recipient)
 
     def set_subject(self, subject):
-        """ Set subject """
+        """Set subject."""
+
         self.subject = subject if subject and isinstance(subject, str) else "No Subject"
 
     def set_attachments(self, attachments):
-        """ Populate attachment list """
+        """Populate attachment list."""
+
         if attachments:
             if isinstance(attachments, str):
                 if os.path.exists(attachments):
@@ -179,11 +203,13 @@ class SendMailGunApi(object):
                         self.attachments.append(attachment)
 
     def set_body(self, body):
-        """ Set body """
+        """Set body."""
+
         self.text = body if body else ''
 
-    def sendmail(self, string):
-        """ Parse mail buffer and send it """
+    def sendmail(self, string, api_url, api_key):
+        """Parse mail buffer and send it."""
+
         response = None
 
         #  Strip mail frontmatter from mail text
@@ -199,7 +225,7 @@ class SendMailGunApi(object):
         # Send message if we have enough info
         if self.sender and self.to and (self.text or len(self.attachments)):
             # If text is empty, make sure it is at least a string.
-            response = self.send()
+            response = self.send(api_url, api_key)
         else:
             raise PostmasterException('Message configuration did not meet the minimum requirements!')
 
@@ -207,8 +233,12 @@ class SendMailGunApi(object):
 
 
 class SendSmtp(object):
+
+    """Send SMTP email."""
+
     def __init__(self, smtp_server, port, tls=True):
-        """ Initialize mail variables """
+        """Initialize mail variables."""
+
         # Server settings
         self.server = smtp_server
         self.port = port
@@ -225,17 +255,18 @@ class SendSmtp(object):
         self.attachments = []
 
     def get_email_size(self):
-        """ Get size of email in bytes """
+        """Get size of email in bytes."""
+
         size = len(self.text.encode('utf-8'))
         for attachment in self.attachments:
             try:
                 size += os.path.getsize(attachment)
-            except:
+            except Exception:
                 pass
         return size
 
     def send(self, auth, user=None):
-        """ Send email via smtp """
+        """Send email via smtp."""
 
         if convert_file_size('bytes', 'mega', self.get_email_size()) > 25:
             raise PostmasterException('Message exceeds 25MB!')
@@ -259,7 +290,7 @@ class SendSmtp(object):
                     encoders.encode_base64(part)
                     part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(a))
                     msg.attach(part)
-            except:
+            except Exception:
                 pass
 
         msg.attach(MIMEText(self.text))
@@ -275,14 +306,15 @@ class SendSmtp(object):
         try:
             server.sendmail(self.reply, self.to + self.cc + self.bcc, msg.as_string())
             server.quit()
-        except:
+        except Exception:
             server.quit()
             raise PostmasterException('SMTP mail sending failed!')
 
         return str('<Response [200]>')
 
     def set_sender(self, sender):
-        """ Set sender """
+        """Set sender."""
+
         if sender and isinstance(sender, str):
             contact = parse_contact(sender)
             if contact is not None:
@@ -290,7 +322,8 @@ class SendSmtp(object):
                 self.reply = contact[0]
 
     def set_recipients(self, recipient_type, recipients):
-        """ Set recipient """
+        """Set recipient."""
+
         to = getattr(self, recipient_type)
         if recipients:
             if isinstance(recipients, str) and is_contact(recipients):
@@ -301,11 +334,13 @@ class SendSmtp(object):
                         to.append(recipient)
 
     def set_subject(self, subject):
-        """ Set subject """
+        """Set subject."""
+
         self.subject = subject if subject and isinstance(subject, str) else "No Subject"
 
     def set_attachments(self, attachments):
-        """ Populate attachment list """
+        """Populate attachment list."""
+
         if attachments:
             if isinstance(attachments, str):
                 if os.path.exists(attachments):
@@ -316,11 +351,13 @@ class SendSmtp(object):
                         self.attachments.append(attachment)
 
     def set_body(self, body):
-        """ Set body """
+        """Set body."""
+
         self.text = body if body else ''
 
     def sendmail(self, string, auth, user=None):
-        """ Parse mail buffer and send it """
+        """Parse mail buffer and send it."""
+
         response = None
 
         #  Strip mail frontmatter from mail text

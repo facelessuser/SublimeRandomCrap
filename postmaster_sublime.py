@@ -27,8 +27,8 @@ Hey what's up. Here's a file.
 ~Postmaster
 ```
 
-When creating an new email, postmaster looks in your Sublime User/Postmaster folder to find email templates.  These are used to create your new email
-with its frontmatter and content:
+When creating an new email, postmaster looks in your Sublime User/Postmaster folder to find email templates.
+These are used to create your new email with its frontmatter and content:
 
 ```js
 {
@@ -42,19 +42,22 @@ with its frontmatter and content:
 
 Available template variables are:
 
-| Name         | Type                       | Description                                                                                     |
-|--------------|----------------------------|-------------------------------------------------------------------------------------------------|
-| subject      | string                     | Email subject.                                                                                  |
-| from         | string                     | Sender in the form `me@example.com` or `My Name <me@example.com>`.                              |
-| to           | string or array of strings | Recipient in the form `to@example.com` or `Their Name <to@example.com>`.                        |
-| cc           | string or array of strings | Carbon copy recipient in the form `to@example.com` or `Their Name <to@example.com>`.            |
-| bcc          | string or array of strings | Blind carbon copy recipient in the form `to@example.com` or `Their Name <to@example.com>`.      |
-| attachements | string or array of strings | Full file path for the attachment.                                                              |
-| body         | string                     | Optional default body if desired.                                                               |
-| smtp_server  | string                     | SMTP server used to send email.                                                                 |
-| port         | int                        | SMTP server port used to send email.                                                            |
-| tls          | bool                       | Should use tls via STARTTLS.                                                                    |
-| user         | string                     | Optional user name for SMTP server. By your default sender email will be used `me@example.com`. |
+| Name         | Type                       | Description                                                             |
+|--------------|----------------------------|-------------------------------------------------------------------------|
+| subject      | string                     | Email subject.                                                          |
+| from         | string                     | Sender in the form `me@example.com` or `My Name <me@example.com>`.      |
+| to           | string or array of strings | Recipient in the form `to@example.com` or `Their Name <to@example.com>`.|
+| cc           | string or array of strings | Carbon copy recipient in the form `to@example.com` or `Their Name       |
+|              |                            | <to@example.com>`.                                                      |
+| bcc          | string or array of strings | Blind carbon copy recipient in the form `to@example.com` or `Their Name |
+|              |                            | <to@example.com>`.                                                      |
+| attachements | string or array of strings | Full file path for the attachment.                                      |
+| body         | string                     | Optional default body if desired.                                       |
+| smtp_server  | string                     | SMTP server used to send email.                                         |
+| port         | int                        | SMTP server port used to send email.                                    |
+| tls          | bool                       | Should use tls via STARTTLS.                                            |
+| user         | string                     | Optional user name for SMTP server. By your default sender email will be|
+|              |                            | used `me@example.com`.                                                  |
 
 If you have multiple templates, you will prompted for which template to use.
 
@@ -85,11 +88,19 @@ If you want to right click an email in a view and send an email to it, add the f
 Licensed under MIT
 Copyright (c) 2015 Isaac Muse <isaacmuse@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions
+of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 """
 import sublime
 import sublime_plugin
@@ -128,7 +139,7 @@ DEFAULT_VARS = {
 # Helper methods
 ########################
 def get_mail_settings_dir():
-    """ Get mail settings dir """
+    """Get mail settings dir."""
     return os.path.join(sublime.packages_path(), "User", 'Postmaster')
 
 
@@ -145,7 +156,8 @@ def yaml_dump(data, stream=None, Dumper=yaml.Dumper, object_pairs_hook=OrderedDi
 
 
 def get_mail_contacts(contact_file_path):
-    """ Get mail contacts """
+    """Get mail contacts."""
+
     contacts = {}
     if not os.path.exists(contact_file_path):
         contact_file_path = os.path.join(get_mail_settings_dir(), GLOBAL_CONTACTS)
@@ -163,7 +175,8 @@ def get_mail_contacts(contact_file_path):
 
 
 def save_contacts(contacts, contact_file_path):
-    """ Save contacts """
+    """Save contacts."""
+
     if not os.path.exists(contact_file_path):
         contact_file_path = os.path.join(get_mail_settings_dir(), GLOBAL_CONTACTS)
     else:
@@ -182,7 +195,8 @@ def save_contacts(contacts, contact_file_path):
 
 
 def get_mail_settings():
-    """ Get mail settings """
+    """Get mail settings."""
+
     base = get_mail_settings_dir()
     for f in os.listdir(base):
         file_path = os.path.join(base, f)
@@ -194,9 +208,11 @@ def get_mail_settings():
 # Compose Mail
 ########################
 class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
-    """ Quick insert of contacts from contact file into mail frontmatter """
+
+    """Quick insert of contacts from contact file into mail frontmatter."""
+
     def insert_contact(self, value):
-        """ Call insert with the selected contact """
+        """Call insert with the selected contact."""
         if value >= 0:
             self.view.run_command(
                 'postmaster_insert_contact',
@@ -204,7 +220,8 @@ class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
             )
 
     def get_contact_file(self):
-        """ Get contact file """
+        """Get contact file."""
+
         frontmatter = postmaster.strip_frontmatter(
             self.view.substr(sublime.Region(0, self.view.size()))
         )[0]
@@ -215,7 +232,8 @@ class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
         return contact_file
 
     def run(self, edit, contact=None):
-        """ Insert contact if provided. If not, prompt user for contact. """
+        """Insert contact if provided. If not, prompt user for contact."""
+
         pt = self.view.sel()[0].begin()
         if contact is None and pt > 0 and self.view.substr(pt - 1) == '@':
             self.options = []
@@ -233,9 +251,12 @@ class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
 
 
 class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
-    """ When creating a new mail, use a template and format desired content. """
+
+    """When creating a new mail, use a template and format desired content."""
+
     def format_subject(self, template_variables):
-        """ Format subject """
+        """Format subject."""
+
         subject = template_variables.get('subject', None)
         if not subject or not isinstance(subject, str):
             self.template_variables['subject'] = ''
@@ -243,7 +264,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.template_variables['subject'] = subject
 
     def format_sender(self, template_variables):
-        """ Format sender """
+        """Format sender."""
+
         sender = template_variables.get('from', None)
         if not sender or not isinstance(sender, str):
             self.template_variables['from'] = ''
@@ -251,7 +273,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.template_variables['from'] = sender
 
     def format_recipients(self, template_variables):
-        """ Format recipients """
+        """Format recipients."""
+
         for recipient in ('to', 'cc', 'bcc'):
             to = template_variables.get(recipient, None)
             if not to or not isinstance(to, (str, list, tuple, set)):
@@ -269,7 +292,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
                     self.template_variables[recipient] = ' %s' % to
 
     def format_attachments(self, template_variables):
-        """ Format attachments """
+        """Format attachments."""
+
         attachments = template_variables.get('attachments', None)
         if not attachments or not isinstance(attachments, (str, list, tuple, set)):
             self.template_variables['attachments'] = ''
@@ -280,7 +304,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.template_variables['attachments'] = attachments
 
     def format_body(self, template_variables):
-        """ Format body """
+        """Format body."""
+
         body = template_variables.get('body', None)
         if not body or not isinstance(body, str):
             self.body = ''
@@ -288,7 +313,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.body = ' %s' % body
 
     def format_signature(self, template_variables):
-        """ Format signature """
+        """Format signature."""
+
         signature = template_variables.get('signature', None)
         if not signature or not isinstance(signature, str):
             self.signature = ''
@@ -296,7 +322,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.signature = '\n\n%s' % signature
 
     def format_smtp_server(self, template_variables):
-        """ Format smtp server """
+        """Format smtp server."""
+
         server = template_variables.get('smtp_server', "smtp.gmail.com")
         if not server or not isinstance(server, str):
             self.template_variables['smtp_server'] = "smtp.gmail.com"
@@ -304,7 +331,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.template_variables['smtp_server'] = server
 
     def format_port(self, template_variables):
-        """ Format port """
+        """Format port."""
+
         port = template_variables.get('port', 587)
         if not port or not isinstance(port, int):
             self.template_variables['port'] = 587
@@ -312,7 +340,8 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.template_variables['port'] = port
 
     def format_tls(self, template_variables):
-        """ Format tls """
+        """Format tls."""
+
         tls = template_variables.get('tls', 587)
         if not tls or not isinstance(tls, bool):
             self.template_variables['tls'] = True
@@ -320,19 +349,22 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
             self.template_variables['tls'] = tls
 
     def format_user(self, template_variables):
-        """ Format user """
+        """Format user."""
+
         user = template_variables.get('user', None)
         if user and isinstance(user, str):
             self.template_variables['user'] = user
 
     def format_contacts(self, template_variables):
-        """ Format contacts """
+        """Format contacts."""
+
         contacts = template_variables.get('contacts', None)
         if contacts and isinstance(contacts, str):
             self.template_variables['contacts'] = contacts
 
     def run(self, edit, address=None, template_variables=DEFAULT_VARS):
-        """ Insert template into new mail view """
+        """Insert template into new mail view."""
+
         self.address = address if address and isinstance(address, str) else None
         self.template_variables = OrderedDict()
 
@@ -364,9 +396,12 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
 
 
 class PostmasterNewCommand(sublime_plugin.WindowCommand):
-    """ Create a new mail view to send """
+
+    """Create a new mail view to send."""
+
     def new_mail(self, value):
-        """ Open the new view with the template """
+        """Open the new view with the template."""
+
         vars = None
         if value >= 0:
             mail_setting = self.mail_settings[value]
@@ -387,7 +422,8 @@ class PostmasterNewCommand(sublime_plugin.WindowCommand):
         view.set_syntax_file("Packages/SublimeRandomCrap/PostmasterEmail.tmLanguage")
 
     def run(self, address=None, mail_settings=None):
-        """ Initiate opening new view with mail template """
+        """Initiate opening new view with mail template."""
+
         self.address = address if address and isinstance(address, str) else None
         mail_menu = []
         if mail_settings is not None:
@@ -427,13 +463,17 @@ class PostmasterNewCommand(sublime_plugin.WindowCommand):
 
 
 class PostmasterMailTo(sublime_plugin.TextCommand):
-    """ Context menu command to create mail from address under cursor """
+
+    """Context menu command to create mail from address under cursor."""
+
     def is_visible(self, event):
-        """ Don't show in context menu unless there is an address """
+        """Don't show in context menu unless there is an address."""
+
         return self.find_address(event) is not None
 
     def find_address(self, event):
-        """ Retrieve the address from the view """
+        """Retrieve the address from the view."""
+
         address = None
         pt = self.view.window_to_text((event["x"], event["y"]))
         line = self.view.line(pt)
@@ -453,18 +493,21 @@ class PostmasterMailTo(sublime_plugin.TextCommand):
         return address
 
     def description(self, event):
-        """ Display address to mail to in context menu """
+        """Display address to mail to in context menu."""
+
         address = self.find_address(event)
         if len(address) > 64:
             address = address[0:64] + "..."
         return "Mail To: " + address
 
     def want_event(self):
-        """ Receive event """
+        """Receive event."""
+
         return True
 
     def run(self, edit, event):
-        """ Create new email to the given address """
+        """Create new email to the given address."""
+
         address = self.find_address(event)
         if address:
             self.view.window().run_command('postmaster_new', {"address": address})
@@ -474,8 +517,10 @@ class PostmasterListener(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
         """
         Try to force the selection in an password panel to be at end.
+
         Milage may vary.
         """
+
         if view is not None and view.settings().get('postmaster_password_panel', False):
             view.sel().clear()
             view.sel().add(sublime.Region(view.size()))
@@ -485,9 +530,12 @@ class PostmasterListener(sublime_plugin.EventListener):
 # Send Mail
 ########################
 class PostmasterSendCommand(sublime_plugin.TextCommand):
-    """ Send the mail from the current view buffer """
+
+    """Send the mail from the current view buffer."""
+
     def send_with_auth(self, value):
-        """ Send with the settings """
+        """Send with the settings."""
+
         if value:
             value = self.auth
             self.auth = ''
@@ -496,7 +544,8 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
             self.auth = ''
 
     def hide_auth(self, password):
-        """ Hide auth input """
+        """Hide auth input."""
+
         if len(password) > len(self.auth):
             self.auth += password[len(self.auth):]
             password = '*' * len(self.auth)
@@ -510,11 +559,13 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
         view.sel().add(sublime.Region(view.size()))
 
     def clear_auth(self):
-        """ Clear auth value """
+        """Clear auth value."""
+
         self.auth = ''
 
     def store_contacts(self, mg):
-        """ Store contacts """
+        """Store contacts."""
+
         settings = sublime.load_settings(SETTINGS)
         if settings.get('save_contacts'):
             contacts = []
@@ -528,7 +579,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
             save_contacts(contact_list, self.contacts)
 
     def send(self, auth):
-        """ Using the settings file to send the mail """
+        """Using the settings file to send the mail."""
 
         if auth:
             pm = postmaster.SendSmtp(self.smtp_server, self.port, self.tls)
@@ -556,7 +607,8 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
             sublime.error_message('Auth was not provided!')
 
     def run(self, edit):
-        """ Initiate mail sending """
+        """Initiate mail sending."""
+
         self.auth = ''
         self.window = self.view.window()
         self.user = None
@@ -606,7 +658,8 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
 
 
 def plugin_loaded():
-    """ Make sure mail setting folder exists """
+    """Make sure mail setting folder exists."""
+
     mail_folder = get_mail_settings_dir()
     if not os.path.exists(mail_folder):
         os.makedirs(mail_folder)
