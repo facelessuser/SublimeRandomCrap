@@ -14,6 +14,7 @@ from SublimeLinter.lint import Linter, util, persist
 import os
 import re
 from functools import lru_cache
+import sublime
 
 RE_ALIAS = re.compile(r'(?P<default>[\w\d\-._]+)@alias=(?P<alias>[\w\d\-._]*)')
 RE_DOC = re.compile(r'D\d{3}$')
@@ -530,6 +531,10 @@ class Prospector(Linter):
         '-p', '--path'
     }
 
+    profile_path = {
+        '--profile', '-P'
+    }
+
     def context_sensitive_executable_path(self, cmd):
         """
         Find the alias requested, else return the default.
@@ -568,6 +573,15 @@ class Prospector(Linter):
 
         return which(cmd)
 
+    def replace_sublime_profile(self, a):
+        """Replace sublime profile."""
+
+        m = re.match(r'\$\{sublime=(?P<profile>.+?)\}', a)
+        if m:
+            if os.path.exists(filename):
+                a = filename
+        return a
+
     def insert_args(self, cmd):
         """Insert user arguments into cmd and return the result."""
 
@@ -577,16 +591,23 @@ class Prospector(Linter):
 
         if not self.prospector_project_profile:
             skip_next = False
+            replace_variables = False
+            count = 0
             for a in self.build_args(self.get_view_settings(inline=True)):
-                if skip_next:
+                if replace_variables:
+                    args.append('%s' % self.replace_sublime_profile(a))
+                elif skip_next:
                     skip_next = False
-                    continue
                 elif a in self.disallowed_args:
-                    continue
+                    pass
                 elif a in self.disallowed_kwargs:
                     skip_next = True
-                    continue
-                args.append(a)
+                elif a in self.profile_path:
+                    args.append(a)
+                    replace_variables = True
+                else:
+                    args.append(a)
+                count += 1
 
         cmd = list(cmd)
 
