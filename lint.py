@@ -19,6 +19,7 @@ RE_ALIAS = re.compile(r'(?P<default>[\w\d\-._]+)@alias=(?P<alias>[\w\d\-._]*)')
 RE_DOC = re.compile(r'D\d{3}$')
 RE_PYLINT_CODES = re.compile(r'(?P<error>[FE]\d+)|(?P<warning>[CIWR]\d+)$')
 
+# Pylint symbolic name <--> code mapping
 pylint_codes = {
     "blacklisted-name": "C0102",
     "invalid-name": "C0103",
@@ -256,8 +257,9 @@ pylint_codes = {
 }
 
 
+# Predictable code <--> near token mapping
 near_token = {
-    # Pylint: Predictable near tokens
+    # Pylint
     'C1001': 'class',  # adequately reported at column 0, converted to None
     'E0100': '__init__',
     'E0101': '__init__',
@@ -290,7 +292,6 @@ near_token = {
     'C0304': None,
     # 'C0326',  # special case TODO find a way to use the next 2 lines on
     # the report, which shows the position of the error.
-    'C1001': None,
     'E0001': None,
     'E0102': None,
     'E0202': None,
@@ -338,16 +339,17 @@ near_token = {
     'W0633': None,
     'W0712': None,
     'W1300': None,
-    'W1301': None,
-
-    # Pep257: no meaninful columns
-    'D202': None
+    'W1301': None
 }
 
 
+# Code <--> near regex mapping
 near_regex = {
     # McCabe Prospector
     'MC0001': r'(?:[\w\d_]+\.)*?(?P<near>[\w\d_]+) is too complex \(\d+\)',
+
+    # Pyflakes
+    'F401': r'(?P<near>\'.+\') imported but unused',
 
     # Pylint
     'C0102': r'Black listed name "(?P<near>.*)"',
@@ -429,22 +431,16 @@ def which(cmd):
         return util.find_executable(cmd)
 
 
-def get_relative_path(relative_to, relative_from):
-    relpath = os.path.relpath(relative_from, relative_to)
-    return relpath
-
-
 @lru_cache(maxsize=None)
-def find_files(start_dir, names, parent=False, limit=None, aux_dirs=[]):
+def find_files(start_dir, names, parent=False, limit=None, aux_dirs=None):
     """
-    Find the given file by searching up the file hierarchy from start_dir.
-    If the file is found and parent is False, returns the path to the file.
-    If parent is True the path to the file's parent directory is returned.
-    If limit is None, the search will continue up to the root directory.
-    Otherwise a maximum of limit directories will be checked.
-    If aux_dirs is not empty and the file hierarchy search failed,
-    those directories are also checked.
+    Take SublimeLinters 'find_file' and augment it to find one of a list of file names.
+
+    Any match in the list, we quit and return the path.
     """
+
+    if aux_dirs is None:
+        aux_dirs = []
 
     for d in util.climb(start_dir, limit=limit):
         for name in names:
@@ -467,7 +463,6 @@ def find_files(start_dir, names, parent=False, limit=None, aux_dirs=[]):
 
                 return target
 
-
 class Prospector(Linter):
 
     """Provides an interface to prospector."""
@@ -478,12 +473,18 @@ class Prospector(Linter):
     version_re = r'(?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 0.10.2'
     regex = r'''(?x)
-        ^\s+L(?P<line>\d+):(?P<col>\-|\d+)[ ](?P<method>.*?):[ ][\w\d]+[ ]-[ ]
+        # Line:Column Class.function Tool
+        ^\s+L(?P<line>\d+):(?P<col>\-|\d+)[ ](?P<method>.*?):[ ](?P<tool>[\w\d\-_]+)[ ]-[ ]
+        # Codes
         (?P<code>
+            # Sort pep8, pep257, pep8-naming, MCabe and pyflakes error codes
             (?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12])))|
             (?P<warning>(?:[DFEWCN]|MC)\d+)|
+            # Pylint errors will drop into unsorted as they are symbolic names
+            # and will be sorted later.
             (?P<unsorted>.+?)
         )\r?\n
+        # The related message.
         ^\s+(?P<message>.+?)\r?\n
     '''
     multiline = True
@@ -492,36 +493,36 @@ class Prospector(Linter):
     prospector_config = ('.prospector.yml', 'landscape.yml')
     prospector_cwd = None
     prospector_target = None
+    prospector_project_profile = False
     root_check = ('tox.ini', 'setup.cfg', '.git', '.gitignore')
 
     defaults = {
-        'no-autodetect': False,
-        'full-pep8': True,
-        'doc-warnings': False,
-        'test-warnings': False,
-        'no-style-warnings': False,
-        'member-warnings': False,
-        'no-external-config': False,
-        '--profile:+': [],
+        '--profile:,+': [],
         '--strictness': 'medium',
         '--max-line-length': 160,
         '--profile-path': '',
-        '--uses:+': [],
-        '--with-tool:+': [],
-        '--without-tool:+,': [],
-        '--ignore-patterns:+,': [],
-        '--ignore-paths:+,': []
+        '--uses:,+': [],
+        '--tools:,+': [],
+        '--with-tool:,+': [],
+        '--without-tool:,+': [],
+        '--ignore-patterns:,+': [],
+        '--ignore-paths:,+': []
     }
 
-    flag_options = [
-        'full-pep8',
-        'no-autodetect',
-        'doc-warnings',
-        'test-warnings',
-        'no-style-warnings',
-        'member-warnings',
-        'no-external-config'
-    ]
+    disallowed_args = {
+        '-S', '--summary-only',
+        '-M', '--messages-only',
+        '-X', '--die-on-tool-error',
+        '--absolute-paths',
+        '-0', '--zero-exit',
+        '-h', '--help',
+        '-v', '--version'
+    }
+
+    disallowed_kwargs = {
+        '-o', '--output-format',
+        '-p', '--path'
+    }
 
     def context_sensitive_executable_path(self, cmd):
         """
@@ -545,13 +546,49 @@ class Prospector(Linter):
 
     @classmethod
     def which(cls, cmd):
+        """Find which cmd binary to use."""
 
         return which(cmd)
+
+    def insert_args(self, cmd):
+        """Insert user arguments into cmd and return the result."""
+
+        # Get build args, but strip out anything that would
+        # interfere with are needed settings.
+        args = []
+
+        if not self.prospector_project_profile:
+            skip_next = False
+            for a in self.build_args(self.get_view_settings(inline=True)):
+                if skip_next:
+                    skip_next = False
+                    continue
+                elif a in self.disallowed_args:
+                    continue
+                elif a in self.disallowed_kwargs:
+                    skip_next = True
+                    continue
+                args.append(a)
+
+        cmd = list(cmd)
+
+        if '*' in cmd:
+            i = cmd.index('*')
+
+            if args:
+                cmd[i:i + 1] = args
+            else:
+                cmd.pop(i)
+        else:
+            cmd += args
+
+        return cmd
 
     def cmd(self):
         """Return the command line to execute."""
 
-        self.executable_path = None
+        # self.executable_path = None
+        self.prospector_project_profile = False
         self.prospector_cwd = None
         self.prospector_target = self.filename
 
@@ -559,12 +596,14 @@ class Prospector(Linter):
         alias = settings.get('@alias', '')
         alias = '@alias=%s' % ('' if not isinstance(alias, str) else alias)
 
+        # This is the base command
+        #    - Prospector call.
+        #    - Emacs output for easy parsing result parsing.
+        #    - Messages only; no summary.
         cmd = ['prospector' + alias, '-o', 'emacs', '-M']
 
-        for option in self.flag_options:
-            if option in settings and settings[option]:
-                cmd.append('--%s' % option)
-
+        # Try and find prospector default config file
+        # and, if found count, the parent directory as project root.
         prospector_config = None
         if '-p' not in cmd and '--path' not in cmd and self.filename:
             prospector_config = find_files(
@@ -572,6 +611,8 @@ class Prospector(Linter):
                 self.prospector_config,
             )
 
+        # If no config found, try and find the root of the project
+        # by searching for a file that indicates the root.
         root = None
         if not prospector_config:
             root = find_files(
@@ -579,16 +620,19 @@ class Prospector(Linter):
                 self.root_check
             )
 
-        if ('--profile' not in settings or not settings['--profile']) and prospector_config:
+        # Set the CWD directory if project root found.
+        # Add project profile if found and make relative to CWD.
+        # Set target file path as relative to project root (if found).
+        if prospector_config:
+            self.prospector_project_profile = True
             self.prospector_cwd = os.path.dirname(prospector_config)
             self.prospector_target = os.path.relpath(self.filename, self.prospector_cwd)
+            cmd += ['--profile-path', os.path.basename(prospector_config)]
         elif root is not None:
             self.prospector_cwd = os.path.dirname(root)
             self.prospector_target = os.path.relpath(self.filename, self.prospector_cwd)
 
-        if prospector_config:
-            cmd += ['-P', os.path.basename(prospector_config)]
-
+        # Add insertion tokes for other arguments and file name.
         cmd += ['*', '@']
 
         if persist.debug_mode():
@@ -596,29 +640,37 @@ class Prospector(Linter):
             persist.printf('Settings: {}'.format(self.get_view_settings()))
             persist.printf('Bin: {}'.format(cmd[0]))
 
+        # Adjust for context sensitive settings
         have_path, path = self.context_sensitive_executable_path(cmd)
-
         if have_path:
             cmd[0] = path
+
         return cmd
 
     def split_match(self, match):
         """Split match."""
 
+        # Get the match parts.
         error = bool(match.group('error')) or bool(match.group('unsorted'))
         warning = bool(match.group('warning'))
         message = match.group('message').strip()
+        tool = match.group('tool')
         code = match.group('code')
         unsorted = match.group('unsorted')
         line = int(match.group('line')) - 1
         col = match.group('col')
         # method = match.group('method')
         near = None
-        if col in ('-',):
+
+        # '-' and '0' should not have a col highlighted without 'near'
+        # Anything else should adjust column by '-1' as columns are '1' based.
+        if col == '-' or (tool != 'pylint' and col == '0'):
             col = None
         else:
-            col = int(col)
+            col = int(col) - (1 if tool != 'pylint' else 0)
 
+        # Pylint uses symbolic names in prospector.
+        # Search the mappings to find actual code.
         if unsorted:
             error = True
             code = pylint_codes.get(unsorted)
@@ -628,23 +680,31 @@ class Prospector(Linter):
                     error = bool(match.group('error'))
                     warning = bool(match.group('warning'))
 
+        # See if this code has a predefined 'near' token.
         if code in near_token:
             col = None
             near = near_token[code]
 
-        if code in near_regex:
+        # See if this code has a regex to find the 'near' token.
+        elif code in near_regex:
             col = None
             m = re.match(near_regex[code], message)
             if m:
-                near = m.group('near')
+                if 'near' in m.groupdict():
+                    # 'near' will be more precise than 'col'
+                    near = m.group('near')
+                elif 'col' in m.groupdict():
+                    col = int(m.group('col'))
 
-        return match, line, col, error, warning, "(%s): %s" % (match.group('code'), message), near
+        # Return the parsed match parts.
+        return match, line, col, error, warning, "%s: %s" % (code, message), near
 
     def run(self, cmd, code):
         """Run."""
 
         # Prospector works best if you can run it from a path
-        # relative to the config. So we override run
+        # relative to the config. So we adjust the CWD if found
+        # the project root.
         if self.prospector_cwd is not None:
             os.chdir(self.prospector_cwd)
 
@@ -655,6 +715,7 @@ class Prospector(Linter):
                 cmd or '<builtin>')
             )
 
+        # Add in the adjusted file target
         if '@' in cmd:
             cmd[cmd.index('@')] = self.prospector_target
         elif not code:
@@ -663,6 +724,7 @@ class Prospector(Linter):
         if persist.debug_mode():
             persist.printf('Final CMD: {}'.format(str(cmd)))
 
+        # We never run live, only on save, so no need to deal with view code.
         return util.communicate(
             cmd,
             None,
