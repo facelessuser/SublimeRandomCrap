@@ -494,7 +494,6 @@ class Prospector(Linter):
     prospector_cwd = None
     prospector_target = None
     prospector_project_profile = False
-    root_check = ('tox.ini', 'setup.cfg', '.git', '.gitignore')
 
     defaults = {
         '--profile:,+': [],
@@ -507,6 +506,13 @@ class Prospector(Linter):
         '--without-tool:,+': [],
         '--ignore-patterns:,+': [],
         '--ignore-paths:,+': []
+    }
+
+    meta_defaults = {
+        '@only-project-profile': False,
+        '@alias': 'prospector',
+        '@project-profiles': ['.prospector.yml', '.landscape.yml'],
+        '@project-root-files': ['tox.ini', 'setup.cfg', '.git', '.gitignore']
     }
 
     disallowed_args = {
@@ -543,6 +549,18 @@ class Prospector(Linter):
                 return True, path
 
         return False, None
+
+    @classmethod
+    def settings(cls):
+        """Return the default settings for this linter, merged with the user settings."""
+
+        if cls.lint_settings is None:
+            linters = persist.settings.get('linters', {})
+            cls.lint_settings = (cls.defaults or {}).copy()
+            cls.lint_settings.update((cls.meta_defaults or {}).copy())
+            cls.lint_settings.update(linters.get(cls.name, {}))
+
+        return cls.lint_settings
 
     @classmethod
     def which(cls, cmd):
@@ -591,9 +609,14 @@ class Prospector(Linter):
         self.prospector_project_profile = False
         self.prospector_cwd = None
         self.prospector_target = self.filename
+        self.only_project_profile = False
 
         settings = self.get_view_settings()
-        alias = settings.get('@alias', '')
+        alias = settings['@alias']
+        root_check = tuple(settings['@project-root-files'])
+        project_profiles = tuple(settings['@project-profiles'])
+        self.only_project_profile = settings['@only-project-profile']
+
         alias = '@alias=%s' % ('' if not isinstance(alias, str) else alias)
 
         # This is the base command
@@ -608,7 +631,7 @@ class Prospector(Linter):
         if '-p' not in cmd and '--path' not in cmd and self.filename:
             prospector_config = find_files(
                 os.path.dirname(self.filename),
-                self.prospector_config,
+                project_profiles,
             )
 
         # If no config found, try and find the root of the project
@@ -617,7 +640,7 @@ class Prospector(Linter):
         if not prospector_config:
             root = find_files(
                 os.path.dirname(self.filename),
-                self.root_check
+                root_check
             )
 
         # Set the CWD directory if project root found.
@@ -705,8 +728,12 @@ class Prospector(Linter):
         # Prospector works best if you can run it from a path
         # relative to the config. So we adjust the CWD if found
         # the project root.
+
         if self.prospector_cwd is not None:
             os.chdir(self.prospector_cwd)
+
+        if self.only_project_profile and not self.prospector_project_profile:
+            return ''
 
         if persist.debug_mode():
             persist.printf('{}: {} {}'.format(
