@@ -578,6 +578,7 @@ class Prospector(Linter):
 
         m = re.match(r'\$\{sublime=(?P<profile>.+?)\}', a)
         if m:
+            filename = os.path.join(sublime.packages_path(), os.path.normpath(m.group('profile')))
             if os.path.exists(filename):
                 a = filename
         return a
