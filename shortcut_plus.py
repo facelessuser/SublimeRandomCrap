@@ -1,5 +1,5 @@
 """
-Shortcut Plus
+Shortcut Plus.
 
 Copyright (c) 2012-2015 Isaac Muse <isaacmuse@gmail.com>
 License: MIT
@@ -70,16 +70,22 @@ CURRENT_HOSTNAME = socket.gethostname().lower()
 
 
 def total_seconds(t):
+    """Get the total number of seconds for the given time."""
+
     return int((t.microseconds + (t.seconds + t.days * 24 * 3600) * 10 ** 6) / 10 ** 6)
 
 
 def get_current_time():
+    """Get the current time."""
+
     now = datetime.now()
     seconds = total_seconds(timedelta(hours=now.hour, minutes=now.minute, seconds=now.second))
     return seconds, now
 
 
 def translate_time(t):
+    """Translate the time."""
+
     mn, mx = t.replace(" ", "").split('-')
     t_min = time.strptime(mn, '%H:%M')
     t_max = time.strptime(mx, '%H:%M')
@@ -90,12 +96,20 @@ def translate_time(t):
 
 
 class ShortcutMode(object):
+
+    """Class to track shortcut mode."""
+
     enabled = False
     profile = ""
 
 
 class ShortcutPlusModeListener(sublime_plugin.EventListener):
+
+    """Listener to evaluate shortcuts."""
+
     def on_query_context(self, view, key, operator, operand, match_all):
+        """Logic to handle whether shortcut plus shortcut should be allowed."""
+
         handeled = False
         if ShortcutMode.enabled and key.startswith("shortcut_plus(profile):"):
             if ShortcutMode.profile == key[len("shortcut_plus(profile):"):len(key)]:
@@ -120,7 +134,12 @@ class ShortcutPlusModeListener(sublime_plugin.EventListener):
 
 
 class ToggleShortcutPlusCommand(sublime_plugin.ApplicationCommand):
+
+    """Toggle shortcut plus mode."""
+
     def run(self, profile):
+        """Run the command."""
+
         if profile == "" or ShortcutMode.profile == profile:
             ShortcutMode.enabled = False
             ShortcutMode.profile = ""
@@ -134,5 +153,10 @@ class ToggleShortcutPlusCommand(sublime_plugin.ApplicationCommand):
 
 
 class ShortcutPlusTestCommand(sublime_plugin.WindowCommand):
+
+    """Shortcut plus test command."""
+
     def run(self, msg):
+        """Run the command."""
+
         sublime.message_dialog(msg)

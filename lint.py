@@ -465,6 +465,7 @@ def find_files(start_dir, names, parent=False, limit=None, aux_dirs=None):
 
                 return target
 
+
 class Prospector(Linter):
 
     """Provides an interface to prospector."""

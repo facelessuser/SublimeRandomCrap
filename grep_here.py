@@ -7,17 +7,17 @@ Multiple entries can be defined and you can limit them to a specific platform:
 ```js
     "grep_call": {
         "win": {
-            "caption": "Grep Here…",
+            "caption": "Grep Here...",
             "cmd": ["C:\\Program Files\\grepWin\\grepWin.exe", "/searchpath:${PATH}"],
             "platform": ["windows"]
         },
         "win_rummage": {
-            "caption": "Rummage Here…",
+            "caption": "Rummage Here...",
             "cmd": ["C:\\Program Files (x86)\\Rummage\\Rummage.exe", "-s", ":${PATH}"],
             "platform": ["windows"]
         },
         "osx": {
-            "caption": "Rummage Here…",
+            "caption": "Rummage Here...",
             "cmd": ["/Applications/Rummage.app/Contents/MacOS/Rummage", "-s", "${PATH}"],
             "platform": ["osx"]
         }

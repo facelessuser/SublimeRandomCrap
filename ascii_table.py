@@ -44,11 +44,19 @@ Just define the commands below:
 Licensed under MIT
 Copyright (c) 2014-2015 Isaac Muse <isaacmuse@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions
+of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 """
 import sublime_plugin
 import sublime
@@ -353,6 +361,8 @@ def display_ascii(code):
 
 
 def get_ascii_info(code, info_type):
+    """Get ASCII table info."""
+
     value = None
     entry = ASCII_INFO[code]
     if info_type == DEC:
@@ -373,6 +383,9 @@ def get_ascii_info(code, info_type):
 
 
 class AsciiTableSearchCommand(sublime_plugin.TextCommand):
+
+    """Command to open ASCII table then perform search."""
+
     def run(self, edit, info_type):
         """Find or launch an ascii table view and pop and then call actual search command."""
 
@@ -389,6 +402,9 @@ class AsciiTableSearchCommand(sublime_plugin.TextCommand):
 
 
 class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
+
+    """ASCII table search."""
+
     def run(self, edit, info_type):
         """Show the palette search options based on info_type."""
 
@@ -407,7 +423,7 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
                 self.view.window().show_quick_panel(self.items, self.show)
 
     def show(self, value):
-        """Focus the search result."""
+        """Set focus to the search result."""
 
         if value != -1:
             pt = self.view.text_point(value + 1, 0)
@@ -422,13 +438,22 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
 
 
 class AsciiTableWriteCommand(sublime_plugin.TextCommand):
+
+    """Write out the ASCII table."""
+
     def run(self, edit):
         """Insert table in ascii view."""
 
-        self.view.insert(edit, 0, ASCII_HEADER + '\n'.join([display_ascii(x) for x in range(0, 256) if x in ASCII_INFO]))
+        self.view.insert(
+            edit, 0,
+            ASCII_HEADER + '\n'.join([display_ascii(x) for x in range(0, 256) if x in ASCII_INFO])
+        )
 
 
 class AsciiTableCommand(sublime_plugin.WindowCommand):
+
+    """ASCII table command to show ASCII table."""
+
     def run(self):
         """Show the ascii table.  Only generate if one is not available."""
 

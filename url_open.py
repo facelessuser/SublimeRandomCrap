@@ -20,14 +20,23 @@ rex = re.compile(
 
 
 class OpenContextUrlCommand(sublime_plugin.TextCommand):
+
+    """Open the URL from the context menu."""
+
     def run(self, edit, event):
+        """Run the command."""
+
         url = self.find_url(event)
         webbrowser.open_new_tab(url)
 
     def is_visible(self, event):
+        """Check if command should be visible in the context menu."""
+
         return self.find_url(event) is not None
 
     def find_url(self, event):
+        """Check if cursor is on a URL."""
+
         pt = self.view.window_to_text((event["x"], event["y"]))
         line = self.view.line(pt)
 
@@ -49,10 +58,13 @@ class OpenContextUrlCommand(sublime_plugin.TextCommand):
         return None
 
     def description(self, event):
+        """Show the URL in the command description."""
         url = self.find_url(event)
         if len(url) > 64:
             url = url[0:64] + "..."
         return "Open " + url
 
     def want_event(self):
+        """Check if event wanted."""
+
         return True

@@ -3,32 +3,34 @@ repo_url: https://github.com/facelessuser/SublimeRandomCrap
 site_description: Random plugins and scripts for Sublime Text.
 copyright: Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a>
 pages:
-- ['index.md', 'Home']
-- ['plugins/asciitable.md', 'Plugins', 'AsciiTable']
-- ['plugins/grephere.md', 'Plugins', 'GrepHere']
-- ['plugins/highlightword.md', 'Plugins', 'HighlightWord']
-- ['plugins/insertdate.md', 'Plugins', 'InsertDate']
-- ['plugins/postmaster.md', 'Plugins', 'Postmaster']
-- ['plugins/shortcutplus.md', 'Plugins', 'ShortcutPlus']
-- ['plugins/sublimeapidoc.md', 'Plugins', 'SublimeApiDoc']
-- ['plugins/sublimeinfo.md', 'Plugins', 'SublimeInfo']
-- ['plugins/togglewhitespace.md', 'Plugins', 'ToggleWhiteSpace']
+  - Home: index.md
+  - Plugins:
+    - AsciiTable: plugins/asciitable.md
+    - GrepHere: plugins/grephere.md
+    - HighlightWord: plugins/highlightword.md
+    - InsertDate: plugins/insertdate.md
+    - Postmaster: plugins/postmaster.md
+    - ShortcutPlus: plugins/shortcutplus.md
+    - SublimeApiDoc: plugins/sublimeapidoc.md
+    - SublimeInfo: plugins/sublimeinfo.md
+    - ToggleWhiteSpace: plugins/togglewhitespace.md
 theme: readthedocs
 theme_dir: doc_theme
 markdown_extensions:
-- markdown.extensions.extra
-- markdown.extensions.admonition
-- markdown.extensions.smarty
-- markdown.extensions.nl2br
-- markdown.extensions.codehilite
-- pymdownx.inlinehilite
-- pymdownx.magiclink
-- pymdownx.betterem
-- pymdownx.tilde
-- pymdownx.caret
-- pymdownx.smartsymbols
-- pymdownx.githubemoji
-- pymdownx.tasklist
-- pymdownx.superfences
-- pymdownx.progressbar
-- pymdownx.headeranchor
+  - markdown.extensions.extra
+  - markdown.extensions.admonition
+  - markdown.extensions.smarty
+  - markdown.extensions.nl2br
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.betterem
+  - pymdownx.tilde
+  - pymdownx.caret
+  - pymdownx.smartsymbols
+  - pymdownx.githubemoji
+  - pymdownx.tasklist
+  - pymdownx.superfences
+  - pymdownx.progressbar
+  - pymdownx.headeranchor

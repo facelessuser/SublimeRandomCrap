@@ -1,5 +1,5 @@
 """
-Postmaster
+Postmaster.
 
 Licensed under MIT
 Copyright (c) 2015 Isaac Muse <isaacmuse@gmail.com>
@@ -46,7 +46,7 @@ RE_CONTACT = re.compile(
 
 
 def is_contact(contact):
-    """Is string a contact?."""
+    """Check if string is a contact."""
 
     return RE_CONTACT.match(contact) is not None
 

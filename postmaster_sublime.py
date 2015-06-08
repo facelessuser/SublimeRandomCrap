@@ -1,5 +1,5 @@
 """
-Postmaster Sublime Plugin
+Postmaster Sublime Plugin.
 
 Allows for sending emails via SMTP.  New emails are created via a command:
 
@@ -140,12 +140,16 @@ DEFAULT_VARS = {
 ########################
 def get_mail_settings_dir():
     """Get mail settings dir."""
+
     return os.path.join(sublime.packages_path(), "User", 'Postmaster')
 
 
-def yaml_dump(data, stream=None, Dumper=yaml.Dumper, object_pairs_hook=OrderedDict, **kwargs):
-    class OrderedDumper(Dumper):
-        pass
+def yaml_dump(data, stream=None, dumper=yaml.Dumper, object_pairs_hook=OrderedDict, **kwargs):
+    """Force dictionaries to be ordered on YAML dump."""
+
+    class OrderedDumper(dumper):
+
+        """A custom ordered dumper object."""
 
     OrderedDumper.add_representer(
         object_pairs_hook,
@@ -169,7 +173,7 @@ def get_mail_contacts(contact_file_path):
                 obj = yaml.load(f.read())
             for k, v in obj.items():
                 contacts[k.lower()] = v
-        except:
+        except Exception:
             pass
     return contacts
 
@@ -190,7 +194,7 @@ def save_contacts(contacts, contact_file_path):
                     allow_unicode=True, default_flow_style=False
                 )
             )
-    except:
+    except Exception:
         pass
 
 
@@ -278,7 +282,10 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
         for recipient in ('to', 'cc', 'bcc'):
             to = template_variables.get(recipient, None)
             if not to or not isinstance(to, (str, list, tuple, set)):
-                self.template_variables[recipient] = self.address if recipient == 'to' and self.address is not None else ''
+                if recipient == 'to' and self.address is not None:
+                    self.template_variables[recipient] = self.address
+                else:
+                    self.template_variables[recipient] = ''
             elif isinstance(to, (list, tuple, set)):
                 value = [r for r in to if r and isinstance(r, str)]
                 if recipient == 'to' and self.address:
@@ -402,20 +409,20 @@ class PostmasterNewCommand(sublime_plugin.WindowCommand):
     def new_mail(self, value):
         """Open the new view with the template."""
 
-        vars = None
+        variables = None
         if value >= 0:
             mail_setting = self.mail_settings[value]
             try:
                 with codecs.open(mail_setting, 'r', encoding='utf-8') as f:
-                    vars = yaml.load(f.read())
-            except:
+                    variables = yaml.load(f.read())
+            except Exception:
                 pass
 
         view = self.window.new_file()
         view.run_command(
             'postmaster_format_mail',
             {
-                'template_variables': vars if vars else DEFAULT_VARS,
+                'template_variables': variables if variables else DEFAULT_VARS,
                 'address': self.address if self.address else None
             }
         )
@@ -514,6 +521,9 @@ class PostmasterMailTo(sublime_plugin.TextCommand):
 
 
 class PostmasterListener(sublime_plugin.EventListener):
+
+    """Postmaster listener."""
+
     def on_selection_modified(self, view):
         """
         Try to force the selection in an password panel to be at end.
