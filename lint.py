@@ -399,6 +399,7 @@ near_regex = {
     'W0601': r"Global variable '(?P<near>.*)' undefined",
     'W0602': r"Using global for '(?P<near>.*)' but",
     'W0611': r"Unused import (?P<near>.*)",
+    'W0613': r"Unused argument '(?P<near>.*)'",
     'W0621': r"Redefining name '(?P<near>.*)' from outer scope",
     'W0622': r"Redefining built-in '(?P<near>.*)'",
     'W0623': r"Redefining name '(?P<near>.*)' from object '.*' in exception handler",
@@ -593,7 +594,6 @@ class Prospector(Linter):
         if not self.prospector_project_profile:
             skip_next = False
             replace_variables = False
-            count = 0
             for a in self.build_args(self.get_view_settings(inline=True)):
                 if replace_variables:
                     args.append('%s' % self.replace_sublime_profile(a))
@@ -608,7 +608,6 @@ class Prospector(Linter):
                     replace_variables = True
                 else:
                     args.append(a)
-                count += 1
 
         cmd = list(cmd)
 

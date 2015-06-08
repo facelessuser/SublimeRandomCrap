@@ -53,7 +53,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 import sublime_plugin
 import sublime
 
-USE_ST_SYNTAX = int(sublime.version()) >= 3084 and False
+USE_ST_SYNTAX = int(sublime.version()) >= 3092
 ST_SYNTAX = "sublime-syntax" if USE_ST_SYNTAX else 'tmLanguage'
 
 DEC = 0
