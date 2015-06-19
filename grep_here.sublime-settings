@@ -12,7 +12,7 @@
         },
         "osx": {
             "caption": "Rummage Here…",
-            "cmd": ["/Applications/Rummage.app/Contents/MacOS/Rummage", "-s", "${PATH}"],
+            "cmd": ["rummage", "-s", "${PATH}"],
             "platform": ["osx"]
         }
     }

@@ -63,12 +63,46 @@ import sublime
 import subprocess
 from os.path import exists
 import traceback
+import sys
 
 NO_GREP = 0
 NO_TARGET = 1
 
 NO_GREP = "Nothing to grep!"
 CALL_FAILURE = "SubProcess Error:\n%s"
+
+if sys.platform.startswith('win'):
+    _PLATFORM = "windows"
+elif sys.platform == "darwin":
+    _PLATFORM = "osx"
+else:
+    _PLATFORM = "linux"
+
+
+def get_environ():
+    """Get environment and force utf-8."""
+
+    import os
+    env = {}
+    env.update(os.environ)
+
+    if _PLATFORM != 'windows':
+        shell = env['SHELL']
+        p = subprocess.Popen(
+            [shell, '-l', '-c', 'echo "#@#@#${PATH}#@#@#"'],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        result = p.communicate()[0].decode('utf8').split('#@#@#')
+        if len(result) > 1:
+            bin_paths = result[1].split(':')
+            if len(bin_paths):
+                env['PATH'] = ':'.join(bin_paths)
+
+    env['PYTHONIOENCODING'] = 'utf8'
+    env['LANG'] = 'en_US.UTF-8'
+    env['LC_CTYPE'] = 'en_US.UTF-8'
+
+    return env
 
 
 class GrepHereBase(object):
@@ -100,9 +134,9 @@ class GrepHereBase(object):
                 if sublime.platform() == "windows":
                     startupinfo = subprocess.STARTUPINFO()
                     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                    subprocess.Popen(call, startupinfo=startupinfo)
+                    subprocess.Popen(call, startupinfo=startupinfo, env=get_environ())
                 else:
-                    subprocess.Popen(call)
+                    subprocess.Popen(call, env=get_environ())
             except Exception:
                 self.fail(CALL_FAILURE % str(traceback.format_exc()))
 
