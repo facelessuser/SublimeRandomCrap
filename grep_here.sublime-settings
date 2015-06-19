@@ -2,12 +2,12 @@
     "grep_call": {
         "win": {
             "caption": "Grep Here…",
-            "cmd": ["C:\\MyApps\\grepwin.bat", "${PATH}"],
+            "cmd": ["grepwin.bat", "${PATH}"],
             "platform": ["windows"]
         },
         "win_rummage": {
             "caption": "Rummage Here…",
-            "cmd": ["C:\\MyApps\\rummage.bat", "-s", "${PATH}"],
+            "cmd": ["rummage.bat", "-s", "${PATH}"],
             "platform": ["windows"]
         },
         "osx": {
