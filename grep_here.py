@@ -211,7 +211,7 @@ class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
         if key is not None:
             setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
             obj = setting.get(key, None)
-            if key is not None:
+            if key is not None and obj is not None:
                 platform = obj.get('platform', [])
                 if len(platform):
                     if '*' in platform or sublime.platform() in platform:
@@ -248,7 +248,7 @@ class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
         if key is not None:
             setting = sublime.load_settings("grep_here.sublime-settings").get('grep_call', {})
             obj = setting.get(key, None)
-            if key is not None:
+            if key is not None and obj is not None:
                 platform = obj.get('platform', [])
                 if len(platform):
                     if '*' in platform or sublime.platform() in platform:
