@@ -369,9 +369,11 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
         if contacts and isinstance(contacts, str):
             self.template_variables['contacts'] = contacts
 
-    def run(self, edit, address=None, template_variables=DEFAULT_VARS):
+    def run(self, edit, address=None, template_variables=None):
         """Insert template into new mail view."""
 
+        if template_variables is None:
+            template_variables = DEFAULT_VARS
         self.address = address if address and isinstance(address, str) else None
         self.template_variables = OrderedDict()
 

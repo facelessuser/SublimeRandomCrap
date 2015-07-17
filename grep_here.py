@@ -155,12 +155,12 @@ class GrepHere(GrepHereBase):
 
         return isinstance(self, sublime_plugin.WindowCommand)
 
-    def get_target(self, paths=[]):
+    def get_target(self, paths=None):
         """Get the target."""
 
         target = None
         fail_msg = NO_GREP
-        if len(paths):
+        if paths:
             target = paths[0]
         elif self.is_text_cmd():
             filename = self.view.file_name()
@@ -172,7 +172,7 @@ class GrepHere(GrepHereBase):
             self.fail(fail_msg)
         return target
 
-    def grep(self, paths=[], key=None):
+    def grep(self, paths=None, key=None):
         """Call grep program."""
 
         if key is None:
@@ -191,7 +191,7 @@ class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
     def run(self, edit, key):
         """Run the command."""
 
-        self.grep(paths=[], key=key)
+        self.grep(paths=None, key=key)
 
     def description(self, key=None):
         """Get command description."""
@@ -225,12 +225,12 @@ class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
 
     """Grep the folder."""
 
-    def run(self, paths=[], key=None):
+    def run(self, paths=None, key=None):
         """Run the command."""
 
         self.grep(paths=paths, key=key)
 
-    def description(self, paths=[], key=None):
+    def description(self, paths=None, key=None):
         """Get command description."""
 
         caption = None
@@ -241,7 +241,7 @@ class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
                 caption = obj.get('caption', None)
         return caption
 
-    def is_enabled(self, paths=[], key=None):
+    def is_enabled(self, paths=None, key=None):
         """Check if command is enabled."""
 
         enabled = False

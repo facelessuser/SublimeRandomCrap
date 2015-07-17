@@ -1,5 +1,0 @@
-[
-    {"command": "grep_here_folder", "args": {"paths": [], "key": "osx"}},
-    {"command": "grep_here_folder", "args": {"paths": [], "key": "win"}},
-    {"command": "grep_here_folder", "args": {"paths": [], "key": "win_rummage"}}
-]
