@@ -5,7 +5,7 @@ from . import md_popup
 
 test_content = '''
 
-### Header
+# Header
 
 Here is some text **bold** text and *italic* text. And a link: www.google.com.  And some inline normal inline `backtic`.
 
@@ -19,6 +19,7 @@ Here is some text **bold** text and *italic* text. And a link: www.google.com.  
 - *Test* fenced highlight
 
     ```python
+    # Whatever
     import sublime
     import sublime_plugin
     from pygments import highlight
@@ -28,7 +29,9 @@ Here is some text **bold** text and *italic* text. And a link: www.google.com.  
     import markdown
     ```
 
-!!! tip "Tip"
+---
+
+!!! danger "Tip"
     Here is a tip, `admonition` blocks are great!.
 '''
 
