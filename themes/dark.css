@@ -1,0 +1,104 @@
+/* General Markdown */
+html {
+    background-color: #393b3d;
+    color: #CCCCCC;
+}
+
+body {
+    background-color: #232628;
+    margin: 1px;
+    font-size: 1em;
+}
+
+.content {
+    margin: 0.5em;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #99cc99;
+}
+
+a {
+    color: #6699cc;
+}
+
+.hint, .tip {
+    padding: 0.5em;
+    background-color: #2E3633;
+}
+
+blockquote {
+    padding: 0.5em;
+    display: block;
+    color: #888888;
+    font-style: italic;
+}
+
+/* Code Highlighting */
+.codehilite {padding: 0.5em;}
+.codehilite, .inlinehilite {background-color: #181818;}
+.hll { background-color: #5A5D5F }
+.c { color: #888888; font-style: italic }
+.err { color: #F2777A }
+.k { color: #CC99CC; font-weight: bold }
+.l { color: #F99157 }
+.n { color: #cccccc }
+.o { color: #66CCCC }
+.p { color: #cccccc }
+.cm { color: #888888; font-style: italic }
+.cp { color: #888888; font-weight: bold }
+.c1 { color: #888888; font-style: italic }
+.cs { color: #888888; font-style: italic }
+.gd { color: #F2777A }
+.ge { font-style: italic }
+.gh { color: #cccccc; font-weight: bold }
+.gi { color: #99CC99 }
+.gp { color: #888888; font-weight: bold }
+.gs { font-weight: bold }
+.gu { color: #66CCCC; font-weight: bold }
+.kc { color: #CC99CC; font-weight: bold }
+.kd { color: #CC99CC; font-weight: bold }
+.kn { color: #CC99CC; font-weight: bold }
+.kp { color: #CC99CC; font-weight: bold }
+.kr { color: #CC99CC; font-weight: bold }
+.kt { color: #FFCC66; font-weight: bold }
+.ld { color: #99CC99 }
+.m { color: #F99157 }
+.s { color: #99CC99 }
+.na { color: #6699CC }
+.nb { color: #6699CC }
+.nc { color: #F2777A; font-weight: bold }
+.no { color: #F2777A }
+.nd { color: #66CCCC }
+.ni { color: #cccccc }
+.ne { color: #F2777A; font-weight: bold }
+.nf { color: #6699CC; font-weight: bold }
+.nl { color: #cccccc }
+.nn { color: #cccccc }
+.nx { color: #6699CC }
+.py { color: #cccccc }
+.nt { color: #F2777A }
+.nv { color: #F2777A }
+.ow { color: #66CCCC }
+.w { color: #cccccc }
+.mb { color: #F99157 }
+.mf { color: #F99157 }
+.mh { color: #F99157 }
+.mi { color: #F99157 }
+.mo { color: #F99157 }
+.sb { color: #99CC99 }
+.sc { color: #cccccc }
+.sd { color: #888888 }
+.s2 { color: #99CC99 }
+.se { color: #F99157 }
+.sh { color: #99CC99 }
+.si { color: #F99157 }
+.sx { color: #99CC99 }
+.sr { color: #99CC99 }
+.s1 { color: #99CC99 }
+.ss { color: #99CC99 }
+.bp { color: #F99157 }
+.vc { color: #F2777A }
+.vg { color: #F2777A }
+.vi { color: #F2777A }
+.il { color: #F99157 }
