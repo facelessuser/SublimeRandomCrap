@@ -20,7 +20,6 @@ rex = re.compile(
 
 
 class OpenContextUrlCommand(sublime_plugin.TextCommand):
-
     """Open the URL from the context menu."""
 
     def run(self, edit, event):

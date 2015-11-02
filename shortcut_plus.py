@@ -96,7 +96,6 @@ def translate_time(t):
 
 
 class ShortcutMode(object):
-
     """Class to track shortcut mode."""
 
     enabled = False
@@ -104,7 +103,6 @@ class ShortcutMode(object):
 
 
 class ShortcutPlusModeListener(sublime_plugin.EventListener):
-
     """Listener to evaluate shortcuts."""
 
     def on_query_context(self, view, key, operator, operand, match_all):
@@ -134,7 +132,6 @@ class ShortcutPlusModeListener(sublime_plugin.EventListener):
 
 
 class ToggleShortcutPlusCommand(sublime_plugin.ApplicationCommand):
-
     """Toggle shortcut plus mode."""
 
     def run(self, profile):
@@ -153,7 +150,6 @@ class ToggleShortcutPlusCommand(sublime_plugin.ApplicationCommand):
 
 
 class ShortcutPlusTestCommand(sublime_plugin.WindowCommand):
-
     """Shortcut plus test command."""
 
     def run(self, msg):

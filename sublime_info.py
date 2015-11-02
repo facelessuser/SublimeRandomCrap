@@ -60,7 +60,6 @@ def external_ip():
 
 
 class SublimeInfoCommand(sublime_plugin.ApplicationCommand):
-
     """Sublime info command."""
 
     def run(self):

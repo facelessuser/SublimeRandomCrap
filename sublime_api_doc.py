@@ -36,7 +36,6 @@ import webbrowser
 
 
 class ShowSublimeApiCommand(sublime_plugin.ApplicationCommand):
-
     """Show the Sublime API in the webbrowser."""
 
     def run(self):

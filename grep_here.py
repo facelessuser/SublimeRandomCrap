@@ -106,7 +106,6 @@ def get_environ():
 
 
 class GrepHereBase(object):
-
     """Grep Base class."""
 
     def fail(self, msg, alert=True):
@@ -142,7 +141,6 @@ class GrepHereBase(object):
 
 
 class GrepHere(GrepHereBase):
-
     """Grep Here."""
 
     def is_text_cmd(self):
@@ -185,7 +183,6 @@ class GrepHere(GrepHereBase):
 
 
 class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
-
     """Grep the file."""
 
     def run(self, edit, key):
@@ -222,7 +219,6 @@ class GrepHereFileCommand(sublime_plugin.TextCommand, GrepHere):
 
 
 class GrepHereFolderCommand(sublime_plugin.WindowCommand, GrepHere):
-
     """Grep the folder."""
 
     def run(self, paths=None, key=None):

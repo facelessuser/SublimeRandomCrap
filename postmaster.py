@@ -94,14 +94,12 @@ def strip_frontmatter(string):
 
 
 class PostmasterException(Exception):
-
     """Postmaster exception."""
 
     pass
 
 
 class SendMailGunApi(object):
-
     """Send mail via mail gun API."""
 
     def __init__(self):
@@ -233,7 +231,6 @@ class SendMailGunApi(object):
 
 
 class SendSmtp(object):
-
     """Send SMTP email."""
 
     def __init__(self, smtp_server, port, tls=True):

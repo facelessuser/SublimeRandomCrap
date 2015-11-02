@@ -35,7 +35,6 @@ import sublime_plugin
 
 
 class ToggleWhiteSpaceCommand(sublime_plugin.ApplicationCommand):
-
     """Toggle the showing of whitespace in Sublime."""
 
     def run(self):

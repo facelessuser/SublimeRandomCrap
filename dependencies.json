@@ -2,7 +2,9 @@
     "*": {
         ">=3000": [
             "pyyaml",
-            "requests"
+            "requests",
+            "markdown",
+            "pygments"
         ]
     }
 }

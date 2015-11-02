@@ -148,7 +148,6 @@ def yaml_dump(data, stream=None, dumper=yaml.Dumper, object_pairs_hook=OrderedDi
     """Force dictionaries to be ordered on YAML dump."""
 
     class OrderedDumper(dumper):
-
         """A custom ordered dumper object."""
 
     OrderedDumper.add_representer(
@@ -212,7 +211,6 @@ def get_mail_settings():
 # Compose Mail
 ########################
 class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
-
     """Quick insert of contacts from contact file into mail frontmatter."""
 
     def insert_contact(self, value):
@@ -255,7 +253,6 @@ class PostmasterInsertContactCommand(sublime_plugin.TextCommand):
 
 
 class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
-
     """When creating a new mail, use a template and format desired content."""
 
     def format_subject(self, template_variables):
@@ -405,7 +402,6 @@ class PostmasterFormatMailCommand(sublime_plugin.TextCommand):
 
 
 class PostmasterNewCommand(sublime_plugin.WindowCommand):
-
     """Create a new mail view to send."""
 
     def new_mail(self, value):
@@ -472,7 +468,6 @@ class PostmasterNewCommand(sublime_plugin.WindowCommand):
 
 
 class PostmasterMailTo(sublime_plugin.TextCommand):
-
     """Context menu command to create mail from address under cursor."""
 
     def is_visible(self, event):
@@ -523,7 +518,6 @@ class PostmasterMailTo(sublime_plugin.TextCommand):
 
 
 class PostmasterListener(sublime_plugin.EventListener):
-
     """Postmaster listener."""
 
     def on_selection_modified(self, view):
@@ -542,7 +536,6 @@ class PostmasterListener(sublime_plugin.EventListener):
 # Send Mail
 ########################
 class PostmasterSendCommand(sublime_plugin.TextCommand):
-
     """Send the mail from the current view buffer."""
 
     def send_with_auth(self, value):

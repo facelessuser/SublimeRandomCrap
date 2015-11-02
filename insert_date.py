@@ -46,7 +46,6 @@ import time
 
 
 class InsertDateTimeCommand(sublime_plugin.TextCommand):
-
     """Insert date into view."""
 
     def run(self, edit, time_format="%Y-%m-%d", utc=False):

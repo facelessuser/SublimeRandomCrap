@@ -115,7 +115,6 @@ def underline(regions):
 # Each of the event handlers simply marks the time of the most recent
 # event and a timer periodically executes do_search
 class HighlightWord(object):
-
     """HighlightWord."""
 
     def __init__(self):
@@ -267,7 +266,6 @@ class HighlightWord(object):
 
 
 class HighlightWordListenerCommand(sublime_plugin.EventListener):
-
     """Handle listener events."""
 
     def on_selection_modified(self, view):
@@ -281,7 +279,6 @@ class HighlightWordListenerCommand(sublime_plugin.EventListener):
 
 
 class HwThread(threading.Thread):
-
     """Load up defaults."""
 
     def __init__(self):

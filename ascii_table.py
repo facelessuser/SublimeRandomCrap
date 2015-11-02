@@ -383,7 +383,6 @@ def get_ascii_info(code, info_type):
 
 
 class AsciiTableSearchCommand(sublime_plugin.TextCommand):
-
     """Command to open ASCII table then perform search."""
 
     def run(self, edit, info_type):
@@ -402,7 +401,6 @@ class AsciiTableSearchCommand(sublime_plugin.TextCommand):
 
 
 class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
-
     """ASCII table search."""
 
     def run(self, edit, info_type):
@@ -438,7 +436,6 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
 
 
 class AsciiTableWriteCommand(sublime_plugin.TextCommand):
-
     """Write out the ASCII table."""
 
     def run(self, edit):
@@ -451,7 +448,6 @@ class AsciiTableWriteCommand(sublime_plugin.TextCommand):
 
 
 class AsciiTableCommand(sublime_plugin.WindowCommand):
-
     """ASCII table command to show ASCII table."""
 
     def run(self):
