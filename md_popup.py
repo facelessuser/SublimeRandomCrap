@@ -7,9 +7,82 @@ import sublime
 import markdown
 from . import file_strip
 import traceback
+from plistlib import readPlistFromBytes
+from .rgba import RGBA
+import os
+import re
+
+_css_cache = {}
+_lum_cache = {}
+
+LUM_MIDPOINT = 127
 
 
-class MdWrapper(markdown.Markdown):
+def sublime_format_path(pth):
+    """Format the path for sublime."""
+
+    m = re.match(r"^([A-Za-z]{1}):(?:/|\\)(.*)", pth)
+    if sublime.platform() == "windows" and m is not None:
+        pth = m.group(1) + "/" + m.group(2)
+    return pth.replace("\\", "/")
+
+
+def scheme_lums(scheme_file):
+    """Get the scheme lumincance."""
+    color_scheme = os.path.normpath(scheme_file)
+    scheme_file = os.path.basename(color_scheme)
+    plist_file = readPlistFromBytes(
+        re.sub(
+            br"^[\r\n\s]*<!--[\s\S]*?-->[\s\r\n]*|<!--[\s\S]*?-->", b'',
+            sublime.load_binary_resource(sublime_format_path(color_scheme))
+        )
+    )
+
+    color_settings = plist_file["settings"][0]["settings"]
+    rgba = RGBA(color_settings.get("background", '#FFFFFF'))
+    return rgba.luminance()
+
+
+def get_scheme_lum(view):
+    """Get scheme lum."""
+
+    lum = 255
+    scheme = view.settings().get('color_scheme')
+    if scheme is not None:
+        if scheme in _lum_cache:
+            lum = _lum_cache[scheme]
+        else:
+            try:
+                lum = scheme_lums(scheme)
+            except Exception:
+                pass
+    return lum
+
+
+def get_theme_by_scheme_map(view):
+    """Get mapped scheme if available."""
+
+    css = None
+    theme_map = sublime.load_settings('Preferences.sublime-settings').get('md_popup_theme_map', {})
+
+    if theme_map:
+        scheme = view.settings().get('color_scheme')
+        if scheme is not None and scheme in theme_map:
+            css = get_css(theme_map[scheme])
+    return css
+
+
+def get_theme_by_lums(lums):
+    """Get theme based on lums."""
+
+    if lums <= LUM_MIDPOINT:
+        css_content = get_css('Packages/SublimeRandomCrap/themes/dark.css')
+    else:
+        css_content = get_css('Packages/SublimeRandomCrap/themes/light.css')
+    return css_content
+
+
+class _MdWrapper(markdown.Markdown):
     """
     Wrapper around Python Markdown's class.
 
@@ -21,7 +94,7 @@ class MdWrapper(markdown.Markdown):
     def __init__(self, *args, **kwargs):
         """Call original init."""
 
-        super(MdWrapper, self).__init__(*args, **kwargs)
+        super(_MdWrapper, self).__init__(*args, **kwargs)
 
     def registerExtensions(self, extensions, configs):  # noqa
         """
@@ -61,18 +134,30 @@ class MdWrapper(markdown.Markdown):
         return self
 
 
+def clear_cache():
+    """Clear the css cache."""
+
+    global _css_cache
+    global _lum_cache
+    _css_cache = {}
+    _lum_cache = {}
+
+
 def get_css(css_file):
     """
     Get css file.
 
     Strip out comments and carriage returns.
     """
+    css = None
+    if css_file in _css_cache:
+        css = _css_cache[css_file]
 
-    css = ''
     try:
         css = file_strip.comments.Comments('css').strip(
             sublime.load_resource(css_file).replace('\r', '')
         )
+        _css_cache[css_file] = css
     except Exception as e:
         print(e)
         pass
@@ -83,7 +168,7 @@ def show_popup(
     view, content, md=True, location=-1,
     max_width=320, max_height=240,
     on_navigate=None, on_hide=None,
-    css=None
+    css=None, append_css=None
 ):
     """Parse the color scheme if needed and show the styled pop-up."""
 
@@ -110,13 +195,29 @@ def show_popup(
         }
     }
 
+    if css is None:
+        css_content = get_theme_by_scheme_map(view)
+
+        if css_content is None:
+            lums = get_scheme_lum(view)
+            css_content = get_theme_by_lums(lums)
+        else:
+            css_content = get_css(css)
+            if css_content is None:
+                lums = get_scheme_lum(view)
+                css_content = get_theme_by_lums(lums)
+
+    if append_css is not None and isinstance(append_css, str):
+        css_content += append_css
+
     if md:
-        content = MdWrapper(
+        content = _MdWrapper(
             extensions=extensions,
             extension_configs=configs,
         ).convert(content).replace('&quot;', '"').replace('\n', '')
 
-    html = "<style>%s</style>" % css if css else ''
+    print(content)
+    html = "<style>%s</style>" % css_content if css_content else ''
     html += '<div class="content">%s</div>' % content
 
     view.show_popup(

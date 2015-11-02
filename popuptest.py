@@ -42,8 +42,7 @@ class MdPopupTestCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         """Run command."""
 
-        css = md_popup.get_css('Packages/SublimeRandomCrap/themes/dark.css')
         md_popup.show_popup(
-            self.view, test_content, css=css,
+            self.view, test_content,
             max_width=700, max_height=500,
         )
