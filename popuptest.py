@@ -4,40 +4,87 @@ from . import md_popup
 
 
 test_content = '''
+# Testing Headers
 
-# Header
+Testing **bold** text and testing *italic* text. Testing a link: www.google.com.  Testing inline `code`.
 
-Here is some text **bold** text and *italic* text. And a link: www.google.com.  And some inline normal inline `backtic`.
+```
+Testing a fenced block.
 
-> Block quotes?
-> Yup!
+Testing a fenced block.
+```
 
-what
-:   Test line 1
+> Testing
+> Blockquotes
 
-    Test line 2
+Testing
+:   Description
 
-![image](res://Packages/ColorHelper/tt_theme/images/back_dark.png)
-[test](sublime:whatever;3)
+    Lists
 
-- **Test** inline highlight ```:::python import whatever```.
+![Testing images](res://Packages/ColorHelper/tt_theme/images/back_dark.png)
+[Testing sublime href commands](sublime:whatever;3)
+
+- Testing lists
+    - Testing lists
+    - Testing lists
+
+- Testing lists
+    1. Testing lists
+    2. Testing lists
+
+- **Test** inline highlight ```:::python yield 0, '<code class="%s">' % self.cssclass```.
 - *Test* fenced highlight
 
     ```python
-    # Whatever
-    import sublime
-    import sublime_plugin
-    from pygments import highlight
-    from pygments.lexers import get_lexer_by_name
-    from pygments.formatters import find_formatter_class
-    import re
-    import markdown
+    class SublimeInlineHtmlFormatter(HtmlFormatter):
+    """Format the code blocks."""
+
+    def wrap(self, source, outfile):
+        """Overload wrap."""
+
+        return self._wrap_code(source)
+
+    def _wrap_code(self, source):
+        """
+        Wrap the pygmented code.
+
+        Sublime popups don't really support 'code', but since it doesn't
+        hurt anything, we leave it in for the possiblity of future support.
+        We get around the lack of proper 'code' support by converting any
+        spaces after the intial space to nbsp.  We go ahead and convert tabs
+        to 4 spaces as well.
+        """
+
+        yield 0, '<code class="%s">' % self.cssclass
+        for i, t in source:
+            text = ''
+            matched = False
+            for m in html_re.finditer(t):
+                matched = True
+                if m.group(1):
+                    text += m.group(1)
+                elif m.group(3):
+                    text += m.group(3)
+                else:
+                    text += multi_space.sub(
+                        replace_nbsp, m.group(2).replace('\t', ' ' * 4)
+                    ).replace('&#39;', '\'').replace('&quot;', '"')
+            if not matched:
+                text = multi_space.sub(
+                    replace_nbsp, t.replace('\t', ' ' * 4)
+                ).replace('&#39;', '\'').replace('&quot;', '"')
+            yield i, text
+        yield 0, '</code>'
     ```
 
 ---
 
 !!! danger "Tip"
-    Here is a tip, `admonition` blocks are great!.
+    Testing, admonition blocks.
+'''
+
+more = '''
 '''
 
 
@@ -48,6 +95,6 @@ class MdPopupTestCommand(sublime_plugin.TextCommand):
         """Run command."""
 
         md_popup.show_popup(
-            self.view, test_content,
-            max_width=700, max_height=500,
+            self.view, test_content, append_css=more,
+            max_width=300, max_height=500,
         )

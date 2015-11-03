@@ -9,6 +9,23 @@ import traceback
 from plistlib import readPlistFromBytes
 import os
 import re
+import time
+
+DEFAULT_DARK_THEME = 'Packages/SublimeRandomCrap/themes/dark.css'
+DEFAULT_LIGHT_THEME = 'Packages/SublimeRandomCrap/themes/light.css'
+
+
+def _log(msg):
+    """Log."""
+
+    print('MarkdownPopup: %s' % msg)
+
+
+def _get_setting(name, default=None):
+    """Get the Sublime setting."""
+
+    return sublime.load_settings('Preferences.sublime-settings').get(name, default)
+
 
 ##############################
 # Theme/Scheme cache management
@@ -17,7 +34,7 @@ _css_cache = {}
 _lum_cache = {}
 
 
-def clear_cache():
+def _clear_cache():
     """Clear the css cache."""
 
     global _css_cache
@@ -100,26 +117,38 @@ def _scheme_lums(scheme_file):
 def _get_scheme_lum(view):
     """Get scheme lum."""
 
-    lum = 255
+    lum = None
     scheme = view.settings().get('color_scheme')
     if scheme is not None:
         if scheme in _lum_cache:
-            lum = _lum_cache[scheme]
-        else:
+            lum, t = _lum_cache[scheme]
+            delta_time = _get_setting('md_popup_cache_refresh_time', 30)
+            if not isinstance(delta_time, int) or delta_time <= 0:
+                delta_time = 30
+            if time.time() - t >= (delta_time * 60):
+                lum = None
+        if lum is None:
             try:
                 lum = _scheme_lums(scheme)
+                _lum_cache[scheme] = (lum, time.time())
             except Exception:
                 pass
-    return lum
+    return lum if lum is not None else 255
 
 
 def _get_theme_by_lums(lums):
     """Get theme based on lums."""
 
     if lums <= LUM_MIDPOINT:
-        css_content = _get_css('Packages/SublimeRandomCrap/themes/dark.css')
+        theme = _get_setting('md_popup_theme_dark', DEFAULT_DARK_THEME)
+        css_content = _get_css(theme)
+        if css_content is None:
+            css_content = _get_css(DEFAULT_DARK_THEME)
     else:
-        css_content = _get_css('Packages/SublimeRandomCrap/themes/light.css')
+        theme = _get_setting('md_popup_theme_light', DEFAULT_LIGHT_THEME)
+        css_content = _get_css(theme)
+        if css_content is None:
+            css_content = _get_css(DEFAULT_LIGHT_THEME)
     return css_content
 
 
@@ -130,7 +159,7 @@ def _get_theme_by_scheme_map(view):
     """Get mapped scheme if available."""
 
     css = None
-    theme_map = sublime.load_settings('Preferences.sublime-settings').get('md_popup_theme_map', {})
+    theme_map = _get_setting('md_popup_theme_map', {})
 
     if theme_map:
         scheme = view.settings().get('color_scheme')
@@ -153,6 +182,8 @@ class _MdWrapper(markdown.Markdown):
 
     def __init__(self, *args, **kwargs):
         """Call original init."""
+
+        self.md_popup_debug = 'md_popup_debug' in kwargs and bool(kwargs['md_popup_debug'])
 
         super(_MdWrapper, self).__init__(*args, **kwargs)
 
@@ -177,10 +208,11 @@ class _MdWrapper(markdown.Markdown):
                     ext = self.build_extension(ext, configs.get(ext, {}))
                 if isinstance(ext, Extension):
                     ext.extendMarkdown(self, globals())
-                    # print(
-                    #     'Successfully loaded extension "%s.%s".'
-                    #     % (ext.__class__.__module__, ext.__class__.__name__)
-                    # )
+                    if self.md_popup_debug:
+                        _log(
+                            'Successfully loaded extension "%s.%s".'
+                            % (ext.__class__.__module__, ext.__class__.__name__)
+                        )
                 elif ext is not None:
                     raise TypeError(
                         'Extension "%s.%s" must be of type: "markdown.Extension"'
@@ -188,8 +220,8 @@ class _MdWrapper(markdown.Markdown):
                     )
             except Exception:
                 # We want to gracefully continue even if an extension fails.
-                print(str(traceback.format_exc()))
-                continue
+                if self.md_popup_debug:
+                    _log(str(traceback.format_exc()))
 
         return self
 
@@ -237,16 +269,22 @@ def _get_css(css_file):
     """
     css = None
     if css_file in _css_cache:
-        css = _css_cache[css_file]
+        css, t = _css_cache[css_file]
 
-    try:
-        css = _strip_css_comments(
-            sublime.load_resource(css_file).replace('\r', '')
-        )
-        _css_cache[css_file] = css
-    except Exception as e:
-        print(e)
-        pass
+        delta_time = _get_setting('md_popup_cache_refresh_time', 30)
+        if not isinstance(delta_time, int) or delta_time <= 0:
+            delta_time = 30
+        if time.time() - t >= (delta_time * 60):
+            css = None
+    if css is None:
+        try:
+            css = _strip_css_comments(
+                sublime.load_resource(css_file).replace('\r', '')
+            )
+            _css_cache[css_file] = (css, time.time())
+        except Exception as e:
+            print(e)
+            pass
     return css
 
 
@@ -259,6 +297,12 @@ def get_css(css_file):
     return _get_css(css_file)
 
 
+def clear_cache():
+    """Clear cache."""
+
+    _clear_cache()
+
+
 def show_popup(
     view, content, md=True, location=-1,
     max_width=320, max_height=240,
@@ -266,6 +310,17 @@ def show_popup(
     css=None, append_css=None
 ):
     """Parse the color scheme if needed and show the styled pop-up."""
+
+    debug = _get_setting('md_popup_debug')
+    disabled = _get_setting('md_popup_disable', False)
+    if disabled:
+        if debug:
+            _log('Popups disabled')
+        return
+
+    if debug:
+        _log('=====Content=====')
+        _log(content)
 
     extensions = [
         "markdown.extensions.attr_list",
@@ -288,6 +343,10 @@ def show_popup(
         },
         "markdown.extensions.codehilite": {
             "guess_lang": False
+        },
+        "SublimeRandomCrap.mdx.superfences": {
+            "uml_flow": False,
+            "uml_sequence": False
         }
     }
 
@@ -304,13 +363,24 @@ def show_popup(
                 css_content = _get_theme_by_lums(lums)
 
     if append_css is not None and isinstance(append_css, str):
-        css_content += append_css
+        if css_content:
+            css_content += append_css
+        else:
+            css_content = append_css
+
+    if debug:
+        _log('=====CSS=====')
+        _log(css_content)
 
     if md:
         content = _MdWrapper(
             extensions=extensions,
             extension_configs=configs,
         ).convert(content).replace('&quot;', '"').replace('\n', '')
+
+    if debug:
+        _log('=====HTML OUTPUT=====')
+        _log(content)
 
     html = "<style>%s</style>" % css_content if css_content else ''
     html += '<div class="content">%s</div>' % content

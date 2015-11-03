@@ -73,7 +73,7 @@ multi_space = re.compile(r'(?<= ) {2,}')
 def replace_nbsp(m):
     """Replace spaces with nbsp."""
 
-    return '\u00A0' * len(m.group(0))
+    return '&nbsp;' * len(m.group(0))
 
 
 class SublimeInlineHtmlFormatter(HtmlFormatter):

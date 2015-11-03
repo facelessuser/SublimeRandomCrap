@@ -82,7 +82,7 @@ multi_space = re.compile(r'(?<= ) {2,}')
 def replace_nbsp(m):
     """Replace spaces with nbsp."""
 
-    return '\u00A0' * len(m.group(0))
+    return '&nbsp;' * len(m.group(0))
 
 
 class SublimeBlockFormatter(HtmlFormatter):
@@ -134,9 +134,9 @@ class SublimeHighlight(CodeHilite):
 
     def hilite(self):
         """
-        Pass code to the [Pygments](http://pygments.pocoo.org/) highliter with
-        optional line numbers. The output should then be styled with css to
-        your liking. No styles are applied by default - only styling hooks
+        Pass code to the http://pygments.pocoo.org highliter with optional line numbers.
+
+        The output should then be styled with css to your liking. No styles are applied by default - only styling hooks
         (i.e.: <span class="k">).
         returns : A string of html.
         """
@@ -158,19 +158,16 @@ class SublimeHighlight(CodeHilite):
                 except ValueError:
                     lexer = get_lexer_by_name('text')
             formatter = SublimeBlockFormatter(
-                                              linenos=self.linenums,
-                                              cssclass=self.css_class,
-                                              style=self.style,
-                                              noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines)
+                linenos=self.linenums,
+                cssclass=self.css_class,
+                style=self.style,
+                noclasses=self.noclasses,
+                hl_lines=self.hl_lines
+            )
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
-            txt = self.src.replace('&', '&amp;')
-            txt = txt.replace('<', '&lt;')
-            txt = txt.replace('>', '&gt;')
-            # txt = txt.replace('"', '&quot;') Do not do this in Sublime Text
-            txt = multi_space.sub(replace_nbsp, txt.replace('\t', ' ' * 4))  # Special format for sublime.
+            txt = _escape(self.src)
 
             classes = []
             if self.lang:
@@ -195,7 +192,7 @@ def _escape(txt):
     return txt
 
 
-def extendSuperFences(md, name, language, formatter):
+def extend_super_fences(md, name, language, formatter):
     """Extend superfences with the given name, language, and formatter."""
 
     if not hasattr(md, "superfences"):
@@ -284,12 +281,12 @@ class SuperFencesCodeExtension(Extension):
             md.superfences = []
         md.superfences.insert(0, sf_entry)
         if config.get("uml_flow", False):  # Disable for Sublime Text
-            extendSuperFences(
+            extend_super_fences(
                 md, "flow", "flow",
                 lambda s, l, c="uml-flowchart": uml_format(s, l, c)
             )
         if config.get("uml_sequence", False):  # Disable for Sublime Text
-            extendSuperFences(
+            extend_super_fences(
                 md, "sequence", "sequence",
                 lambda s, l, c="uml-sequence-diagram": uml_format(s, l, c)
             )
