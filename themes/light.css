@@ -25,6 +25,7 @@ h1, h2, h3, h4, h5 { color: #718c00; } /* Headers */
 h1 { font-size: 1.5em; }
 h2, h3, h4, h5 { font-size: 1.2em; }
 a { color: #3e999f; } /* Links */
+.content { margin: 0.5em; } /* Content wrapper div. */
 
 /* General classes that give the feel of a theme. */
 .st-background { background-color: #fcfcfc }
@@ -49,7 +50,6 @@ we don't want to gamble with what color the st-classes will return.
 .mark-positive { background-color: #718c00; color: #fafdff; }
 .mark-negative { background-color: #c82829; color: #fafdff; }
 
-.content { margin: 0.5em; } /* Content wrapper div. */
 /* Admonition blocks */
 .admonition { padding: 0.5em; background-color: #E9EEF4; }
 .hint, .tip { padding: 0.5em; background-color: #EEF1E3; }
