@@ -25,6 +25,30 @@ h1, h2, h3, h4, h5 { color: #718c00; } /* Headers */
 h1 { font-size: 1.5em; }
 h2, h3, h4, h5 { font-size: 1.2em; }
 a { color: #3e999f; } /* Links */
+
+/* General classes that give the feel of a theme. */
+.st-background { background-color: #fcfcfc }
+.st-foreground { color: #4d4d4c; }
+.st-comment { color: #8e908c; }
+.st-constant {color: #f5871f;}
+.st-keyword { color: #8959a8; }
+.st-string { color: #718c00; }
+.st-entity { color: #4271ae; }
+.st-storage { color: #eab700; }
+.st-variable { color: #3e999f; }
+.st-invalid { color: #c82829; }
+
+/*
+Colored emphasis to convey a feeling when
+we don't want to gamble with what color the st-classes will return.
+ */
+.neutral { color: #3e999f; }
+.positive { color: #718c00; }
+.negative { color: #c82829; }
+.mark-neutral { background-color: #3e999f; color: #fafdff; }
+.mark-positive { background-color: #718c00; color: #fafdff; }
+.mark-negative { background-color: #c82829; color: #fafdff; }
+
 .content { margin: 0.5em; } /* Content wrapper div. */
 /* Admonition blocks */
 .admonition { padding: 0.5em; background-color: #E9EEF4; }
