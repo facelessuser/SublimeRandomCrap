@@ -228,6 +228,7 @@ def _strip_css_comments(text, preserve_lines=False):
 
     return ''.join(map(lambda m: evaluate(m, preserve_lines), CSS_PATTERN.finditer(text)))
 
+
 def _get_css(css_file):
     """
     Get css file.
@@ -274,7 +275,8 @@ def show_popup(
         "SublimeRandomCrap.mdx.magiclink",
         "SublimeRandomCrap.mdx.inlinehilite",
         "markdown.extensions.nl2br",
-        "markdown.extensions.admonition"
+        "markdown.extensions.admonition",
+        "markdown.extensions.def_list"
     ]
 
     configs = {
