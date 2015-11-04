@@ -1,6 +1,6 @@
 """Popup test module."""
 import sublime_plugin
-from . import md_popup
+import mdpopups
 
 
 test_content = '''
@@ -94,7 +94,7 @@ class MdPopupTestCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         """Run command."""
 
-        md_popup.show_popup(
+        mdpopups.show_popup(
             self.view, test_content, append_css=more,
             max_width=700, max_height=500,
         )

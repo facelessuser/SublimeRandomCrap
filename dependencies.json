@@ -4,7 +4,8 @@
             "pyyaml",
             "requests",
             "markdown",
-            "pygments"
+            "pygments",
+            "mdpopups"
         ]
     }
 }
