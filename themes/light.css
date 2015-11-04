@@ -8,9 +8,9 @@ body {
     font-size: 1em;
 }
 /* Headers */
-h1, h2, h3, h4, h5 { color: #718c00; }
+h1, h2, h3, h4, h5, h6 { color: #718c00; }
 h1 { font-size: 1.5em; }
-h2, h3, h4, h5 { font-size: 1.2em; }
+h2, h3, h4, h5, h6 { font-size: 1.2em; }
 /* Blockquote support. */
 blockquote {
     padding: 0.5em;
@@ -54,10 +54,10 @@ a { color: #3e999f; } /* Links */
 Colored emphasis to convey a feeling when
 we don't want to gamble with what color the st-classes will return.
  */
-.neutral { color: #3e999f; }
+.neutral { color: #4271ae; }
 .positive { color: #718c00; }
 .negative { color: #c82829; }
-.mark-neutral { background-color: #3e999f; color: #fafdff; }
+.mark-neutral { background-color: #4271ae; color: #fafdff; }
 .mark-positive { background-color: #718c00; color: #fafdff; }
 .mark-negative { background-color: #c82829; color: #fafdff; }
 
