@@ -96,5 +96,5 @@ class MdPopupTestCommand(sublime_plugin.TextCommand):
 
         md_popup.show_popup(
             self.view, test_content, append_css=more,
-            max_width=300, max_height=500,
+            max_width=700, max_height=500,
         )

@@ -27,6 +27,27 @@ def _get_setting(name, default=None):
     return sublime.load_settings('Preferences.sublime-settings').get(name, default)
 
 
+def _can_show(view):
+    """
+    Check if popup can be shown.
+
+    I have seen Sublime can sometimes crash if trying
+    to do a popup off screen.  Normally it should just not show,
+    but sometimes it can crash.  We will check if popup
+    can/should be attempted.
+    """
+
+    can_show = True
+    sel = view.sel()
+    if len(sel) >= 1:
+        region = view.visible_region()
+        if region.begin() > sel[0].b or region.end() < sel[0].b:
+            can_show = False
+    else:
+        can_show = False
+
+    return can_show
+
 ##############################
 # Theme/Scheme cache management
 ##############################
@@ -225,6 +246,78 @@ class _MdWrapper(markdown.Markdown):
 
         return self
 
+
+def _create_html(view, content, md=True, css=None, append_css=None, debug=False):
+    """Create html from content."""
+
+    if debug:
+        _log('=====Content=====')
+        _log(content)
+
+    extensions = [
+        "markdown.extensions.attr_list",
+        "markdown.extensions.codehilite",
+        "SublimeRandomCrap.mdx.superfences",
+        "SublimeRandomCrap.mdx.betterem",
+        "SublimeRandomCrap.mdx.magiclink",
+        "SublimeRandomCrap.mdx.inlinehilite",
+        "markdown.extensions.nl2br",
+        "markdown.extensions.admonition",
+        "markdown.extensions.def_list"
+    ]
+
+    configs = {
+        "SublimeRandomCrap.mdx.inlinehilite": {
+            "style_plain_text": True,
+            "css_class": "inlinehilite",
+            "use_codehilite_settings": False,
+            "guess_lang": False
+        },
+        "markdown.extensions.codehilite": {
+            "guess_lang": False
+        },
+        "SublimeRandomCrap.mdx.superfences": {
+            "uml_flow": False,
+            "uml_sequence": False
+        }
+    }
+
+    if css is None:
+        css_content = _get_theme_by_scheme_map(view)
+
+        if css_content is None:
+            lums = _get_scheme_lum(view)
+            css_content = _get_theme_by_lums(lums)
+        else:
+            css_content = _get_css(css)
+            if css_content is None:
+                lums = _get_scheme_lum(view)
+                css_content = _get_theme_by_lums(lums)
+
+    if append_css is not None and isinstance(append_css, str):
+        if css_content:
+            css_content += append_css
+        else:
+            css_content = append_css
+
+    if debug:
+        _log('=====CSS=====')
+        _log(css_content)
+
+    if md:
+        content = _MdWrapper(
+            extensions=extensions,
+            extension_configs=configs,
+        ).convert(content).replace('&quot;', '"').replace('\n', '')
+
+    if debug:
+        _log('=====HTML OUTPUT=====')
+        _log(content)
+
+    html = "<style>%s</style>" % css_content if css_content else ''
+    html += '<div class="content">%s</div>' % content
+    return html
+
 ##############################
 # CSS parsing cache management
 ##############################
@@ -303,11 +396,34 @@ def clear_cache():
     _clear_cache()
 
 
+def hide_popup(view):
+    """Hide the popup."""
+
+    view.hide_popup()
+
+
+def update_popup(view, content, md=True, css=None, append_css=None):
+    """Update the popup."""
+
+    debug = _get_setting('md_popup_debug')
+    disabled = _get_setting('md_popup_disable', False)
+    if disabled:
+        if debug:
+            _log('Popups disabled')
+        return
+
+    if not _can_show(view):
+        return
+
+    html = _create_html(view, content, md, css, append_css, debug)
+
+    view.update_popup(html)
+
+
 def show_popup(
-    view, content, md=True, location=-1,
-    max_width=320, max_height=240,
-    on_navigate=None, on_hide=None,
-    css=None, append_css=None
+    view, content, md=True, css=None, append_css=None,
+    flags=0, location=-1, max_width=320, max_height=240,
+    on_navigate=None, on_hide=None
 ):
     """Parse the color scheme if needed and show the styled pop-up."""
 
@@ -318,74 +434,12 @@ def show_popup(
             _log('Popups disabled')
         return
 
-    if debug:
-        _log('=====Content=====')
-        _log(content)
+    if not _can_show(view):
+        return
 
-    extensions = [
-        "markdown.extensions.attr_list",
-        "markdown.extensions.codehilite",
-        "SublimeRandomCrap.mdx.superfences",
-        "SublimeRandomCrap.mdx.betterem",
-        "SublimeRandomCrap.mdx.magiclink",
-        "SublimeRandomCrap.mdx.inlinehilite",
-        "markdown.extensions.nl2br",
-        "markdown.extensions.admonition",
-        "markdown.extensions.def_list"
-    ]
-
-    configs = {
-        "SublimeRandomCrap.mdx.inlinehilite": {
-            "style_plain_text": True,
-            "css_class": "inlinehilite",
-            "use_codehilite_settings": False,
-            "guess_lang": False
-        },
-        "markdown.extensions.codehilite": {
-            "guess_lang": False
-        },
-        "SublimeRandomCrap.mdx.superfences": {
-            "uml_flow": False,
-            "uml_sequence": False
-        }
-    }
-
-    if css is None:
-        css_content = _get_theme_by_scheme_map(view)
-
-        if css_content is None:
-            lums = _get_scheme_lum(view)
-            css_content = _get_theme_by_lums(lums)
-        else:
-            css_content = _get_css(css)
-            if css_content is None:
-                lums = _get_scheme_lum(view)
-                css_content = _get_theme_by_lums(lums)
-
-    if append_css is not None and isinstance(append_css, str):
-        if css_content:
-            css_content += append_css
-        else:
-            css_content = append_css
-
-    if debug:
-        _log('=====CSS=====')
-        _log(css_content)
-
-    if md:
-        content = _MdWrapper(
-            extensions=extensions,
-            extension_configs=configs,
-        ).convert(content).replace('&quot;', '"').replace('\n', '')
-
-    if debug:
-        _log('=====HTML OUTPUT=====')
-        _log(content)
-
-    html = "<style>%s</style>" % css_content if css_content else ''
-    html += '<div class="content">%s</div>' % content
+    html = _create_html(view, content, md, css, append_css, debug)
 
     view.show_popup(
-        html, location=location, max_width=max_width,
+        html, flags=flags, location=location, max_width=max_width,
         max_height=max_height, on_navigate=on_navigate, on_hide=on_hide
     )
