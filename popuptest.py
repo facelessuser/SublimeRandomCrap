@@ -2,6 +2,45 @@
 import sublime_plugin
 import mdpopups
 
+test_content2 ='''
+
+- **Test** inline highlight ```:::python yield 0, '<code class="%s">' % self.cssclass```.
+- *Test* fenced highlight
+
+    ```html
+    <span style="color: #FFCC66;">SublimeInlineHtmlFormatter</span>
+    ```
+
+    ```python
+    class SublimeInlineHtmlFormatter(HtmlFormatter):
+    """Format the code blocks."""
+
+    def wrap(self, source, outfile):
+        """Overload wrap."""
+
+        return self._wrap_code(source)
+    ```
+
+    ```js hl_lines="1 3"
+    function isUndef(obj) {
+      return obj === void 0;
+    }
+
+    function isNull(obj) {
+      return obj === null;
+    }
+    ```
+
+'''
+
+insert_text = '''function isUndef(obj) {
+  return obj === void 0;
+}
+
+function isNull(obj) {
+  return obj === null;
+}
+'''
 
 test_content = '''
 # Testing Headers
@@ -82,6 +121,21 @@ Testing
 
 !!! danger "Tip"
     Testing, admonition blocks.
+
+!!! tip "Tip"
+    Testing, admonition blocks.
+
+!!! attention "Tip"
+    Testing, admonition blocks.
+
+!!! caution "Tip"
+    Testing, admonition blocks.
+
+!!! danger "Tip"
+    Testing, admonition blocks.
+
+!!! note "Tip"
+    Testing, admonition blocks.
 '''
 
 more = '''
@@ -95,6 +149,6 @@ class MdPopupTestCommand(sublime_plugin.TextCommand):
         """Run command."""
 
         mdpopups.show_popup(
-            self.view, test_content, append_css=more,
+            self.view, test_content2, css=more,
             max_width=700, max_height=500,
         )
