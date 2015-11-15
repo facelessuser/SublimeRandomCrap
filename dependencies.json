@@ -3,7 +3,7 @@
         ">=3000": [
             "pyyaml",
             "requests",
-            "markdown",
+            "python-markdown",
             "pygments",
             "mdpopups"
         ]
