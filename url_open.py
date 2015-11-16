@@ -10,11 +10,11 @@ import re
 rex = re.compile(
     r'''(?x)(?i)
     \b(?:
-        https?://(?:(?:[a-z\d\-_]+(?:\.[a-z\d\-._]+)+)|localhost)|  # http://
-        w{3}\.[a-z\d\-_]+(?:\.[a-z\d\-._]+)+                        # www.
+        https?://(?:(?:[a-z\d][a-z\d\-_]*(?:\.[a-z\d\-._]+)+)|localhost)| # http://
+        (?P<www>w{3}\.)[a-z\d][a-z\d\-_]*(?:\.[a-z\d\-._]+)+              # www.
     )
-    /?[a-z\d\-._?,!'(){}\[\]/+&@%$#=:"|~;]*                         # url path and querry stuff
-    [a-z\d\-_~/#@$*+=]                                              # allowed end chars
+    /?[a-z\d\-._?,!'(){}\[\]/+&@%$#=:"|~;]*                               # url path and querry stuff
+    [a-z\d\-_~/#@$*+=]                                                    # allowed end chars
     '''
 )
 

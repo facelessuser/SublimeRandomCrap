@@ -32,10 +32,10 @@ from email.utils import formatdate
 
 
 EMAIL = r'''
-(?:[\-+\w]([\w\-+]|\.(?!\.))+)        # Local part
-@(?:[\w\-]+\.)                        # @domain part start
-(?:(?:[\w\-]|(?<!\.)\.(?!\.))*)[a-z]  # @domain.end (allow multiple dot names)
-(?![\d\-_@])                          # Don't allow last char to be followed by these
+(?<![/-_@\w])(?:[\-+\w]([\w\-+]|\.(?!\.))*) # Local part
+(?<!\.)@(?:[\w\-]+\.)                       # @domain part start
+(?:(?:[\w\-]|(?<!\.)\.(?!\.))*)[a-z]\b      # @domain.end (allow multiple dot names)
+(?![\d\-_@])                                # Don't allow last char to be followed by these
 '''
 
 RE_MAIL = re.compile(r'''(?x)(?i)(?P<email>%s)''' % EMAIL)
