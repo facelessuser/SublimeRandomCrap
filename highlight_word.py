@@ -90,11 +90,11 @@ def clear_regions(view=None):
         if win is not None:
             view = win.active_view()
     if view is not None:
-        regions = view.settings().get('highlight_word_regions', 0)
+        regions = view.settings().get('highlight_word.regions', 0)
         if highlight_word is not None:
             for count in range(0, regions):
                 view.erase_regions(KEY + str(count))
-                view.settings().set('highlight_word_regions', 0)
+                view.settings().set('highlight_word.regions', 0)
 
 
 def underline(regions):
@@ -262,7 +262,7 @@ class HighlightWord(object):
             self.style
         )
 
-        view.settings().set('highlight_word_regions', self.max_selections)
+        view.settings().set('highlight_word.regions', self.max_selections)
 
 
 class HighlightWordListenerCommand(sublime_plugin.EventListener):

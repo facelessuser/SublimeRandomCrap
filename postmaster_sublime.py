@@ -527,7 +527,7 @@ class PostmasterListener(sublime_plugin.EventListener):
         Milage may vary.
         """
 
-        if view is not None and view.settings().get('postmaster_password_panel', False):
+        if view is not None and view.settings().get('postmaster.password_panel', False):
             view.sel().clear()
             view.sel().add(sublime.Region(view.size()))
 
@@ -659,7 +659,7 @@ class PostmasterSendCommand(sublime_plugin.TextCommand):
         self.tls = frontmatter.get('tls', None)
         if self.smtp_server and self.port is not None and self.tls is not None:
             view = self.window.show_input_panel('Password:', '', self.send_with_auth, self.hide_auth, self.clear_auth)
-            view.settings().set('postmaster_password_panel', True)
+            view.settings().set('postmaster.password_panel', True)
 
 
 def plugin_loaded():

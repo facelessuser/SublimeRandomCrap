@@ -3,6 +3,9 @@ import sublime
 import sublime_plugin
 import mdpopups
 
+css = '''
+'''
+
 test_content = '''
 # H1
 ## H2
@@ -13,6 +16,8 @@ test_content = '''
 Testing **bold** text and testing *italic* text.
 Testing autolink: www.google.com.
 Testing inline `code`.
+
+Another paragraph.
 
     Testing indented code blocks
 
@@ -84,7 +89,7 @@ class MdPopupTestCommand(sublime_plugin.TextCommand):
         else:
             settings.set('mdpopups_use_sublime_highlighter', True)
         mdpopups.show_popup(
-            self.view, test_content,
+            self.view, test_content, css=css,
             max_width=700, max_height=500,
         )
         settings.set('mdpopups_use_sublime_highlighter', original)

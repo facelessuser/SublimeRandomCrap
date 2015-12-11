@@ -388,14 +388,14 @@ class AsciiTableSearchCommand(sublime_plugin.TextCommand):
     def run(self, edit, info_type):
         """Find or launch an ascii table view and pop and then call actual search command."""
 
-        if not self.view.settings().get("ascii_table_view", False):
+        if not self.view.settings().get("ascii_table.view", False):
             window = self.view.window()
             if window is not None:
                 window.run_command('ascii_table')
+            ascii_view = window.active_view()
         else:
             ascii_view = self.view
 
-        ascii_view = window.active_view()
         if ascii_view is not None:
             ascii_view.run_command('ascii_table_view_search', {'info_type': info_type})
 
@@ -432,7 +432,7 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
     def is_enabled(self, info_type):
         """Enable only if we are in an ascii table view."""
 
-        return self.view.settings().get("ascii_table_view", False)
+        return self.view.settings().get("ascii_table.view", False)
 
 
 class AsciiTableWriteCommand(sublime_plugin.TextCommand):
@@ -454,7 +454,7 @@ class AsciiTableCommand(sublime_plugin.WindowCommand):
         """Show the ascii table.  Only generate if one is not available."""
 
         for view in self.window.views():
-            if view.settings().get("ascii_table_view", False):
+            if view.settings().get("ascii_table.view", False):
                 self.window.focus_view(view)
                 return
 
@@ -465,5 +465,5 @@ class AsciiTableCommand(sublime_plugin.WindowCommand):
             view.set_read_only(True)
             view.set_scratch(True)
             view.set_name(".ascii_table")
-            view.settings().set("ascii_table_view", True)
+            view.settings().set("ascii_table.view", True)
             view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table.%s" % ST_SYNTAX)
