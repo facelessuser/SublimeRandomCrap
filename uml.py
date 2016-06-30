@@ -32,6 +32,31 @@ class TempFile(object):
         self.file.close()
 
 
+def get_environ():
+    """Get environment and force utf-8."""
+
+    import os
+    env = {}
+    env.update(os.environ)
+
+    if sublime.platform() != 'windows':
+        shell = env['SHELL']
+        p = subprocess.Popen(
+            [shell, '-l', '-c', 'echo "#@#@#${PATH}#@#@#"'],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        result = p.communicate()[0].decode('utf8').split('#@#@#')
+        if len(result) > 1:
+            bin_paths = result[1].split(':')
+            if len(bin_paths):
+                env['PATH'] = ':'.join(bin_paths)
+
+    env['PYTHONIOENCODING'] = 'utf8'
+    env['LANG'] = 'en_US.UTF-8'
+    env['LC_CTYPE'] = 'en_US.UTF-8'
+
+    return env
+
 
 class UmlCommand(sublime_plugin.TextCommand):
 
@@ -103,7 +128,8 @@ class UmlCommand(sublime_plugin.TextCommand):
                         stdin=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         stdout=png,
-                        shell=True
+                        shell=True,
+                        env=get_environ()
                     )
                 else:
                     process = subprocess.Popen(
@@ -111,7 +137,8 @@ class UmlCommand(sublime_plugin.TextCommand):
                         stdin=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         stdout=png,
-                        shell=True
+                        shell=True,
+                        env=get_environ()
                     )
 
                 output = process.communicate(input=snippet)
