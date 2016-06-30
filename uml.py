@@ -1,3 +1,8 @@
+"""
+@startuml
+bob -> kate
+@enduml
+"""
 import sublime
 import sublime_plugin
 import io
@@ -66,7 +71,7 @@ class UmlCommand(sublime_plugin.TextCommand):
         for x in range(self.view.settings().get('uml.regions', 0)):
             self.view.erase_regions("uml%d" % x)
         self.view.settings().set('uml.regions', 0)
-        self.view.erase_phantoms("uml")
+        mdpopups.erase_phantoms(self.view, "uml")
         self.snippets = []
         count = 0
         for region in  self.view.find_all(r'@startuml[\s\S]*?@enduml'):
@@ -165,7 +170,8 @@ class UmlCommand(sublime_plugin.TextCommand):
         regions = self.view.get_regions(key)
 
         if regions:
-            self.view.add_phantom(
+            mdpopups.add_phantom(
+                self.view,
                 "uml",
                 regions[0],
                 phantom,
