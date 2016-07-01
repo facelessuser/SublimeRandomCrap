@@ -122,7 +122,6 @@ class UmlCommand(sublime_plugin.TextCommand):
 
         count = 0
         for snippet in self.snippets:
-            print(snippet)
             with TempFile() as png:
                 if sublime.platform() == "windows":
                     startupinfo = subprocess.STARTUPINFO()
@@ -142,7 +141,7 @@ class UmlCommand(sublime_plugin.TextCommand):
                         stdin=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         stdout=png,
-                        shell=True,
+                        shell=False,
                         env=get_environ()
                     )
 
