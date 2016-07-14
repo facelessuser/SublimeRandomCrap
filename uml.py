@@ -74,7 +74,7 @@ class UmlCommand(sublime_plugin.TextCommand):
         mdpopups.erase_phantoms(self.view, "uml")
         self.snippets = []
         count = 0
-        for region in  self.view.find_all(r'@startuml[\s\S]*?@enduml'):
+        for region in  self.view.find_all(r'@startuml[\s\S]*?@enduml|@startdot[\s\S]*?@enddot|@startditaa[\s\S]*?@endditaa'):
             self.snippets.append(self.view.substr(region).encode('utf-8'))
             self.view.add_regions(
                 "uml%d" %  count,
@@ -155,7 +155,10 @@ class UmlCommand(sublime_plugin.TextCommand):
                         self.escape_code(png.file.read().decode('utf-8'))
                     )
                 else:
-                    phantom = '<img src="data:image/png;base64,%s">' % base64.b64encode(png.file.read()).decode('ascii')
+                    with open('c:\\test%d.png' % count, 'wb') as f:
+                        f.write(png.file.read())
+                    png.file.seek(0)
+                    phantom = '<img src="data:image/png;base64,%s"/>' % base64.b64encode(png.file.read()).decode('ascii')
 
                 sublime.set_timeout(
                     lambda phantom=phantom, index=count:
@@ -175,7 +178,8 @@ class UmlCommand(sublime_plugin.TextCommand):
                 "uml",
                 regions[0],
                 phantom,
-                sublime.LAYOUT_BLOCK
+                0,
+                md=False,
             )
         self.view.erase_regions(key)
         self.view.settings().set('uml.regions', self.view.settings().get('uml.regions', 0) - 1)
