@@ -1,11 +1,6 @@
-"""
-@startuml
-bob -> kate
-@enduml
-"""
+"""Display UML."""
 import sublime
 import sublime_plugin
-import io
 import os
 import subprocess
 import base64
@@ -14,6 +9,7 @@ import mdpopups
 import re
 
 PLANTUML = 'Packages/SublimeRandomCrap/plantuml.jar'
+ERROR_OUTPUT = '<span class="invalid">Conversion failed!</span>\n\n<hr>\n\n<div class="highlight"><pre>%s</pre></div>\n'
 
 
 def packages_path(pth):
@@ -64,20 +60,23 @@ def get_environ():
 
 
 class UmlCommand(sublime_plugin.TextCommand):
+    """Command to parse and display UML."""
 
     plantuml = packages_path('Packages/SublimeRandomCrap/plantuml.jar')
 
     def run(self, edit):
+        """Run command."""
+
         for x in range(self.view.settings().get('uml.regions', 0)):
             self.view.erase_regions("uml%d" % x)
         self.view.settings().set('uml.regions', 0)
         mdpopups.erase_phantoms(self.view, "uml")
         self.snippets = []
         count = 0
-        for region in  self.view.find_all(r'@startuml[\s\S]*?@enduml|@startdot[\s\S]*?@enddot|@startditaa[\s\S]*?@endditaa'):
+        for region in self.view.find_all(r'@startuml[\s\S]*?@enduml|@startdot[\s\S]*?@enddot'):
             self.snippets.append(self.view.substr(region).encode('utf-8'))
             self.view.add_regions(
-                "uml%d" %  count,
+                "uml%d" % count,
                 [region],
                 "",
                 "",
@@ -108,6 +107,7 @@ class UmlCommand(sublime_plugin.TextCommand):
         )
 
     def render(self):
+        """Render the UML."""
 
         cmd = [
             'java',
@@ -120,8 +120,11 @@ class UmlCommand(sublime_plugin.TextCommand):
             'UTF-8'
         ]
 
+        print(cmd)
+
         count = 0
         for snippet in self.snippets:
+            print(snippet)
             with TempFile() as png:
                 if sublime.platform() == "windows":
                     startupinfo = subprocess.STARTUPINFO()
@@ -141,23 +144,23 @@ class UmlCommand(sublime_plugin.TextCommand):
                         stdin=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         stdout=png,
-                        shell=False,
+                        shell=True,
                         env=get_environ()
                     )
 
-                output = process.communicate(input=snippet)
+                process.communicate(input=snippet)
 
                 png.file.seek(0)
 
                 if process.returncode:
-                    phantom = '<span class="invalid">Conversion failed!</span>\n\n<hr>\n\n<div class="highlight"><pre>%s</pre></div>\n' % (
+                    phantom = ERROR_OUTPUT % (
                         self.escape_code(png.file.read().decode('utf-8'))
                     )
                 else:
-                    with open('c:\\test%d.png' % count, 'wb') as f:
-                        f.write(png.file.read())
+                    print(base64.urlsafe_b64encode(png.file.read()).decode('ascii'))
                     png.file.seek(0)
-                    phantom = '<img src="data:image/png;base64,%s"/>' % base64.b64encode(png.file.read()).decode('ascii')
+                    phantom = '<img src="data:image/png;base64,%s">' % base64.b64encode(png.file.read()).decode('ascii')
+                    print(phantom)
 
                 sublime.set_timeout(
                     lambda phantom=phantom, index=count:
@@ -167,6 +170,7 @@ class UmlCommand(sublime_plugin.TextCommand):
             count += 1
 
     def add_phantom(self, phantom, index):
+        """Add a phantom."""
 
         key = 'uml%d' % index
         regions = self.view.get_regions(key)
@@ -177,8 +181,8 @@ class UmlCommand(sublime_plugin.TextCommand):
                 "uml",
                 regions[0],
                 phantom,
-                0,
-                md=False,
+                sublime.LAYOUT_BLOCK,
+                md=False
             )
         self.view.erase_regions(key)
         self.view.settings().set('uml.regions', self.view.settings().get('uml.regions', 0) - 1)
