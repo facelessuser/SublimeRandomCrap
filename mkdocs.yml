@@ -14,6 +14,8 @@ pages:
     - SublimeApiDoc: plugins/sublimeapidoc.md
     - SublimeInfo: plugins/sublimeinfo.md
     - ToggleWhiteSpace: plugins/togglewhitespace.md
+    - AutoSideBar: plugins/autosidebar.md
+    - Grip: plugins/grip.md
 theme: readthedocs
 theme_dir: doc_theme
 markdown_extensions:
