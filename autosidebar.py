@@ -6,8 +6,6 @@ Copyright (c) 2016 Isaac Muse <isaacmuse@gmail.com>
 import sublime
 import sublime_plugin
 
-tab_enabled = False
-
 
 class AutoSideBarListener(sublime_plugin.EventListener):
     """Listener that auto hides/shows the sidebar."""
