@@ -2,7 +2,7 @@
     "docs": [
         {
             "location": "/",
-            "text": "SublimeRandomCrap\n\n\nA random collection of Sublime Text plugins.\n\n\n\n\nOverview\n\n\nSublime random crap is a collection of Sublime Text plugins that I either do no want to publicly support or that are in an experimental state.\n\n\nPlugins\n\n\n\n\nAsciiTable (STABLE)\n\n\nGrepHere (STABLE)\n\n\nHighlightWord (STABLE)\n\n\nInsertDate (STABLE)\n\n\nPostmaster (EXPERIMENTAL)\n\n\nShortcutPlus (STABLE)\n\n\nSublimeApiDoc (STABLE)\n\n\nSublimeInfo (STABLE)\n\n\nToggleWhiteSpace (STABLE)\n\n\nAutoSideBar (EXPERIMENTAL)\n\n\nGrip - Github Readme GitHub Readme Instant Preview (EXPERIMENTAL)\n\n\n\n\nInstallation\n\n\nUse Package Control",
+            "text": "SublimeRandomCrap\n\n\nA random collection of Sublime Text plugins.\n\n\n\n\nOverview\n\n\nSublime random crap is a collection of Sublime Text plugins that I either do no want to publicly support or that are in an experimental state.\n\n\nPlugins\n\n\n\n\nAsciiTable (STABLE)\n\n\nGrepHere (STABLE)\n\n\nHighlightWord (STABLE)\n\n\nInsertDate (STABLE)\n\n\nPostmaster (EXPERIMENTAL)\n\n\nShortcutPlus (STABLE)\n\n\nSublimeApiDoc (STABLE)\n\n\nSublimeInfo (STABLE)\n\n\nToggleWhiteSpace (STABLE)\n\n\nAutoSideBar (EXPERIMENTAL)\n\n\nGrip - GitHub Readme Instant Preview (EXPERIMENTAL)\n\n\n\n\nInstallation\n\n\nUse Package Control",
             "title": "Home"
         },
         {
@@ -17,7 +17,7 @@
         },
         {
             "location": "/#plugins",
-            "text": "AsciiTable (STABLE)  GrepHere (STABLE)  HighlightWord (STABLE)  InsertDate (STABLE)  Postmaster (EXPERIMENTAL)  ShortcutPlus (STABLE)  SublimeApiDoc (STABLE)  SublimeInfo (STABLE)  ToggleWhiteSpace (STABLE)  AutoSideBar (EXPERIMENTAL)  Grip - Github Readme GitHub Readme Instant Preview (EXPERIMENTAL)",
+            "text": "AsciiTable (STABLE)  GrepHere (STABLE)  HighlightWord (STABLE)  InsertDate (STABLE)  Postmaster (EXPERIMENTAL)  ShortcutPlus (STABLE)  SublimeApiDoc (STABLE)  SublimeInfo (STABLE)  ToggleWhiteSpace (STABLE)  AutoSideBar (EXPERIMENTAL)  Grip - GitHub Readme Instant Preview (EXPERIMENTAL)",
             "title": "Plugins"
         },
         {
