@@ -1,3 +1,10 @@
+.wy-menu-vertical .subnav li.current > a {
+    padding-left: 2.42em;
+}
+.wy-menu-vertical .subnav li.current > ul li a {
+    padding-left: 3.23em;
+}
+
 /* Code Blocks */
 .rst-content code, .rst-content tt {
   color: #333;
@@ -5,6 +12,18 @@
   white-space: pre-wrap;
   line-height: 75%;
   padding: 2px 5px;
+}
+
+.rst-content a code, .rst-content a tt {
+    color: #2980B9;
+}
+
+.rst-content a:hover code, .rst-content a:hover tt {
+    color: #3091d1;
+}
+
+.rst-content a:visited code, .rst-content a:visited tt {
+    color: #9B59B6;
 }
 
 .rst-content div.codehilite {

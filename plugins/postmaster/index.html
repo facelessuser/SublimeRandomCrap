@@ -3,25 +3,29 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Postmaster - Sublime Random Crap Documentation</title>
   
-
   <link rel="shortcut icon" href="../../img/favicon.ico">
-
-  
+  <title>Postmaster - Sublime Random Crap Documentation</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_custom.css" type="text/css" />
   <link rel="stylesheet" href="../../css/highlight.css">
-
+  <link href="../../css/theme_custom.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Postmaster";
+    var mkdocs_page_input_path = "plugins\\postmaster.md";
+    var mkdocs_page_url = "/plugins/postmaster/";
+  </script>
+  
   <script src="../../js/jquery-2.1.1.min.js"></script>
   <script src="../../js/modernizr-2.8.3.min.js"></script>
   <script src="../../js/theme.js"></script> 
-
   
 </head>
 
@@ -134,6 +138,20 @@
     </li>
 
         
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../autosidebar/">AutoSideBar</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../grip/">Grip</a>
+        
+    </li>
+
+        
     </ul>
 <li>
           
@@ -166,9 +184,8 @@
     <li>Postmaster</li>
     <li class="wy-breadcrumbs-aside">
       
-        
-          <a href="https://github.com/facelessuser/SublimeRandomCrap" class="icon icon-github"> Edit on GitHub</a>
-        
+        <a href="https://github.com/facelessuser/SublimeRandomCrap/edit/master/docs/plugins\postmaster.md"
+          class="icon icon-github"> Edit on GitHub</a>
       
     </li>
   </ul>
@@ -183,7 +200,7 @@
 <p>Allows for sending emails via SMTP.  New emails are created via a command:</p>
 <p>Emails consist of the email content preceded by YAML frontmatter that defines<br />
 the subject, sender, recipients, attachments and SMTP servo info:</p>
-<div class="codehilite"><pre>---
+<div class="codehilite"><pre><span></span>---
 subject: Sending a file
 from: Postmaster User &lt;postmasteruser@example.com&gt;
 to: Someone &lt;someone@example.com&gt;
@@ -209,7 +226,7 @@ Hey what&#39;s up. Here&#39;s a file.
 <h1 id="configuring"><a name="user-content-configuring" href="#configuring" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Configuring</h1>
 <p>When creating an new email, postmaster looks in your Sublime User/Postmaster folder to find email templates.  These are used to create your new email<br />
 with its frontmatter and content:</p>
-<div class="codehilite"><pre><span class="p">{</span>
+<div class="codehilite"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;from&quot;</span><span class="o">:</span> <span class="s2">&quot;Postmaster User &lt;postmasteruser@example.com&gt;&quot;</span><span class="p">,</span>
     <span class="s2">&quot;signature&quot;</span><span class="o">:</span> <span class="s2">&quot;~Postmaster&quot;</span><span class="p">,</span>
     <span class="s2">&quot;smtp_server&quot;</span><span class="o">:</span> <span class="s2">&quot;smtp.gmail.com&quot;</span><span class="p">,</span>
@@ -237,22 +254,22 @@ with its frontmatter and content:</p>
 <tr>
 <td>from</td>
 <td>string</td>
-<td>Sender in the form <code>me@example.com</code>or <code>My Name &lt;me@example.com&gt;</code></td>
+<td>Sender in the form <code>me@example.com</code> or <code>My Name &lt;me@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>to</td>
 <td>string or array of strings</td>
-<td>Recipient in the form <code>to@example.com</code>or <code>Their Name &lt;to@example.com&gt;</code></td>
+<td>Recipient in the form <code>to@example.com</code> or <code>Their Name &lt;to@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>cc</td>
 <td>string or array of strings</td>
-<td>Carbon copy recipient in the form <code>to@example.com</code>or <code>Their Name &lt;to@example.com&gt;</code></td>
+<td>Carbon copy recipient in the form <code>to@example.com</code> or <code>Their Name &lt;to@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>bcc</td>
 <td>string or array of strings</td>
-<td>Blind carbon copy recipient in the form <code>to@example.com</code>or <code>Their Name &lt;to@example.com&gt;</code></td>
+<td>Blind carbon copy recipient in the form <code>to@example.com</code> or <code>Their Name &lt;to@example.com&gt;</code>.</td>
 </tr>
 <tr>
 <td>attachements</td>
@@ -282,13 +299,13 @@ with its frontmatter and content:</p>
 <tr>
 <td>user</td>
 <td>string</td>
-<td>Optional user name for SMTP server. By default, your sender email will be used <code>me@example.com</code></td>
+<td>Optional user name for SMTP server. By default, your sender email will be used <code>me@example.com</code>.</td>
 </tr>
 </tbody>
 </table>
 <h1 id="commands"><a name="user-content-commands" href="#commands" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Commands</h1>
 <p>Just add the following commands to create and send emails:</p>
-<div class="codehilite"><pre>    <span class="c1">//////////////////////////////////</span>
+<div class="codehilite"><pre><span></span>    <span class="c1">//////////////////////////////////</span>
     <span class="c1">// Postmaster</span>
     <span class="c1">//////////////////////////////////</span>
     <span class="p">{</span>
@@ -303,13 +320,13 @@ with its frontmatter and content:</p>
 
 
 <p>If you want to right click an email in a view and send an email to it, add the following to your context menu:</p>
-<div class="codehilite"><pre>    <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="o">:</span> <span class="s2">&quot;postmaster_mail_to&quot;</span><span class="p">}</span>
+<div class="codehilite"><pre><span></span>    <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="o">:</span> <span class="s2">&quot;postmaster_mail_to&quot;</span><span class="p">}</span>
 </pre></div>
 
 
 <h1 id="license"><a name="user-content-license" href="#license" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>License</h1>
 <p>Licensed under MIT<br />
-Copyright &copy; 2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></p>
+Copyright &copy; 2015 Isaac Muse <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#105;&#115;&#97;&#97;&#99;&#109;&#117;&#115;&#101;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &ldquo;Software&rdquo;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
 <p>THE SOFTWARE IS PROVIDED &ldquo;AS IS&rdquo;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
@@ -320,7 +337,7 @@ Copyright &copy; 2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../shortcutplus/" class="btn btn-neutral float-right" title="ShortcutPlus"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../shortcutplus/" class="btn btn-neutral float-right" title="ShortcutPlus">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../insertdate/" class="btn btn-neutral" title="InsertDate"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -331,11 +348,10 @@ Copyright &copy; 2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;
   <hr/>
 
   <div role="contentinfo">
-    <p>
+    <!-- Copyright etc -->
     
-    Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a>
+      <p>Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a></p>
     
-    </p>
   </div>
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
@@ -351,7 +367,7 @@ Copyright &copy; 2015 Isaac Muse <a href="../&#109;&#97;&#105;&#108;&#116;&#111;
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/facelessuser/SublimeRandomCrap" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../insertdate/" style="color: #fcfcfc;">&laquo; Previous</a></span>

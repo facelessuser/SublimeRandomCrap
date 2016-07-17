@@ -3,25 +3,29 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HighlightWord - Sublime Random Crap Documentation</title>
   
-
   <link rel="shortcut icon" href="../../img/favicon.ico">
-
-  
+  <title>HighlightWord - Sublime Random Crap Documentation</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_custom.css" type="text/css" />
   <link rel="stylesheet" href="../../css/highlight.css">
-
+  <link href="../../css/theme_custom.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "HighlightWord";
+    var mkdocs_page_input_path = "plugins\\highlightword.md";
+    var mkdocs_page_url = "/plugins/highlightword/";
+  </script>
+  
   <script src="../../js/jquery-2.1.1.min.js"></script>
   <script src="../../js/modernizr-2.8.3.min.js"></script>
   <script src="../../js/theme.js"></script> 
-
   
 </head>
 
@@ -134,6 +138,20 @@
     </li>
 
         
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../autosidebar/">AutoSideBar</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../grip/">Grip</a>
+        
+    </li>
+
+        
     </ul>
 <li>
           
@@ -166,9 +184,8 @@
     <li>HighlightWord</li>
     <li class="wy-breadcrumbs-aside">
       
-        
-          <a href="https://github.com/facelessuser/SublimeRandomCrap" class="icon icon-github"> Edit on GitHub</a>
-        
+        <a href="https://github.com/facelessuser/SublimeRandomCrap/edit/master/docs/plugins\highlightword.md"
+          class="icon icon-github"> Edit on GitHub</a>
       
     </li>
   </ul>
@@ -184,7 +201,7 @@
 <p>Originally a mod of <a href="https://github.com/ajpalkovic">ajpalkovic&rsquo;s plugin</a>, though it doesn&rsquo;t appear to be available anymore.</p>
 <h1 id="configuring"><a name="user-content-configuring" href="#configuring" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Configuring</h1>
 <p>Highlights all other instances of the selected word (or optionally word under cursor):</p>
-<div class="codehilite"><pre>    <span class="c1">// Require the word to be selected.</span>
+<div class="codehilite"><pre><span></span>    <span class="c1">// Require the word to be selected.</span>
     <span class="c1">// Disable to highlight word with no selection.</span>
     <span class="s2">&quot;require_word_select&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 </pre></div>
@@ -193,20 +210,20 @@
 <p>Can be configured to highlight multiple word sets simultaneously with multiple cursors.<br />
 When doing multiple cursors, you can highlight each in their own color<br />
 (limited by available theme colors):</p>
-<div class="codehilite"><pre>    <span class="c1">// Define scopes for highlights</span>
+<div class="codehilite"><pre><span></span>    <span class="c1">// Define scopes for highlights</span>
     <span class="c1">// The more you define, the more selections you can do</span>
     <span class="s2">&quot;highlight_scopes&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;keyword&quot;</span><span class="p">,</span> <span class="s2">&quot;constant.language&quot;</span><span class="p">],</span>
 </pre></div>
 
 
 <p>Style of highlights can also be controlled:</p>
-<div class="codehilite"><pre>    <span class="c1">// Highlight style (solid|outline|underline|thin_underline|squiggly|stippled)</span>
+<div class="codehilite"><pre><span></span>    <span class="c1">// Highlight style (solid|outline|underline|thin_underline|squiggly|stippled)</span>
     <span class="s2">&quot;highlight_style&quot;</span><span class="o">:</span> <span class="s2">&quot;outline&quot;</span><span class="p">,</span>
 </pre></div>
 
 
 <p>Optionally can disable highlight if number of selections in view are greater than a certain value:</p>
-<div class="codehilite"><pre>    <span class="c1">// If selection threshold is greater than</span>
+<div class="codehilite"><pre><span></span>    <span class="c1">// If selection threshold is greater than</span>
     <span class="c1">// the specified setting, don&#39;t highlight words.</span>
     <span class="c1">// -1 means no threshold.</span>
     <span class="s2">&quot;selection_threshold&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mi">1</span>
@@ -222,7 +239,7 @@ When doing multiple cursors, you can highlight each in their own color<br />
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../insertdate/" class="btn btn-neutral float-right" title="InsertDate"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../insertdate/" class="btn btn-neutral float-right" title="InsertDate">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../grephere/" class="btn btn-neutral" title="GrepHere"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -233,11 +250,10 @@ When doing multiple cursors, you can highlight each in their own color<br />
   <hr/>
 
   <div role="contentinfo">
-    <p>
+    <!-- Copyright etc -->
     
-    Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a>
+      <p>Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a></p>
     
-    </p>
   </div>
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
@@ -253,7 +269,7 @@ When doing multiple cursors, you can highlight each in their own color<br />
 <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/facelessuser/SublimeRandomCrap" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../grephere/" style="color: #fcfcfc;">&laquo; Previous</a></span>
