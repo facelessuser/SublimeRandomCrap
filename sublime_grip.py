@@ -1,4 +1,9 @@
-"""Github Readme GitHub Readme Instant Preview."""
+"""
+Github Readme GitHub Readme Instant Preview.
+
+Licensed under MIT
+Copyright (c) 2016 Isaac Muse <isaacmuse@gmail.com>
+"""
 import sublime
 import sublime_plugin
 import os

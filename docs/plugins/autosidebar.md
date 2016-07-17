@@ -7,6 +7,20 @@ Auto hide and show the sidebar.
 # Overview
 Provides a listener that will hide the sidebar when mousing over a text view and triggering a hover event.  Shows the sidebar when the cursor mouses over the gutter and triggers a hover event.
 
+# Commands
+AutoSideBar contains only one command that is used to enable and disable the feature.  The toggle command also has only one optional argument that is used to set the sidebar state on feature disable.  `show_sidebar` can be set either to `true` or `false` to show or hide the sidebar on feature disable.  If nothing is specified, the sidebar will be left in its current state (shown or hidden) on feature disable. 
+
+```js
+    //////////////////////////////////
+    // AutoSideBar Commands
+    //////////////////////////////////
+    {
+        "caption": "AutoSideBar: Toggle",
+        "command": "auto_side_bar_toggle",
+        "args": {"show_sidebar": true}
+    },
+```
+
 # License
 Licensed under MIT
 Copyright (c) 2016 Isaac Muse <isaacmuse@gmail.com>
