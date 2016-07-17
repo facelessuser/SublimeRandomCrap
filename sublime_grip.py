@@ -49,45 +49,65 @@ class GripCommand(sublime_plugin.TextCommand):
     def run(self, edit, livereload=False):
         """Run command."""
 
+        # Kill running process
         global proc
-        setting = sublime.load_settings('sublime-grip.sublime-settings')
+        if proc is not None:
+            kill_process()
+
+        settings = sublime.load_settings('sublime-grip.sublime-settings')
+
+        # Get auth token
+        oauth_token = settings.get('oauth_token', None)
+        if not isinstance(oauth_token, str):
+            oauth_token = None
+
+        # Prepare command
         file_name = self.view.file_name()
+        cmd = settings.get('python_cmd')
+        cmd += ["-m", "grip"]
+        if not livereload:
+            cmd.append("--norefresh")
+        cmd.append('-b')
+
+        if oauth_token:
+            cmd += ["--pass", oauth_token]
+
         if file_name is not None and os.path.exists(file_name):
-            # Kill running process
-            if proc is not None:
-                kill_process()
-
-            # Prepare command
-            cmd = setting.get('python_cmd')
-            cmd += ["-m", "grip"]
-            if not livereload:
-                cmd.append("--norefresh")
-            cmd.append('-b')
             cmd.append(file_name)
+            text = None
+        else:
+            cmd.append('--title=Untitled - Grip ')
+            cmd.append('-')
+            text = self.view.substr(sublime.Region(0, self.view.size()))
 
-            # Execute command
-            if sublime.platform() == "windows":
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                p = subprocess.Popen(
-                    cmd,
-                    startupinfo=startupinfo,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    env=get_environ()
-                )
-            else:
-                p = subprocess.Popen(
-                    cmd,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    env=get_environ()
-                )
+        # Execute command
+        if sublime.platform() == "windows":
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            p = subprocess.Popen(
+                cmd,
+                startupinfo=startupinfo,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=get_environ()
+            )
+        else:
+            p = subprocess.Popen(
+                cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=get_environ()
+            )
 
-            # Save proc for livereload
-            proc = p
+        # Send input if executing on buffer
+        if text is not None:
+            p.stdin.write(text.encode('utf-8'))
+            p.stdin.close()
+
+        # Save proc for livereload
+        proc = p
 
 
 def kill_process():
