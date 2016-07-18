@@ -44,7 +44,7 @@ OPTIONS = OrderedDict(
         ),
         (
             "Icons",
-                [
+            [
                 "theme_icons_materialized",
                 "theme_icons_atomized",
             ],
@@ -178,8 +178,8 @@ OPTIONS = OrderedDict(
             ],
         ),
         (
-             "Sidebar Indent",
-             [
+            "Sidebar Indent",
+            [
                 "theme_sidebar_indent_xs",
                 "theme_sidebar_indent_sm",
                 "theme_sidebar_indent_md",
@@ -291,6 +291,8 @@ def is_boxy_res(item):
 
 
 class BoxyConfigCommand(sublime_plugin.TextCommand):
+    """Boxy configuration."""
+
     def on_navigate(self, href):
         """Handle option selection."""
 
@@ -402,8 +404,8 @@ class BoxyConfigCommand(sublime_plugin.TextCommand):
             ''.join(popup),
             css=css,
             on_navigate=self.on_navigate,
-            max_width = 1024,
-            max_height = 1024
+            max_width=1024,
+            max_height=1024
         )
 
     def run(self, edit):
