@@ -280,7 +280,7 @@ OPTIONS = OrderedDict(
 )
 
 css = """\
-.boxy-config.small { font-size: {{'*.8px'|relativesize}}; }\n
+.boxy-config.small { font-size: {{'*.8px'|relativesize}}; }
 """
 
 
