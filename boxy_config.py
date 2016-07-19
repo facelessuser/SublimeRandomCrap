@@ -279,8 +279,29 @@ OPTIONS = OrderedDict(
     )
 )
 
+BACK = '[◀](back){: .boxy-config .ui-control }'
+SECTIONS = '- [%(section)s](::%(section)s){: .boxy-config .ui-control }\n'
+SECTION_LABEL = '\n\n## Boxy Config - %s\n\n'
+SECTIONS_LABEL = '\n\n## Boxy Config - Sections\n\n'
+GENERAL_SETTING = '''- [**%(status)s**{: .boxy-config %(class)s} %(name)s](%(name)s:%(set)s:%(section)s)\
+{: .boxy-config .ui-control }\n'''
+SCHEME = '''- [**%(status)s**{: .boxy-config %(class)s} %(name)s](color_scheme:%(set)s:%(section)s)\
+{: .boxy-config .ui-control }\n'''
+THEME_LABEL = '\n\n## Boxy Config - Theme\n\n'
+SCHEME_LABEL = '\n\n## Boxy Config - Color Scheme\n\n'
+OTHER_SCHEME = '''- [**%(status)s**{: .boxy-config .ui-control %(class)s} Other: %(name)s]\
+(color_scheme:%(set)s:%(section)s){: .boxy-config .ui-control }\n'''
+THEME = '''- [**%(status)s**{: .boxy-config .ui-control %(class)s} %(name)s](theme:%(set)s:%(section)s)\
+{: .boxy-config .ui-control }\n'''
+OTHER_THEME = '''- [**%(status)s**{: .boxy-config .ui-control %(class)s} Other: %(name)s](theme:%(set)s:%(section)s)\
+{: .boxy-config .ui-control }\n'''
+MARKED = "✓"
+UNMARKED = "✗"
+RADIO_MARKED = "☒"
+RADIO_UNMARKED = "☐"
 css = """\
 .boxy-config.small { font-size: {{'*.8px'|relativesize}}; }
+.boxy-config.ui-control { text-decoration: none; }
 """
 
 
@@ -296,9 +317,7 @@ class BoxyConfigCommand(sublime_plugin.TextCommand):
     def on_navigate(self, href):
         """Handle option selection."""
 
-        if href == 'close':
-            self.hide_popup(self.view)
-        elif href == 'back':
+        if href == 'back':
             self.show_popup('Main')
         else:
             settings = sublime.load_settings('Preferences.sublime-settings')
@@ -320,28 +339,26 @@ class BoxyConfigCommand(sublime_plugin.TextCommand):
         """Show config popup."""
 
         settings = sublime.load_settings('Preferences.sublime-settings')
-        if menu == 'Main':
-            popup = ['[close](close){: .boxy-config .small}']
-        else:
-            popup = ['[back](back){: .boxy-config .small}']
-        popup.append('\n\n# Boxy Config')
+        popup = []
+        if menu != 'Main':
+            popup = [BACK]
 
         if menu == 'Main':
-            popup.append('\n\n## Sections\n\n')
+            popup.append(SECTIONS_LABEL)
             for k in ['Theme', 'Color Scheme'] + list(OPTIONS.keys()):
-                popup.append('- [%(section)s](::%(section)s)\n' % {"section": k})
+                popup.append(SECTIONS % {"section": k})
         elif menu == 'Theme':
             theme = settings.get('theme', '')
             boxy_themes = [
                 os.path.basename(bt) for bt in sorted(sublime.find_resources('Boxy*.sublime-theme')) if is_boxy_res(bt)
             ]
-            popup.append('\n\n## Theme\n\n')
+            popup.append(THEME_LABEL)
             for option in boxy_themes:
                 option_value = theme == option
                 popup.append(
-                    '- [**%(status)s**{: %(class)s}](theme:%(set)s:%(section)s) %(name)s\n' % {
+                    THEME % {
                         "name": option,
-                        "status": '⚫' if option_value else '⚪',
+                        "status": RADIO_MARKED if option_value else RADIO_UNMARKED,
                         "set": option,
                         "class": '.success' if option_value else '.error',
                         'section': "Theme"
@@ -349,9 +366,9 @@ class BoxyConfigCommand(sublime_plugin.TextCommand):
                 )
             if theme is not None and theme not in boxy_themes:
                 popup.append(
-                    '- [**%(status)s**{: %(class)s}](theme:%(set)s:%(section)s) Other: %(name)s\n' % {
+                    OTHER_THEME % {
                         "name": theme,
-                        "status": '⚫',
+                        "status": RADIO_MARKED,
                         "set": option,
                         "class": '.success' if option_value else '.error',
                         'section': "Theme"
@@ -362,13 +379,13 @@ class BoxyConfigCommand(sublime_plugin.TextCommand):
             boxy_schemes = [
                 bs for bs in sorted(sublime.find_resources('Boxy*.tmTheme')) if is_boxy_res(bs)
             ]
-            popup.append('\n\n## Color Scheme\n\n')
+            popup.append(SCHEME_LABEL)
             for option in boxy_schemes:
                 option_value = scheme == option
                 popup.append(
-                    '- [**%(status)s**{: %(class)s}](color_scheme:%(set)s:%(section)s) %(name)s\n' % {
+                    SCHEME % {
                         "name": option,
-                        "status": '⚫' if option_value else '⚪',
+                        "status": RADIO_MARKED if option_value else RADIO_UNMARKED,
                         "set": option,
                         "class": '.success' if option_value else '.error',
                         "section": 'Color Scheme'
@@ -376,22 +393,22 @@ class BoxyConfigCommand(sublime_plugin.TextCommand):
                 )
             if scheme is not None and scheme not in boxy_schemes:
                 popup.append(
-                    '- [**%(status)s**{: %(class)s}](color_scheme:%(set)s:%(section)s) Other: %(name)s\n' % {
+                    OTHER_SCHEME % {
                         "name": scheme,
-                        "status": '⚫',
+                        "status": RADIO_MARKED,
                         "set": option,
                         "class": '.success',
                         "section": 'Color Scheme'
                     }
                 )
         else:
-            popup.append('\n\n## %s\n\n' % menu)
+            popup.append(SECTION_LABEL % menu)
             for option in OPTIONS[menu]:
                 option_value = bool(settings.get(option, False))
                 popup.append(
-                    '- [**%(status)s**{: %(class)s}](%(name)s:%(set)s:%(section)s) %(name)s\n' % {
+                    GENERAL_SETTING % {
                         "name": option,
-                        "status": '✓' if option_value else '✗',
+                        "status": MARKED if option_value else UNMARKED,
                         "set": str(not option_value),
                         "class": '.success' if option_value else '.error',
                         "section": menu
