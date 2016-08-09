@@ -20,14 +20,18 @@ class AutoSideBarListener(sublime_plugin.EventListener):
         Events like "reveal file" in sidebar will usually show the sidebar on their own.
         """
 
+        if view.settings().get('is_widget', False):
+            return
+
         settings = sublime.load_settings('autosidebar.sublime-settings')
         if settings.get('autosidebar_enable', True):
             win = view.window()
             if win is not None:
+                no_gutter = not view.settings().get('gutter', False)
                 sidebar_visible = win.is_sidebar_visible()
-                if sidebar_visible is False and hover_zone == sublime.HOVER_GUTTER:
+                if sidebar_visible is False and (hover_zone == sublime.HOVER_GUTTER or no_gutter):
                     win.run_command('toggle_side_bar')
-                elif sidebar_visible is True and hover_zone != sublime.HOVER_GUTTER:
+                elif sidebar_visible is True and hover_zone != sublime.HOVER_GUTTER and not no_gutter:
                     win.run_command('toggle_side_bar')
 
 
