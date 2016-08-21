@@ -43,7 +43,7 @@ class ShowSublimeApiCommand(sublime_plugin.ApplicationCommand):
 
         version = int(sublime.version())
         if version >= 3000 and version < 4000:
-            webbrowser.open("http://www.sublimetext.com/docs/3/api_reference.html")
+            webbrowser.open("https://www.sublimetext.com/docs/3/api_reference.html")
         elif version >= 2000 and version < 3000:
             webbrowser.open("http://www.sublimetext.com/docs/2/api_reference.html")
         else:
