@@ -271,7 +271,7 @@ class HighlightWordListenerCommand(sublime_plugin.EventListener):
     def on_selection_modified(self, view):
         """Handle selection events for highlighting."""
 
-        if hw_thread.ignore_all:
+        if hw_thread is None or hw_thread.ignore_all:
             return
         now = time()
         hw_thread.modified = True
