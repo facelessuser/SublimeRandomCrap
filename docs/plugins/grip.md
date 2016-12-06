@@ -1,11 +1,10 @@
 # Grip (EXPERIMENTAL) {: .doctitle}
 Github Readme GitHub Readme Instant Preview.
-{: .doctitle-info}
 
 ---
 
 # Overview
-Uses [grip](https://github.com/joeyespo/grip) (installed on machine) to preview a Github readme.  Can only have one grip instance running a one time.  When a new grip instance is created, the last one is killed.
+This is buggy. Uses [grip](https://github.com/joeyespo/grip) (installed on machine) to preview a Github readme.  Can only have one grip instance running a one time.  When a new grip instance is created, the last one is killed.
 
 # Commands
 ```js

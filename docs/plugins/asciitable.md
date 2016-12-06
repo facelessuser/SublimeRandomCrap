@@ -1,6 +1,5 @@
 # AsciiTable (STABLE) {: .doctitle}
 Reference ASCII table for Sublime Text.
-{: .doctitle-info}
 
 ---
 

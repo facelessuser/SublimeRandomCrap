@@ -1,6 +1,5 @@
 # GrepHere (STABLE) {: .doctitle}
 Launch your favorite grep tool from Sublime text.
-{: .doctitle-info}
 
 ---
 

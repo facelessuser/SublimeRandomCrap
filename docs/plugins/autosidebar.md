@@ -1,6 +1,5 @@
 # AutoSideBar (EXPERIMENTAL) {: .doctitle}
 Auto hide and show the sidebar.
-{: .doctitle-info}
 
 ---
 

@@ -1,6 +1,5 @@
 # SublimeRandomCrap {: .doctitle}
 A random collection of Sublime Text plugins.
-{: .doctitle-info}
 
 ---
 
@@ -18,7 +17,7 @@ Sublime random crap is a collection of Sublime Text plugins that I either do no 
 - [SublimeInfo (STABLE)](plugins/sublimeinfo.md)
 - [ToggleWhiteSpace (STABLE)](plugins/togglewhitespace.md)
 - [AutoSideBar (EXPERIMENTAL)](plugins/autosidebar.md)
-- [Grip - GitHub Readme Instant Preview (EXPERIMENTAL)](plugins/grip.md)
+<!-- - [Grip - GitHub Readme Instant Preview (EXPERIMENTAL)](plugins/grip.md) -->
 
 # Installation
 Use Package Control

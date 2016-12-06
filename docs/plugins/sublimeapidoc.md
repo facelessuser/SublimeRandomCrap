@@ -1,6 +1,5 @@
 # SublimeApiDoc (STABLE) {: .doctitle}
 Show Sublime's API Doc website.
-{: .doctitle-info}
 
 ---
 

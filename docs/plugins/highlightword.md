@@ -1,6 +1,5 @@
 # HighlightWord (STABLE) {: .doctitle}
 Highlight selected instances of words.
-{: .doctitle-info}
 
 ---
 
@@ -9,6 +8,8 @@ Originally a mod of [ajpalkovic's plugin](https://github.com/ajpalkovic), though
 
 
 # Configuring
+All settings are found in `highlight_word.sublime-settings`.
+
 Highlights all other instances of the selected word (or optionally word under cursor):
 
 ```js
@@ -41,6 +42,19 @@ Optionally can disable highlight if number of selections in view are greater tha
     // the specified setting, don't highlight words.
     // -1 means no threshold.
     "selection_threshold": -1
+```
+
+# Selecting All Instances of Word
+HighlightWord also provides a command to highlight all instances of selected word(s). Just add the following command to your `Default.sublime-commands` file:
+
+```js
+    //////////////////////////////////
+    // Highlight Word
+    //////////////////////////////////
+    {
+        "caption": "HighlightWord: Select Word(s)",
+        "command": "highlight_word_select"
+    },
 ```
 
 # License

@@ -1,6 +1,5 @@
 # SublimeInfo (STABLE) {: .doctitle}
 Show basic system info in Sublime Text.
-{: .doctitle-info}
 
 ---
 

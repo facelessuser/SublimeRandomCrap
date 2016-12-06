@@ -1,6 +1,5 @@
 # InsertDate (STABLE) {: .doctitle}
 Insert the date in Sublime Text.
-{: .doctitle-info}
 
 ---
 

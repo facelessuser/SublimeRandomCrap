@@ -1,6 +1,5 @@
 # ShortcutPlus (STABLE) {: .doctitle}
 Shortcut profile manager for Sublime Text.
-{: .doctitle-info}
 
 ---
 

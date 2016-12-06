@@ -1,6 +1,5 @@
 # ToggleWhiteSpace (STABLE) {: .doctitle}
 Toggle whitespace in Sublime Text.
-{: .doctitle-info}
 
 ---
 

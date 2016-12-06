@@ -1,6 +1,5 @@
 # Postmaster (EXPERIMENTAL) {: .doctitle}
 Send emails from Sublime Text.
-{: .doctitle-info}
 
 ---
 
