@@ -19,13 +19,12 @@
   <script>
     // Current page data
     var mkdocs_page_name = "HighlightWord";
-    var mkdocs_page_input_path = "plugins\\highlightword.md";
+    var mkdocs_page_input_path = "plugins/highlightword.md";
     var mkdocs_page_url = "/plugins/highlightword/";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../js/modernizr-2.8.3.min.js"></script>
-  <script src="../../js/theme.js"></script> 
+  <script src="../../js/modernizr-2.8.3.min.js"></script> 
   
 </head>
 
@@ -45,7 +44,7 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        <ul class="current">
+	<ul class="current">
           
             <li>
     <li class="toctree-l1 ">
@@ -86,6 +85,9 @@
                 
             
                 <li class="toctree-l3"><a href="#configuring">Configuring</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#selecting-all-instances-of-word">Selecting All Instances of Word</a></li>
                 
             
                 <li class="toctree-l3"><a href="#license">License</a></li>
@@ -145,13 +147,6 @@
     </li>
 
         
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../grip/">Grip</a>
-        
-    </li>
-
-        
     </ul>
 <li>
           
@@ -184,7 +179,7 @@
     <li>HighlightWord</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/facelessuser/SublimeRandomCrap/edit/master/docs/plugins\highlightword.md"
+        <a href="https://github.com/facelessuser/SublimeRandomCrap/edit/master/docs/plugins/highlightword.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -195,7 +190,7 @@
             <div class="section">
               
                 <h1 class="doctitle" id="highlightword-stable"><a name="user-content-highlightword-stable" href="#highlightword-stable" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HighlightWord (STABLE)</h1>
-<p class="doctitle-info">Highlight selected instances of words.<br /></p>
+<p>Highlight selected instances of words.</p>
 <hr />
 <h1 id="overview"><a name="user-content-overview" href="#overview" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Overview</h1>
 <p>Originally a mod of <a href="https://github.com/ajpalkovic">ajpalkovic&rsquo;s plugin</a>, though it doesn&rsquo;t appear to be available anymore.</p>
@@ -230,6 +225,18 @@ When doing multiple cursors, you can highlight each in their own color<br />
 </pre></div>
 
 
+<h1 id="selecting-all-instances-of-word"><a name="user-content-selecting-all-instances-of-word" href="#selecting-all-instances-of-word" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Selecting All Instances of Word</h1>
+<p>HighlightWord also provides a command to highlight all instances of selected word(s). Just add the following command to your <code>Default.sublime-commands</code> file:</p>
+<div class="codehilite"><pre><span></span>    <span class="c1">//////////////////////////////////</span>
+    <span class="c1">// Highlight Word</span>
+    <span class="c1">//////////////////////////////////</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;caption&quot;</span><span class="o">:</span> <span class="s2">&quot;HighlightWord: Select Word(s)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;command&quot;</span><span class="o">:</span> <span class="s2">&quot;highlight_word_select&quot;</span>
+    <span class="p">},</span>
+</pre></div>
+
+
 <h1 id="license"><a name="user-content-license" href="#license" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>License</h1>
 <p>Unknown at the present.  It used to be publicly available, but has since been removed.  I had forked it for personal modifications.  There was no license mentioned at the time.</p>
               
@@ -252,7 +259,7 @@ When doing multiple cursors, you can highlight each in their own color<br />
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2011 - 2015 <a href="https://github.com/facelessuser">Isaac Muse</a></p>
+      <p>Copyright &copy; 2011 - 2016 <a href="https://github.com/facelessuser">Isaac Muse</a></p>
     
   </div>
 
@@ -263,10 +270,10 @@ When doing multiple cursors, you can highlight each in their own color<br />
       </div>
 
     </section>
-
+    
   </div>
 
-<div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/facelessuser/SublimeRandomCrap" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -279,6 +286,7 @@ When doing multiple cursors, you can highlight each in their own color<br />
       
     </span>
 </div>
+    <script src="../../js/theme.js"></script>
 
 </body>
 </html>
