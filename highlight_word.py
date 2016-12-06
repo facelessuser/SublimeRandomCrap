@@ -278,6 +278,114 @@ class HighlightWordListenerCommand(sublime_plugin.EventListener):
         hw_thread.time = now
 
 
+class HighlightWordSelectCommand(sublime_plugin.TextCommand):
+    """Select all instances of the selected word(s)."""
+
+    def run(self, edit):
+        """run the command"""
+
+        theme_selectors = tuple(settings.get('highlight_scopes', [SCOPE]))
+        max_selections = len(theme_selectors)
+        word_select = settings.get('require_word_select', False)
+
+        current_words = []
+        current_regions = []
+        good_words = set()
+        words = []
+
+        separator_string = self.view.settings().get('word_separators', "") + " \n\r\t"
+        selections = self.view.sel()
+        sel_len = len(selections)
+        if sel_len > 0:
+            # Reduce m*n search to just n by mapping each word
+            # separator character into a dictionary
+            self.separators = {}
+            for c in separator_string:
+                self.separators[c] = True
+
+            for selection in selections:
+                current_regions.append(self.view.word(selection))
+                current_words.append(
+                    self.view.substr(current_regions[-1]).strip(separator_string)
+                )
+
+            count = 0
+            for word in current_words:
+                if word not in good_words:
+                    if count != max_selections:
+                        good_words.add(word)
+                        words.append((word, current_regions[count]))
+                        count += 1
+                    else:
+                        return
+
+        count = 0
+        select_regions = []
+        for word in words:
+            key = KEY + str(count)
+            selector = theme_selectors[count]
+
+            # See if a word is selected or if you are just in a word
+            if word_select and word[1].size() != selections[count].size():
+                continue
+
+            # remove leading/trailing separator characters just in case
+            # print u"|%s|" % currentWord
+            if len(word[0]) == 0:
+                continue
+
+            # ignore the selection if it spans multiple words
+            abort = False
+            for c in word[0]:
+                if c in self.separators:
+                    abort = True
+                    break
+            if abort:
+                continue
+
+            select_regions += self.select_word(key, selector, word[0])
+            count += 1
+
+        if select_regions:
+            self.view.sel().clear()
+            self.view.sel().add_all(select_regions)
+
+    def select_word(self, key, selector, current_word):
+        """Find and highlight word."""
+
+        size = self.view.size() - 1
+        search_start = 0
+
+        valid_regions = []
+        while True:
+            found_region = self.view.find(current_word, search_start, sublime.LITERAL)
+            if found_region is None:
+                break
+
+            # regions can have reversed start/ends so normalize them
+            start = max(0, found_region.begin())
+            end = min(size, found_region.end())
+            if search_start == end:
+                search_start += 1
+                continue
+            search_start = end
+
+            if search_start >= size:
+                break
+
+            if found_region.empty():
+                break
+
+            # check if the character before and after the region is a separator character
+            # if it is not, then the region is part of a larger word and shouldn't match
+            # this can't be done in a regex because we would be unable to use the word_separators setting string
+            if start == 0 or self.view.substr(sublime.Region(start - 1, start)) in self.separators:
+                if end == size or self.view.substr(sublime.Region(end, end + 1)) in self.separators:
+                    valid_regions.append(found_region)
+
+        return valid_regions
+
+
 class HwThread(threading.Thread):
     """Load up defaults."""
 
