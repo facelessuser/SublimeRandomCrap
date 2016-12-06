@@ -282,7 +282,7 @@ class HighlightWordSelectCommand(sublime_plugin.TextCommand):
     """Select all instances of the selected word(s)."""
 
     def run(self, edit):
-        """run the command"""
+        """Run the command."""
 
         theme_selectors = tuple(settings.get('highlight_scopes', [SCOPE]))
         max_selections = len(theme_selectors)
