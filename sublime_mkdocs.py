@@ -62,7 +62,7 @@ class MkdocsCommand(sublime_plugin.TextCommand):
 
         # Prepare command
         file_name = self.view.file_name()
-        cmd = [settings.get('mkdocs_location')]
+        cmd = [settings.get('mkdocs_exe').get(sublime.platform())]
         port = settings.get('port', '8000')
         timeout = settings.get('timeout', 5)
         assert os.path.exists(cmd[0]), "Can't find mkdocs!"
@@ -136,8 +136,9 @@ def kill_process():
         p = get_process(cmd)
         p.communicate()
     else:
-        # TODO: add 'nix stuff here
-        pass
+        cmd = ['pkill', '-f', r'[pP]ython.*mkdocs']
+        p = get_process(cmd)
+        p.communicate()
 
 
 def plugin_loaded():

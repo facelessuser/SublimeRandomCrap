@@ -1,3 +1,6 @@
 {
-    "grip_location": "c:/Python35/Scripts/grip.exe"
+    "grip_exe": {
+        "windows": "c:/Python27/Scripts/grip.exe",
+        "osx": "/Library/Frameworks/Python.framework/Versions/2.7/bin/grip"
+    }
 }

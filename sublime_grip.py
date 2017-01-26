@@ -60,7 +60,7 @@ class GripCommand(sublime_plugin.TextCommand):
         proc = None
 
         settings = sublime.load_settings('sublime-grip.sublime-settings')
-        port = settings.get('port', '8000')
+        port = settings.get('port', '6419')
         timeout = settings.get('timeout', 5)
 
         # Get auth token
@@ -70,7 +70,7 @@ class GripCommand(sublime_plugin.TextCommand):
 
         # Prepare command
         file_name = self.view.file_name()
-        cmd = [settings.get('grip_location')]
+        cmd = [settings.get('grip_exe').get(sublime.platform())]
         assert os.path.exists(cmd[0]), "Can't find grip!"
         if not livereload:
             cmd.append("--norefresh")
@@ -152,8 +152,9 @@ def kill_process():
         p = get_process(cmd)
         p.communicate()
     else:
-        # TODO: add 'nix stuff here
-        pass
+        cmd = ['pkill', '-f', r'[pP]ython.*grip']
+        p = get_process(cmd)
+        p.communicate()
 
 
 def plugin_loaded():
