@@ -14,7 +14,8 @@ Sublime random crap is a collection of Sublime Text plugins that I either do no 
 - SublimeInfo (STABLE)
 - ToggleWhiteSpace (STABLE)
 - AutoSideBar (EXPERIMENTAL)
-- Grip - GitHub Readme Instant Preview (EXPERIMENTAL)
+- GripLive - GitHub Readme Instant Preview (EXPERIMENTAL)
+- MkDocsLive (EXPERIMENTAL)
 
 # Documentation
 http://facelessuser.github.io/SublimeRandomCrap/

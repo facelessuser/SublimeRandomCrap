@@ -1,5 +1,5 @@
 """
-Github Readme GitHub Readme Instant Preview.
+Mkdocs Instant Preview.
 
 Licensed under MIT
 Copyright (c) 2016 Isaac Muse <isaacmuse@gmail.com>
@@ -40,7 +40,7 @@ def get_environ():
     return env
 
 
-class GripKillCommand(sublime_plugin.ApplicationCommand):
+class MkdocsKillCommand(sublime_plugin.ApplicationCommand):
     """Command to kill last process."""
 
     def run(self):
@@ -48,85 +48,42 @@ class GripKillCommand(sublime_plugin.ApplicationCommand):
         kill_process()
 
 
-class GripCommand(sublime_plugin.TextCommand):
-    """Run grip."""
+class MkdocsCommand(sublime_plugin.TextCommand):
+    """Run mkdocs."""
 
     def run(self, edit, livereload=False):
         """Run command."""
-
         global proc
         # Kill running process
         kill_process()
         proc = None
 
-        settings = sublime.load_settings('sublime-grip.sublime-settings')
-        port = settings.get('port', '8000')
-        timeout = settings.get('timeout', 5)
-
-        # Get auth token
-        oauth_token = settings.get('oauth_token', None)
-        if not isinstance(oauth_token, str):
-            oauth_token = None
+        settings = sublime.load_settings('sublime-mkdocs.sublime-settings')
 
         # Prepare command
         file_name = self.view.file_name()
-        cmd = [settings.get('grip_location')]
-        assert os.path.exists(cmd[0]), "Can't find grip!"
-        if not livereload:
-            cmd.append("--norefresh")
+        cmd = [settings.get('mkdocs_location')]
+        port = settings.get('port', '8000')
+        timeout = settings.get('timeout', 5)
+        assert os.path.exists(cmd[0]), "Can't find mkdocs!"
 
-        if oauth_token:
-            cmd += ["--pass", oauth_token]
-
-        if file_name is not None and os.path.exists(file_name):
-            cmd.append(file_name)
-            cmd.append(port)
-            text = None
+        if file_name is not None and os.path.exists(file_name) and os.path.splitext(file_name)[1].lower() == '.yml':
+            cmd.extend(['serve', '-f', file_name, '-a', 'localhost:%s' % port])
+            if not livereload:
+                cmd.append('--no-livereload')
+            p = get_process(cmd, os.path.dirname(file_name))
+            p.stdin.close()
+            proc = p
+            sublime.set_timeout(lambda: check_status(timeout, port), 0)
         else:
-            cmd.append('--title=Untitled - Grip ')
-            cmd.append('-')
-            cmd.append(port)
-            text = self.view.substr(sublime.Region(0, self.view.size()))
-
-        p = get_process(cmd)
-
-        # Send input if executing on buffer
-        if text is not None:
-            p.stdin.write(text.encode('utf-8'))
-        p.stdin.close()
-        proc = p
-        sublime.set_timeout(lambda: check_status(timeout, port), 2000)
-
-
-def get_process(cmd):
-    """Execute command."""
-    if sublime.platform() == "windows":
-        startupinfo = subprocess.STARTUPINFO()
-        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        p = subprocess.Popen(
-            cmd,
-            startupinfo=startupinfo,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=get_environ()
-        )
-    else:
-        p = subprocess.Popen(
-            cmd,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=get_environ()
-        )
-    return p
+            print('MkDocsLive: Please provide a valid mkdocs.yml file!')
 
 
 def check_status(count, port):
     """Check status."""
 
     if proc.poll() is not None:
-        print('GripLive: Process died :(')
+        print('MkDocsLive: Process died :(')
         return
 
     try:
@@ -140,15 +97,42 @@ def check_status(count, port):
         count -= 1
         sublime.set_timeout(lambda: check_status(count, port), 2000)
     else:
-        print('GripLive: Process timed out :(')
+        print('MkDocsLive: Process timed out :(')
         kill_process()
+
+
+def get_process(cmd, cwd=None):
+    """Execute command."""
+
+    if sublime.platform() == "windows":
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        p = subprocess.Popen(
+            cmd,
+            startupinfo=startupinfo,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=get_environ(),
+            cwd=cwd
+        )
+    else:
+        p = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=get_environ(),
+            cwd=cwd
+        )
+    return p
 
 
 def kill_process():
     """Kill the last process (if there is one)."""
 
     if sublime.platform() == "windows":
-        cmd = ['taskkill', '/f', '/t', '/im', 'grip.exe']
+        cmd = ['taskkill', '/f', '/t' '/im', 'mkdocs.exe']
         p = get_process(cmd)
         p.communicate()
     else:
