@@ -8,7 +8,6 @@ Sublime random crap is a collection of Sublime Text plugins that I either do no 
 
 # Plugins
 - [AsciiTable (STABLE)](plugins/asciitable.md)
-- [GrepHere (STABLE)](plugins/grephere.md)
 - [HighlightWord (STABLE)](plugins/highlightword.md)
 - [InsertDate (STABLE)](plugins/insertdate.md)
 - [Postmaster (EXPERIMENTAL)](plugins/postmaster.md)
