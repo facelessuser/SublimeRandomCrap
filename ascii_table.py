@@ -2,11 +2,11 @@
 """
 ASCII Table Sublime Plugin.
 
-Display an extended ascii table in Sublime for reference.  Allows searching the table for specific info.
+Display an extended ASCII table in Sublime for reference.  Allows searching the table for specific info.
 
 Just define the commands below:
 
-```js
+```
     //////////////////////////////////
     // ASCII Table
     //////////////////////////////////
@@ -42,7 +42,7 @@ Just define the commands below:
 ```
 
 Licensed under MIT
-Copyright (c) 2014-2015 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2014-2019 Isaac Muse <isaacmuse@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -59,10 +59,6 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 DEALINGS IN THE SOFTWARE.
 """
 import sublime_plugin
-import sublime
-
-USE_ST_SYNTAX = int(sublime.version()) >= 3092
-ST_SYNTAX = "sublime-syntax" if USE_ST_SYNTAX else 'tmLanguage'
 
 DEC = 0
 HEX = 1
@@ -336,7 +332,7 @@ ASCII_LINE = "%-3d    0x%02x    0o%03o    %-5s%s    %-8s%s"
 
 
 def display_ascii(code):
-    """Format and return ascii line."""
+    """Format and return ASCII line."""
 
     entry = ASCII_INFO[code]
     char = entry.get("char", chr(code))
@@ -354,7 +350,7 @@ def display_ascii(code):
             code,       # octal
             char,       # char
             spacer,     # spacer
-            html_name,  # html name
+            html_name,  # HTML name
             info        # info
         )
     ).rstrip()
@@ -386,7 +382,7 @@ class AsciiTableSearchCommand(sublime_plugin.TextCommand):
     """Command to open ASCII table then perform search."""
 
     def run(self, edit, info_type):
-        """Find or launch an ascii table view and pop and then call actual search command."""
+        """Find or launch an ASCII table view and pop and then call actual search command."""
 
         if not self.view.settings().get("ascii_table.view", False):
             window = self.view.window()
@@ -404,7 +400,7 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
     """ASCII table search."""
 
     def run(self, edit, info_type):
-        """Show the palette search options based on info_type."""
+        """Show the palette search options based on `info_type`."""
 
         info_map = {
             "dec": DEC,
@@ -430,7 +426,7 @@ class AsciiTableViewSearchCommand(sublime_plugin.TextCommand):
             self.view.show_at_center(pt)
 
     def is_enabled(self, info_type):
-        """Enable only if we are in an ascii table view."""
+        """Enable only if we are in an ASCII table view."""
 
         return self.view.settings().get("ascii_table.view", False)
 
@@ -439,7 +435,7 @@ class AsciiTableWriteCommand(sublime_plugin.TextCommand):
     """Write out the ASCII table."""
 
     def run(self, edit):
-        """Insert table in ascii view."""
+        """Insert table in ASCII view."""
 
         self.view.insert(
             edit, 0,
@@ -451,7 +447,7 @@ class AsciiTableCommand(sublime_plugin.WindowCommand):
     """ASCII table command to show ASCII table."""
 
     def run(self):
-        """Show the ascii table.  Only generate if one is not available."""
+        """Show the ASCII table.  Only generate if one is not available."""
 
         for view in self.window.views():
             if view.settings().get("ascii_table.view", False):
@@ -466,4 +462,4 @@ class AsciiTableCommand(sublime_plugin.WindowCommand):
             view.set_scratch(True)
             view.set_name(".ascii_table")
             view.settings().set("ascii_table.view", True)
-            view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table.%s" % ST_SYNTAX)
+            view.set_syntax_file("Packages/SublimeRandomCrap/ascii_table")

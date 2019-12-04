@@ -2,7 +2,7 @@
 AutoSideBar.
 
 Licensed under MIT
-Copyright (c) 2016 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2016 - 2019 Isaac Muse <isaacmuse@gmail.com>
 """
 import sublime
 import sublime_plugin

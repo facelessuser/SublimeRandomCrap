@@ -1,9 +1,0 @@
-[
-    { "keys": ["tab"], "command": "postmaster_insert_contact",
-        "context":
-        [
-            { "key": "selector", "operator": "equal", "operand": "meta.header.yaml.postmaster", "match_all": true },
-            { "key": "preceding_text", "operator": "regex_match", "operand": ".*@", "match_all": true }
-        ]
-    }
-]

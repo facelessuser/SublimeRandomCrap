@@ -1,0 +1,70 @@
+[
+    //////////////////////////////////
+    // ASCII Table
+    //////////////////////////////////
+    {
+        "caption": "ASCII Table: Show",
+        "command": "ascii_table"
+    },
+    {
+        "caption": "ASCII Table: Search Decimal",
+        "command": "ascii_table_search",
+        "args": {"info_type": "dec"}
+    },
+    {
+        "caption": "ASCII Table: Search Hexidecimal",
+        "command": "ascii_table_search",
+        "args": {"info_type": "hex"}
+    },
+    {
+        "caption": "ASCII Table: Search Octal",
+        "command": "ascii_table_search",
+        "args": {"info_type": "oct"}
+    },
+    {
+        "caption": "ASCII Table: Search Character",
+        "command": "ascii_table_search",
+        "args": {"info_type": "chr"}
+    },
+    {
+        "caption": "ASCII Table: Search Info",
+        "command": "ascii_table_search",
+        "args": {"info_type": "inf"}
+    },
+    //////////////////////////////////
+    // AutoSideBar Commands
+    //////////////////////////////////
+    {
+        "caption": "AutoSideBar: Toggle",
+        "command": "auto_side_bar_toggle",
+        "args": {"show_sidebar": true}
+    },
+    //////////////////////////////////
+    // Highlight Word
+    //////////////////////////////////
+    {
+        "caption": "HighlightWord: Select Word(s)",
+        "command": "highlight_word_select"
+    },
+    //////////////////////////////////
+    // Doc Commands
+    //////////////////////////////////
+    {
+        "caption": "Sublime API Docs",
+        "command": "show_sublime_api"
+    },
+    //////////////////////////////////
+    // Info Commands
+    //////////////////////////////////
+    {
+        "caption": "Sublime Info",
+        "command": "sublime_info"
+    },
+    //////////////////////////////////
+    // Toggle White Space Command
+    //////////////////////////////////
+    {
+        "caption": "Toggle White Space",
+        "command": "toggle_white_space"
+    }
+]

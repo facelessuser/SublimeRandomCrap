@@ -1,7 +1,7 @@
 """
-Overrides the default url open plugin command in Sublime Text.
+Overrides the default URL open plugin command in Sublime Text.
 
-This gives me control over the regex so I can imrpove it over time.
+This gives me control over the regex so I can improve it over time.
 """
 import sublime_plugin
 import webbrowser

@@ -3,7 +3,7 @@ ToggleWhiteSpace Sublime Plugin.
 
 Toggle showing white space in Sublime Text.
 
-```js
+```
     //////////////////////////////////
     // Toggle White Space Command
     //////////////////////////////////
@@ -14,7 +14,7 @@ Toggle showing white space in Sublime Text.
 ```
 
 Licensed under MIT
-Copyright (c) 2013-2015 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2013-2019 Isaac Muse <isaacmuse@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation

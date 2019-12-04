@@ -1,9 +1,0 @@
-{
-    // Save contacts
-    "save_contacts": true,
-
-    // Store contacts per email template
-    // if email template == MyMail.mail-settings,
-    // contacts will be stored in MyMail.mail-contacts
-    "per_template_contacts": true
-}

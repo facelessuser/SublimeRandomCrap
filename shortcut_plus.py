@@ -1,12 +1,12 @@
 """
 Shortcut Plus.
 
-Copyright (c) 2012-2015 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2012-2019 Isaac Muse <isaacmuse@gmail.com>
 License: MIT
 
 Example:  This shows how to define two shortcut profiles bound to shortcuts
 
-```js
+```
     // Shortcut Plus Toggle
     {
         "keys": ["alt+`"],
@@ -21,15 +21,15 @@ Example:  This shows how to define two shortcut profiles bound to shortcuts
     },
 ```
 
-Example: This shows how to create shortcuts that execute only in a given shorcut profile
-         The first is bound to Myprofile1 and shows a dialog when all selections are empty
+Example: This shows how to create shortcuts that execute only in a given shortcut profile
+         The first is bound to `Myprofile1` and shows a dialog when all selections are empty
          and the escape key is pressed.
 
-         The other is bound to MyProfile2 and shows the inverse when escape is pressed.
+         The other is bound to `MyProfile2` and shows the inverse when escape is pressed.
 
          "shortcut_plus_test" is command only for testing.  You can use any command you want.
 
-```js
+```
     // Shortcut Plus Test
     {
         "keys": ["escape"],
