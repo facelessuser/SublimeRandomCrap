@@ -1,76 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-    
     <url>
-     <loc>/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
-        
     <url>
-     <loc>/plugins/asciitable/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/asciitable/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/plugins/grephere/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/highlightword/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/plugins/highlightword/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/shortcutplus/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/plugins/insertdate/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/sublimeapidoc/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/plugins/postmaster/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/sublimeinfo/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/plugins/shortcutplus/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/togglewhitespace/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/plugins/sublimeapidoc/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/autosidebar/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     <url>
-     <loc>/plugins/sublimeinfo/</loc>
-     <lastmod>2016-12-05</lastmod>
+     <loc>https://facelessuser.github.io/SublimeRandomCrap/plugins/urlopen/</loc>
+     <lastmod>2019-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
-    <url>
-     <loc>/plugins/togglewhitespace/</loc>
-     <lastmod>2016-12-05</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>/plugins/autosidebar/</loc>
-     <lastmod>2016-12-05</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    
-
 </urlset>
