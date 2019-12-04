@@ -1,9 +1,9 @@
 """
 SublimeApiDoc Sublime Plugin.
 
-Show Sublime's API Doc webpage:
+Show Sublime's API Doc site:
 
-```js
+```
     //////////////////////////////////
     // Doc Commands
     //////////////////////////////////
@@ -14,7 +14,7 @@ Show Sublime's API Doc webpage:
 ```
 
 Licensed under MIT
-Copyright (c) 2013-2015 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2013-2019 Isaac Muse <isaacmuse@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -36,7 +36,7 @@ import webbrowser
 
 
 class ShowSublimeApiCommand(sublime_plugin.ApplicationCommand):
-    """Show the Sublime API in the webbrowser."""
+    """Show the Sublime API in the web browser."""
 
     def run(self):
         """Run the command."""

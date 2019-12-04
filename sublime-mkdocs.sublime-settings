@@ -1,6 +1,0 @@
-{
-    "mkdocs_exe": {
-        "windows": "c:/Python27/Scripts/mkdocs.exe",
-        "osx": "/Library/Frameworks/Python.framework/Versions/2.7/bin/mkdocs"
-    }
-}

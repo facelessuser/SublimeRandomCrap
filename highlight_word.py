@@ -3,7 +3,7 @@ Originally a mod of ajpalkovic's plugin https://github.com/ajpalkovic, though it
 
 Highlights all other instances of the selected word (or optional word under cursor):
 
-```js
+```
     // Require the word to be selected.
     // Disable to highlight word with no selection.
     "require_word_select": true,
@@ -13,7 +13,7 @@ Can be configured to highlight multiple word sets simultaneously with multiple c
 When doing multiple cursors, you can highlight each in their own color
 (limited by available theme colors):
 
-```js
+```
     // Define scopes for highlights
     // The more you define, the more selections you can do
     "highlight_scopes": ["string", "keyword", "constant.language"],
@@ -21,14 +21,14 @@ When doing multiple cursors, you can highlight each in their own color
 
 Style of highlights can also be controlled:
 
-```js
+```
     // Highlight style (solid|outline|underline|thin_underline|squiggly|stippled)
     "highlight_style": "outline",
 ```
 
 Optionally can disable highlight if number of selections in view are greater than a certain value:
 
-```js
+```
     // If selection threshold is greater than
     // the specified setting, don't highlight words.
     // -1 means no threshold.
@@ -111,7 +111,7 @@ def underline(regions):
 
 
 # The search is performed half a second after the most recent event
-# in order to prevent the search hapenning on every keypress.
+# in order to prevent the search happening on every key press.
 # Each of the event handlers simply marks the time of the most recent
 # event and a timer periodically executes do_search
 class HighlightWord(object):
@@ -198,7 +198,6 @@ class HighlightWord(object):
                 continue
 
             # remove leading/trailing separator characters just in case
-            # print u"|%s|" % currentWord
             if len(word[0]) == 0:
                 continue
 
@@ -330,7 +329,6 @@ class HighlightWordSelectCommand(sublime_plugin.TextCommand):
                 continue
 
             # remove leading/trailing separator characters just in case
-            # print u"|%s|" % currentWord
             if len(word[0]) == 0:
                 continue
 
