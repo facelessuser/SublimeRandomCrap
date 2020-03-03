@@ -1,26 +1,26 @@
 {
 	"name": "Son of Dracula",
-    "author": "Isaac Muse",
-    "comments": "Based on: Dracula (Zeno Rocha) and Mariana (Sublime HQ Pty Ltd, Dmitri Voronianski)",
+	"author": "Isaac Muse",
+	"comments": "Based on: Dracula (Zeno Rocha) and Mariana (Sublime HQ Pty Ltd, Dmitri Voronianski)",
 	"globals":
 	{
 		"active_guide": "var(orange)",
-		"background": "var(bg)",
-		"bracket_contents_foreground": "color(var(fg) alpha(0.65))",
+		"background": "var(background)",
+		"bracket_contents_foreground": "color(var(foreground) alpha(0.65))",
 		"bracket_contents_options": "underline",
-		"brackets_foreground": "color(var(fg) alpha(0.65))",
+		"brackets_foreground": "color(var(foreground) alpha(0.65))",
 		"brackets_options": "underline",
 		"caret": "var(caret)",
 		"block_caret": "var(block-caret)",
 		"find_highlight": "var(highlight)",
 		"find_highlight_foreground": "var(black)",
-		"foreground": "var(fg)",
+		"foreground": "var(foreground)",
 		"highlight": "var(cyan)",
-		"inactive_selection": "var(grey)",
-		"line_highlight": "var(grey)",
+		"inactive_selection": "var(selection)",
+		"line_highlight": "var(selection)",
 		"misspelling": "var(red)",
-		"selection": "var(grey)",
-		"selection_border": "color(var(grey) lightness(10%))",
+		"selection": "var(selection)",
+		"selection_border": "color(var(selection) lightness(10%))",
 		"shadow": "color(var(black) alpha(0.25))",
 		"stack_guide": "color(orange alpha(0.5))",
 		"tags_foreground": "var(pink)",
@@ -76,12 +76,12 @@
 			"scope": "keyword.operator"
 		},
 		{
-			"foreground": "var(fg)",
+			"foreground": "var(foreground)",
 			"name": "Punctuation",
 			"scope": "punctuation.separator, punctuation.terminator"
 		},
 		{
-			"foreground": "var(fg)",
+			"foreground": "var(foreground)",
 			"name": "Punctuation",
 			"scope": "punctuation.section"
 		},
@@ -173,13 +173,13 @@
 		},
 		{
 			"background": "var(pink)",
-			"foreground": "var(fg)",
+			"foreground": "var(foreground)",
 			"name": "Invalid",
 			"scope": "invalid"
 		},
 		{
 			"background": "var(orange)",
-			"foreground": "var(fg)",
+			"foreground": "var(foreground)",
 			"name": "Invalid deprecated",
 			"scope": "invalid.deprecated"
 		},
@@ -189,7 +189,7 @@
 			"scope": "entity.name.tag.yaml"
 		},
 		{
-			"foreground": "var(fg)",
+			"foreground": "var(foreground)",
 			"name": "YAML String",
 			"scope": "source.yaml string.unquoted"
 		},
@@ -244,12 +244,12 @@
 			"scope": "markup.quote punctuation.definition.blockquote, markup.list punctuation.definition.list_item"
 		},
 		{
-			"background": "color(var(bg) lightness(25%))",
+			"background": "color(var(background) lightness(- 2%))",
 			"name": "markup code",
 			"scope": "markup.raw"
 		},
 		{
-			"background": "color(var(bg) lightness(25%))",
+			"background": "color(var(background) lightness(- 3%))",
 			"name": "markup code",
 			"scope": "markup.raw.inline"
 		},
@@ -279,7 +279,7 @@
 			"scope": "markup.changed"
 		},
 		{
-			"foreground": "var(fg)",
+			"foreground": "var(foreground)",
 			"name": "CSS Properties",
 			"scope": "support.type.property-name"
 		},
@@ -292,43 +292,106 @@
 			"scope": "message.error"
 		},
 		{
-			"background": "color(var(red) alpha(0.1))",
+			"background": "color(var(red) alpha(0.15))",
 			"foreground_adjust": "l(+ 5%)",
 			"scope": "diff.deleted"
 		},
 		{
-			"background": "color(var(red) alpha(0.3))",
+			"background": "color(var(red) alpha(0.30))",
 			"foreground_adjust": "l(+ 10%)",
 			"scope": "diff.deleted.char"
 		},
 		{
-			"background": "color(var(green) alpha(0.1))",
+			"background": "color(var(green) alpha(0.15))",
 			"foreground_adjust": "l(+ 5%)",
 			"scope": "diff.inserted"
 		},
 		{
-			"background": "color(var(green) alpha(0.3))",
+			"background": "color(var(green) alpha(0.30))",
 			"foreground_adjust": "l(+ 10%)",
 			"scope": "diff.inserted.char"
+		},
+		{
+			"scope": "diff.deleted.side-by-side",
+			"background": "color(var(background) lightness(+ 5%))",
+			"foreground_adjust": "l(+ 5%)"
+		},
+		{
+			"scope": "diff.inserted.side-by-side",
+			"background": "color(var(background) lightness(+ 5%))",
+			"foreground_adjust": "l(+ 5%)"
+		},
+		{
+			"scope": "diff.fill",
+			"background": "color(var(background) lightness(+ 5%))"
+		},
+		{
+			"scope": "diff.inserted.merge-left",
+			"background": "color(var(green) alpha(0.15))",
+			"foreground_adjust": "l(+ 5%)"
+		},
+		{
+			"scope": "diff.inserted.char.merge-left",
+			"background": "color(var(green) alpha(0.30))",
+			"foreground_adjust": "l(+ 10%)"
+		},
+		{
+			"scope": "diff.border.merge-left",
+			"background": "color(var(green) alpha(0.50))",
+		},
+		{
+			"scope": "diff.inserted.merge-right",
+			"background": "color(var(yellow) alpha(0.15))",
+			"foreground_adjust": "l(+ 5%)"
+		},
+		{
+			"scope": "diff.inserted.char.merge-right",
+			"background": "color(var(yellow) alpha(0.30))",
+			"foreground_adjust": "l(+ 10%)"
+		},
+		{
+			"scope": "diff.border.merge-right",
+			"background": "hcolor(var(yellow) alpha(0.50))",
+		},
+		{
+			"scope": "diff.border.merge-conflict",
+			"background": "color(var(red) alpha(0.50))",
+		},
+		{
+			"scope": "diff.border.merge-merged",
+			"background": "color(var(purple) alpha(0.50))",
+		},
+		{
+			"scope": "blame.border",
+			"background": "color(var(background) lightness(+ 15%))",
+		},
+		{
+			"scope": "blame.age-icon",
+			"foreground": "var(white)",
+		},
+		{
+			"scope": "source.sublime-merge.preferences.git_binary",
+			"foreground": "var(white)",
 		}
 	],
 	"variables":
 	{
-		"fg": "#f8f8f2",
-		"bg": "#282A36FF",
-		"caret": "#f8f8f0",
-		"block-caret": "#999a9e",
-		"highlight": "#effb7b",
-		"comment": "#6272a4",
-		"black": "#000000",
-		"cyan": "#8be9fd",
-		"grey": "#44475a",
-		"green": "#50fa7b",
-		"orange": "#ffb86c",
-		"pink": "#ff79c6",
-		"purple": "#bd93f9",
-		"red": "#ff5555",
-		"yellow": "#f1fa8c",
-		"invisibles": "#3B3A32"
+		"foreground": "hsl(60, 30%, 96%)",
+		"background": "hsl(231, 15%, 18%)",
+		"caret": "hsl(60, 36%, 96%)",
+		"block-caret": "hsl(60, 36%, 96%)",
+		"selection": "hsl(232, 14%, 31%)",
+		"highlight": "hsl(66, 94%, 73%)",
+		"comment": "hsl(225, 27%, 51%)",
+		"black": "hsl(0, 0%, 0%)",
+		"white": "hsl(0, 0%, 100%)",
+		"cyan": "hsl(191, 97%, 77%)",
+		"green": "hsl(135, 94%, 65%)",
+		"orange": "hsl(31, 100%, 71%)",
+		"pink": "hsl(326, 100%, 74%)",
+		"purple": "hsl(265, 89%, 78%)",
+		"red": "hsl(0, 100%, 67%)",
+		"yellow": "hsl(65, 92%, 76%)",
+		"invisibles": "hsl(53, 8%, 21%)"
 	}
 }
