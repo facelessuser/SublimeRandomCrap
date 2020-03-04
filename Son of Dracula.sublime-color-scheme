@@ -351,7 +351,7 @@
 		},
 		{
 			"scope": "diff.border.merge-right",
-			"background": "hcolor(var(yellow) alpha(0.50))",
+			"background": "color(var(yellow) alpha(0.50))",
 		},
 		{
 			"scope": "diff.border.merge-conflict",
