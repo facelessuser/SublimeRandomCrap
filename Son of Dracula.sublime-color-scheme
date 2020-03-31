@@ -259,12 +259,12 @@
 			"scope": "(text punctuation.definition.italic | text punctuation.definition.bold)"
 		},
 		{
-			"foreground": "var(pink)",
+			"foreground": "var(comment)",
 			"name": "diff.header",
 			"scope": "meta.diff, meta.diff.header"
 		},
 		{
-			"foreground": "var(red)",
+			"foreground": "var(pink)",
 			"name": "diff.deleted",
 			"scope": "markup.deleted"
 		},
@@ -292,12 +292,12 @@
 			"scope": "message.error"
 		},
 		{
-			"background": "color(var(red) alpha(0.15))",
+			"background": "color(var(pink) alpha(0.15))",
 			"foreground_adjust": "l(+ 5%)",
 			"scope": "diff.deleted"
 		},
 		{
-			"background": "color(var(red) alpha(0.30))",
+			"background": "color(var(pink) alpha(0.30))",
 			"foreground_adjust": "l(+ 10%)",
 			"scope": "diff.deleted.char"
 		},
