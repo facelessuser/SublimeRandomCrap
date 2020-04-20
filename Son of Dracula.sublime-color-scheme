@@ -1,31 +1,33 @@
 {
-	"name": "Son of Dracula",
+	"name": "Son of Dracula (Classic)",
 	"author": "Isaac Muse",
-	"comments": "Based on: Dracula (Zeno Rocha) and Mariana (Sublime HQ Pty Ltd, Dmitri Voronianski)",
+	"comments": "Derivation of: Dracula (Zeno Rocha) and Mariana (Sublime HQ Pty Ltd, Dmitri Voronianski)",
 	"globals":
 	{
-		"active_guide": "var(orange)",
+		"active_guide": "color(var(accent) a(75%))",
 		"background": "var(background)",
 		"bracket_contents_foreground": "color(var(foreground) alpha(0.65))",
 		"bracket_contents_options": "underline",
 		"brackets_foreground": "color(var(foreground) alpha(0.65))",
 		"brackets_options": "underline",
 		"caret": "var(caret)",
+		"gutter_foreground": "var(accent)",
 		"block_caret": "var(block-caret)",
 		"find_highlight": "var(highlight)",
-		"find_highlight_foreground": "var(black)",
+		"find_highlight_foreground": "var(background)",
 		"foreground": "var(foreground)",
 		"highlight": "var(cyan)",
 		"inactive_selection": "var(selection)",
 		"line_highlight": "var(selection)",
 		"misspelling": "var(red)",
 		"selection": "var(selection)",
-		"selection_border": "color(var(selection) lightness(10%))",
-		"shadow": "color(var(black) alpha(0.25))",
-		"stack_guide": "color(orange alpha(0.5))",
+		"selection_border": "color(var(selection) lightness(35%))",
+		"shadow": "color(var(shadow) alpha(0.25))",
+		"stack_guide": "color(var(foreground) a(25%))",
 		"tags_foreground": "var(pink)",
 		"tags_options": "stippled_underline",
-		"invisibles": "var(invisibles)"
+		"invisibles": "color(var(foreground) a(20%))",
+		"accent": "var(accent)"
 	},
 	"rules":
 	[
@@ -376,22 +378,39 @@
 	],
 	"variables":
 	{
-		"foreground": "hsl(60, 30%, 96%)",
-		"background": "hsl(231, 15%, 18%)",
-		"caret": "hsl(60, 36%, 96%)",
-		"block-caret": "hsl(60, 36%, 96%)",
-		"selection": "hsl(232, 14%, 31%)",
-		"highlight": "hsl(66, 94%, 73%)",
-		"comment": "hsl(225, 27%, 51%)",
-		"black": "hsl(0, 0%, 0%)",
-		"white": "hsl(0, 0%, 100%)",
-		"cyan": "hsl(191, 97%, 77%)",
-		"green": "hsl(135, 94%, 65%)",
+		// Palette
+		"white": "hsl(60, 30%, 96%)",
+		"red": "hsl(0, 100%, 67%)",
 		"orange": "hsl(31, 100%, 71%)",
+		"yellow": "hsl(65, 92%, 76%)",
+		"green": "hsl(135, 94%, 65%)",
+		"cyan": "hsl(191, 97%, 77%)",
 		"pink": "hsl(326, 100%, 74%)",
 		"purple": "hsl(265, 89%, 78%)",
-		"red": "hsl(0, 100%, 67%)",
-		"yellow": "hsl(65, 92%, 76%)",
-		"invisibles": "hsl(53, 8%, 21%)"
+
+		// Create variants:
+		//
+		// This allows for theme specific variants like what is
+		// possible for Dracula Pro. This scheme was developed
+		// separately from Pro, and I do not own, nor have seen Pro's source.
+		// We purposefully use the classic palette and not Pro's as we do not wish
+		// to take away from the author's work. But this allows you to create Pro style
+		// variants for classic:
+		//
+		//   - Change background to a suitable color and line highlights and accent
+		//     colors will change accordingly.
+		//   - Pro also changes comments based on background, if you'd like something more
+		//     pro-ish, change comment's value to var(accent).
+		"background": "hsl(231, 15%, 18%)",
+		"comment": "hsl(225, 27%, 51%)",
+
+		// UI elements derived from color schemes
+		"foreground": "var(white)",
+		"caret": "var(accent)",
+		"block-caret": "var(accent)",
+		"selection": "color(var(background) s(14%) l(25%))",
+		"highlight": "var(yellow)",
+		"shadow": "hsl(0, 0%, 0%)",
+		"accent": "color(var(background) s(30%) l(60%))"
 	}
 }
