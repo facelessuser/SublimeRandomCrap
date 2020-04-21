@@ -201,7 +201,7 @@
 			"scope": "markup.heading"
 		},
 		{
-			"foreground": "orange",
+			"foreground": "var(orange)",
 			"name": "markup headings",
 			"scope": "markup.heading punctuation.definition.heading"
 		},
