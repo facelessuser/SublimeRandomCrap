@@ -42,7 +42,6 @@ Platform:        %(platform)s
 Hostname:        %(hostname)s
 Sublime Version: %(version)s
 Architecture:    %(arch)s
-IP:              %(ip)s
 External IP:     %(e_ip)s
 '''
 
@@ -70,7 +69,6 @@ class SublimeInfoCommand(sublime_plugin.ApplicationCommand):
             "hostname": socket.gethostname().lower(),
             "version": sublime.version(),
             "arch": sublime.arch(),
-            "ip": socket.gethostbyname(socket.gethostname()),
             "e_ip": external_ip()
         }
 
