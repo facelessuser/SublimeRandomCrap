@@ -23,6 +23,6 @@ https://facelessuser.github.io/SublimeRandomCrap/
 
 Use Package Control
 
-[github-ci-image]: https://github.com/facelessuser/SublimeRandomCrap/workflows/build/badge.svg
-[github-ci-link]: https://github.com/facelessuser/SublimeRandomCrap/actions?workflow=build
-[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
+[github-ci-image]: https://github.com/facelessuser/SublimeRandomCrap/workflows/build/badge.svg?branch=master&event=push
+[github-ci-link]: https://github.com/facelessuser/SublimeRandomCrap/actions?query=workflow%3Abuild+branch%3Amaster
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?labelColor=333333
