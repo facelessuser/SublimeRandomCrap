@@ -9,11 +9,12 @@ copyright: |
 docs_dir: docs/src/markdown
 theme:
   name: material
-  icon:
-    logo: material/book-open-page-variant
+  custom_dir: docs/theme
   palette:
     primary: drac-purple
     accent: drac-purple
+  icon:
+    logo: material/book-open-page-variant
   font:
     text: Roboto
     code: Roboto Mono
@@ -77,24 +78,18 @@ markdown_extensions:
       separator: "\uff0b"
   - pymdownx.details:
   - pymdownx.tabbed:
-
-extra:
-  social:
-    - type: github
-      link: https://github.com/facelessuser
-extra_css:
-  - extra-174a536342.css
-extra_javascript:
-  - extra-0d9305e748.js
+  - pymdownx.saneheaders:
 
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/facelessuser
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/TWs8Tgr
 
 plugins:
   - search
-  - mkdocs_pymdownx_material_extras
   - git-revision-date-localized
+  - mkdocs_pymdownx_material_extras
   - minify:
       minify_html: true
