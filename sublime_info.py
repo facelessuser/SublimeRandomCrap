@@ -38,24 +38,40 @@ import traceback
 
 
 INFO = '''
-Platform:        %(platform)s
-Hostname:        %(hostname)s
-Sublime Version: %(version)s
-Architecture:    %(arch)s
-External IP:     %(e_ip)s
+Platform:        {platform}
+Hostname:        {hostname}
+Sublime Version: {version}
+Architecture:    {arch}
+Local IP:        {l_ip}
+External IP:     {e_ip}
 '''
 
 
 def external_ip():
     """Get external IP."""
 
-    e_ip = "???"
     try:
         with urllibreq.urlopen("https://www.myexternalip.com/raw") as url:
             e_ip = url.read().decode("utf-8")
     except Exception:
+        e_ip = "???"
         print(traceback.format_exc())
     return e_ip
+
+
+def local_ip():
+    """Get local IP address."""
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('10.255.255.255', 1))
+        l_ip = s.getsockname()[0]
+    except Exception:
+        l_ip = '???'
+        print(traceback.format_exc())
+    finally:
+        s.close()
+    return l_ip
 
 
 class SublimeInfoCommand(sublime_plugin.ApplicationCommand):
@@ -69,12 +85,13 @@ class SublimeInfoCommand(sublime_plugin.ApplicationCommand):
             "hostname": socket.gethostname().lower(),
             "version": sublime.version(),
             "arch": sublime.arch(),
+            "l_ip": local_ip(),
             "e_ip": external_ip()
         }
 
-        msg = INFO % info
+        msg = INFO.format(**info)
 
         # Show in a dialog, console, and copy to clipboard
         sublime.message_dialog(msg)
         sublime.set_clipboard(msg)
-        print("\nSublimeInfo: %s" % msg)
+        print("\nSublimeInfo: {}".format(msg))
